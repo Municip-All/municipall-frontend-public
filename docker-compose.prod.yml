@@ -4,7 +4,7 @@ services:
     container_name: municipall-frontend-prod
     restart: always
     ports:
-      - "3000:80"
+      - "3003:80"
     networks:
       - proxy-bridge
 

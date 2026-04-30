@@ -130,16 +130,83 @@ export const AgendaView: React.FC = () => {
 };
 
 export const ProfilView: React.FC = () => {
+  const [userInfo, setUserInfo] = useState({
+    prenom: 'Marie',
+    nom: 'Beaumont',
+    email: 'marie.beaumont@email.fr',
+    tel: '06 12 34 56 78',
+    dob: '1985-06-14'
+  });
+
+  const [address, setAddress] = useState({
+    rue: '12 Rue Pasteur',
+    cp: '94800',
+    ville: 'Villejuif',
+    quartier: 'paul-hochart',
+    comp: ''
+  });
+
+  const [notifications, setNotifications] = useState({
+    demandes: true,
+    alertes: true,
+    evenements: false
+  });
+
+  const [darkMode, setDarkMode] = useState(true);
+  const [language, setLanguage] = useState('fr');
+  
+  const [activeModal, setActiveModal] = useState<string | null>(null);
+  const [pwData, setPwData] = useState({ old: '', new: '', confirm: '' });
+  const [avatar, setAvatar] = useState('MB');
+
+  const openModal = (modal: string) => setActiveModal(modal);
+  const closeModal = () => setActiveModal(null);
+
+  const handleLogout = () => {
+    alert('Déconnexion... À bientôt!');
+    // Redirection vers la page de login
+  };
+
+  const handleToggle = (setting: string) => {
+    if (setting === 'demandes') setNotifications({...notifications, demandes: !notifications.demandes});
+    else if (setting === 'alertes') setNotifications({...notifications, alertes: !notifications.alertes});
+    else if (setting === 'evenements') setNotifications({...notifications, evenements: !notifications.evenements});
+    else if (setting === 'dark') setDarkMode(!darkMode);
+  };
+
+  const handleCopyCode = () => {
+    const code = '<script src="https://cdn.municipall.fr/widget.js" data-commune="villejuif"></script>';
+    navigator.clipboard.writeText(code);
+    alert('Code copié!');
+  };
+
+  const updateProfile = () => {
+    setUserInfo(userInfo);
+    setAddress(address);
+    closeModal();
+    alert('✅ Profil mis à jour!');
+  };
+
+  const updatePassword = () => {
+    if (pwData.new !== pwData.confirm) {
+      alert('⚠️ Les mots de passe ne correspondent pas!');
+      return;
+    }
+    alert('✅ Mot de passe changé!');
+    setPwData({old: '', new: '', confirm: ''});
+    closeModal();
+  };
+
   return (
     <div className="view active" id="view-profil">
 
       <div className="profil-hero">
         <div className="profil-avatar-wrap">
-          <div className="profil-avatar" id="profilAvatar">MB</div>
-          <div className="profil-avatar-edit"  title="Modifier la photo">✏️</div>
+          <div className="profil-avatar" id="profilAvatar" onClick={() => openModal('avatar')} style={{'cursor': 'pointer'}}>{avatar}</div>
+          <div className="profil-avatar-edit" title="Modifier la photo" onClick={() => openModal('avatar')} style={{'cursor': 'pointer'}}>✏️</div>
         </div>
-        <div className="profil-name" id="profilName">Marie Beaumont</div>
-        <div className="profil-commune">📍 Villejuif · Quartier Paul Hochart</div>
+        <div className="profil-name" id="profilName">{userInfo.prenom} {userInfo.nom}</div>
+        <div className="profil-commune">📍 Villejuif · Quartier {address.quartier === 'paul-hochart' ? 'Paul Hochart' : address.quartier}</div>
       </div>
       <div className="profil-stats">
         <div className="ps-card"><div className="ps-val">5</div><div className="ps-lbl">Signalements</div></div>
@@ -149,17 +216,17 @@ export const ProfilView: React.FC = () => {
 
       <div className="settings-section">
         <div className="settings-title">Mon compte</div>
-        <div className="setting-row" >
-          <div className="sr-left"><div className="sr-icon">👤</div><div><div className="sr-label">Informations personnelles</div><div className="sr-sub" id="sr-sub-email">marie.beaumont@email.fr</div></div></div>
-          <div className="sr-right"><span style={{'fontSize': '.7rem', 'color': 'var(--accent)'}}>Modifier</span><span className="sr-chevron">›</span></div>
+        <div className="setting-row" style={{'cursor': 'pointer'}} onClick={(e) => {e.preventDefault(); openModal('identity');}}>
+          <div className="sr-left"><div className="sr-icon">👤</div><div><div className="sr-label">Informations personnelles</div><div className="sr-sub" id="sr-sub-email">{userInfo.email}</div></div></div>
+          <div className="sr-right"><span style={{'fontSize': '.7rem', 'color': 'var(--accent)', 'cursor': 'pointer'}} onClick={(e) => {e.stopPropagation(); openModal('identity');}}>Modifier</span><span className="sr-chevron">›</span></div>
         </div>
-        <div className="setting-row" >
-          <div className="sr-left"><div className="sr-icon">📍</div><div><div className="sr-label">Mon adresse</div><div className="sr-sub" id="sr-sub-address">12 Rue Pasteur, Villejuif</div></div></div>
-          <div className="sr-right"><span style={{'fontSize': '.7rem', 'color': 'var(--accent)'}}>Modifier</span><span className="sr-chevron">›</span></div>
+        <div className="setting-row" style={{'cursor': 'pointer'}} onClick={(e) => {e.preventDefault(); openModal('address');}}>
+          <div className="sr-left"><div className="sr-icon">📍</div><div><div className="sr-label">Mon adresse</div><div className="sr-sub" id="sr-sub-address">{address.rue}, {address.cp}</div></div></div>
+          <div className="sr-right"><span style={{'fontSize': '.7rem', 'color': 'var(--accent)', 'cursor': 'pointer'}} onClick={(e) => {e.stopPropagation(); openModal('address');}}>Modifier</span><span className="sr-chevron">›</span></div>
         </div>
-        <div className="setting-row" >
+        <div className="setting-row" style={{'cursor': 'pointer'}} onClick={(e) => {e.preventDefault(); openModal('password');}}>
           <div className="sr-left"><div className="sr-icon">🔑</div><div><div className="sr-label">Mot de passe</div><div className="sr-sub">Dernière modification : il y a 3 mois</div></div></div>
-          <div className="sr-right"><span style={{'fontSize': '.7rem', 'color': 'var(--accent)'}}>Modifier</span><span className="sr-chevron">›</span></div>
+          <div className="sr-right"><span style={{'fontSize': '.7rem', 'color': 'var(--accent)', 'cursor': 'pointer'}} onClick={(e) => {e.stopPropagation(); openModal('password');}}>Modifier</span><span className="sr-chevron">›</span></div>
         </div>
         <div className="setting-row">
           <div className="sr-left"><div className="sr-icon">📄</div><div><div className="sr-label">Mes documents</div><div className="sr-sub">Attestations, courriers</div></div></div>
@@ -169,26 +236,113 @@ export const ProfilView: React.FC = () => {
 
       <div className="settings-section">
         <div className="settings-title">Notifications</div>
-        <div className="setting-row"><div className="sr-left"><div className="sr-icon">🔔</div><div className="sr-label">Mises à jour de mes demandes</div></div><div className="toggle on" ></div></div>
-        <div className="setting-row"><div className="sr-left"><div className="sr-icon">📢</div><div className="sr-label">Alertes de la commune</div></div><div className="toggle on" ></div></div>
-        <div className="setting-row"><div className="sr-left"><div className="sr-icon">📅</div><div className="sr-label">Rappels événements</div></div><div className="toggle" ></div></div>
+        <div className="setting-row"><div className="sr-left"><div className="sr-icon">🔔</div><div className="sr-label">Mises à jour de mes demandes</div></div><div className={'toggle' + (notifications.demandes ? ' on' : '')} onClick={() => handleToggle('demandes')} style={{'cursor': 'pointer'}}></div></div>
+        <div className="setting-row"><div className="sr-left"><div className="sr-icon">📢</div><div className="sr-label">Alertes de la commune</div></div><div className={'toggle' + (notifications.alertes ? ' on' : '')} onClick={() => handleToggle('alertes')} style={{'cursor': 'pointer'}}></div></div>
+        <div className="setting-row"><div className="sr-left"><div className="sr-icon">📅</div><div className="sr-label">Rappels événements</div></div><div className={'toggle' + (notifications.evenements ? ' on' : '')} onClick={() => handleToggle('evenements')} style={{'cursor': 'pointer'}}></div></div>
       </div>
 
       <div className="settings-section">
         <div className="settings-title">Intégration Commune</div>
         <div style={{'padding': '.4rem 0 .8rem'}}>
           <div className="wp-code">&lt;script src="https://cdn.municipall.fr/widget.js" data-commune="villejuif"&gt;&lt;/script&gt;</div>
-          <button className="btn btn-ghost" style={{'width': '100%', 'marginTop': '.5rem', 'fontSize': '.78rem'}} >📋 Copier le code d'intégration</button>
+          <button className="btn btn-ghost" style={{'width': '100%', 'marginTop': '.5rem', 'fontSize': '.78rem'}} onClick={handleCopyCode}>📋 Copier le code d'intégration</button>
         </div>
       </div>
 
       <div className="settings-section">
         <div className="settings-title">Application</div>
-        <div className="setting-row"><div className="sr-left"><div className="sr-icon">🌙</div><div className="sr-label">Mode sombre</div></div><div className="toggle on" ></div></div>
-        <div className="setting-row" ><div className="sr-left"><div className="sr-icon">🗣️</div><div className="sr-label">Langue</div></div><div className="sr-right"><span>Français</span><span className="sr-chevron">›</span></div></div>
-        <div className="setting-row" style={{'color': 'var(--danger)'}}><div className="sr-left"><div className="sr-icon" style={{'borderColor': 'rgba(255,107,107,.2)'}}>🚪</div><div className="sr-label" style={{'color': 'var(--danger)'}}>Se déconnecter</div></div></div>
+        <div className="setting-row"><div className="sr-left"><div className="sr-icon">🌙</div><div className="sr-label">Mode sombre</div></div><div className={'toggle' + (darkMode ? ' on' : '')} onClick={() => handleToggle('dark')} style={{'cursor': 'pointer'}}></div></div>
+        <div className="setting-row" style={{'cursor': 'pointer'}} onClick={(e) => {e.preventDefault(); openModal('lang');}}><div className="sr-left"><div className="sr-icon">🗣️</div><div className="sr-label">Langue</div></div><div className="sr-right"><span style={{'cursor': 'pointer'}}>{language === 'fr' ? 'Français' : language === 'en' ? 'English' : 'العربية'}</span><span className="sr-chevron" style={{'cursor': 'pointer'}}>›</span></div></div>
+        <div className="setting-row" style={{'color': 'var(--danger)', 'cursor': 'pointer'}} onClick={handleLogout}><div className="sr-left"><div className="sr-icon" style={{'borderColor': 'rgba(255,107,107,.2)'}}>🚪</div><div className="sr-label" style={{'color': 'var(--danger)'}}>Se déconnecter</div></div></div>
       </div>
       <div style={{'textAlign': 'center', 'padding': '.8rem', 'fontSize': '.68rem', 'color': 'var(--dim)'}}>Municip'All v2.2.0 · Données RGPD · Politique de confidentialité</div>
+
+      {/* MODALS */}
+      {activeModal === 'identity' && (
+        <div className="modal-overlay open" onClick={closeModal}>
+          <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header"><div className="modal-title">✏️ Informations personnelles</div><div className="modal-close" onClick={closeModal}>✕</div></div>
+            <div className="form-row">
+              <div className="form-group"><label className="form-label">Prénom</label><input className="form-input" value={userInfo.prenom} onChange={(e) => setUserInfo({...userInfo, prenom: e.target.value})} placeholder="Prénom" /></div>
+              <div className="form-group"><label className="form-label">Nom</label><input className="form-input" value={userInfo.nom} onChange={(e) => setUserInfo({...userInfo, nom: e.target.value})} placeholder="Nom" /></div>
+            </div>
+            <div className="form-group"><label className="form-label">Email</label><input className="form-input" type="email" value={userInfo.email} onChange={(e) => setUserInfo({...userInfo, email: e.target.value})} placeholder="email@example.fr" /></div>
+            <div className="form-group"><label className="form-label">Téléphone</label><input className="form-input" type="tel" value={userInfo.tel} onChange={(e) => setUserInfo({...userInfo, tel: e.target.value})} placeholder="06 XX XX XX XX" /></div>
+            <div className="form-group"><label className="form-label">Date de naissance</label><input className="form-input" type="date" value={userInfo.dob} onChange={(e) => setUserInfo({...userInfo, dob: e.target.value})} /></div>
+            <div className="save-bar"><button className="btn btn-ghost" style={{'flex': '1'}} onClick={closeModal}>Annuler</button><button className="btn btn-accent" style={{'flex': '2'}} onClick={updateProfile}>💾 Enregistrer</button></div>
+          </div>
+        </div>
+      )}
+
+      {activeModal === 'address' && (
+        <div className="modal-overlay open" onClick={closeModal}>
+          <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header"><div className="modal-title">📍 Mon adresse</div><div className="modal-close" onClick={closeModal}>✕</div></div>
+            <div className="form-group"><label className="form-label">Adresse</label><input className="form-input" value={address.rue} onChange={(e) => setAddress({...address, rue: e.target.value})} placeholder="Numéro et rue" /></div>
+            <div className="form-row">
+              <div className="form-group"><label className="form-label">Code postal</label><input className="form-input" value={address.cp} onChange={(e) => setAddress({...address, cp: e.target.value})} placeholder="94800" /></div>
+              <div className="form-group"><label className="form-label">Ville</label><input className="form-input" value={address.ville} onChange={(e) => setAddress({...address, ville: e.target.value})} placeholder="Villejuif" /></div>
+            </div>
+            <div className="form-group"><label className="form-label">Quartier</label>
+              <select className="form-input" value={address.quartier} onChange={(e) => setAddress({...address, quartier: e.target.value})} style={{'cursor': 'pointer'}}>
+                <option value="paul-hochart">Paul Hochart</option>
+                <option value="centre-ville">Centre-Ville</option>
+                <option value="rouget-de-lisle">Rouget de Lisle</option>
+                <option value="quartiers-sud">Quartiers Sud</option>
+                <option value="stade">Stade</option>
+              </select>
+            </div>
+            <div className="form-group"><label className="form-label">Complément d'adresse</label><input className="form-input" value={address.comp} onChange={(e) => setAddress({...address, comp: e.target.value})} placeholder="Bât, étage, code…" /></div>
+            <div className="save-bar"><button className="btn btn-ghost" style={{'flex': '1'}} onClick={closeModal}>Annuler</button><button className="btn btn-accent" style={{'flex': '2'}} onClick={updateProfile}>💾 Enregistrer</button></div>
+          </div>
+        </div>
+      )}
+
+      {activeModal === 'password' && (
+        <div className="modal-overlay open" onClick={closeModal}>
+          <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header"><div className="modal-title">🔑 Changer le mot de passe</div><div className="modal-close" onClick={closeModal}>✕</div></div>
+            <div className="form-group"><label className="form-label">Mot de passe actuel</label><input className="form-input" type="password" value={pwData.old} onChange={(e) => setPwData({...pwData, old: e.target.value})} placeholder="••••••••" /></div>
+            <div className="form-group"><label className="form-label">Nouveau mot de passe</label><input className="form-input" type="password" value={pwData.new} onChange={(e) => setPwData({...pwData, new: e.target.value})} placeholder="••••••••" /></div>
+            <div className="form-group"><label className="form-label">Confirmer</label><input className="form-input" type="password" value={pwData.confirm} onChange={(e) => setPwData({...pwData, confirm: e.target.value})} placeholder="••••••••" /></div>
+            <div className="save-bar"><button className="btn btn-ghost" style={{'flex': '1'}} onClick={closeModal}>Annuler</button><button className="btn btn-accent" style={{'flex': '2'}} onClick={updatePassword}>💾 Enregistrer</button></div>
+          </div>
+        </div>
+      )}
+
+      {activeModal === 'avatar' && (
+        <div className="modal-overlay open" onClick={closeModal}>
+          <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header"><div className="modal-title">🖼️ Photo de profil</div><div className="modal-close" onClick={closeModal}>✕</div></div>
+            <div style={{'display': 'grid', 'gridTemplateColumns': 'repeat(5,1fr)', 'gap': '.6rem', 'marginBottom': '1rem'}}>
+              <div onClick={() => {setAvatar('MB'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'linear-gradient(135deg,var(--blue),var(--accent))', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontFamily': 'var(--fd)', 'fontWeight': '800', 'fontSize': '.85rem', 'cursor': 'pointer', 'border': '2px solid var(--border-a)'}}>MB</div>
+              <div onClick={() => {setAvatar('😊'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>😊</div>
+              <div onClick={() => {setAvatar('🦁'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🦁</div>
+              <div onClick={() => {setAvatar('🌸'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🌸</div>
+              <div onClick={() => {setAvatar('🎯'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🎯</div>
+              <div onClick={() => {setAvatar('⚡'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>⚡</div>
+              <div onClick={() => {setAvatar('🎨'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🎨</div>
+              <div onClick={() => {setAvatar('🏄'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🏄</div>
+              <div onClick={() => {setAvatar('🌍'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🌍</div>
+              <div onClick={() => {setAvatar('🎸'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🎸</div>
+            </div>
+            <div className="save-bar"><button className="btn btn-ghost" style={{'flex': '1'}} onClick={closeModal}>Annuler</button></div>
+          </div>
+        </div>
+      )}
+
+      {activeModal === 'lang' && (
+        <div className="modal-overlay open" onClick={closeModal}>
+          <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header"><div className="modal-title">🗣️ Langue</div><div className="modal-close" onClick={closeModal}>✕</div></div>
+            <div style={{'display': 'flex', 'flexDirection': 'column', 'gap': '.3rem'}}>
+              <div onClick={() => {setLanguage('fr'); closeModal();}} style={{'padding': '.75rem 1rem', 'borderRadius': 'var(--rm)', 'background': language === 'fr' ? 'rgba(78,205,196,.1)' : 'var(--surface)', 'border': language === 'fr' ? '1px solid var(--border-a)' : '1px solid var(--border)', 'cursor': 'pointer', 'display': 'flex', 'justifyContent': 'space-between', 'alignItems': 'center', 'fontSize': '.88rem', 'fontFamily': 'var(--fd)', 'fontWeight': language === 'fr' ? '600' : '500', 'color': language === 'fr' ? 'var(--accent)' : 'inherit'}}>🇫🇷 Français {language === 'fr' && <span>✓</span>}</div>
+              <div onClick={() => {setLanguage('en'); closeModal();}} style={{'padding': '.75rem 1rem', 'borderRadius': 'var(--rm)', 'background': language === 'en' ? 'rgba(78,205,196,.1)' : 'var(--surface)', 'border': language === 'en' ? '1px solid var(--border-a)' : '1px solid var(--border)', 'cursor': 'pointer', 'fontSize': '.88rem', 'fontFamily': 'var(--fd)', 'fontWeight': language === 'en' ? '600' : '500', 'color': language === 'en' ? 'var(--accent)' : 'inherit'}}>🇬🇧 English {language === 'en' && <span>✓</span>}</div>
+              <div onClick={() => {setLanguage('ar'); closeModal();}} style={{'padding': '.75rem 1rem', 'borderRadius': 'var(--rm)', 'background': language === 'ar' ? 'rgba(78,205,196,.1)' : 'var(--surface)', 'border': language === 'ar' ? '1px solid var(--border-a)' : '1px solid var(--border)', 'cursor': 'pointer', 'fontSize': '.88rem', 'fontFamily': 'var(--fd)', 'fontWeight': language === 'ar' ? '600' : '500', 'color': language === 'ar' ? 'var(--accent)' : 'inherit'}}>🇲🇦 العربية {language === 'ar' && <span>✓</span>}</div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };

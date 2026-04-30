@@ -1,15 +1,23 @@
-import React from 'react';
-import { useApp } from './Appcontext';
+import React, { useState } from 'react';
+
+const handleTabClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+  const tabs = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.tab-panel');
+  tabs.forEach(tab => (tab as HTMLElement).classList.remove('on'));
+  panels.forEach(panel => (panel as HTMLElement).classList.remove('on'));
+  e.currentTarget.classList.add('on');
+  const index = Array.from(tabs).indexOf(e.currentTarget as Element);
+  if (panels[index]) (panels[index] as HTMLElement).classList.add('on');
+};
 
 export const DemandesView: React.FC = () => {
-  const { showView, user } = useApp();
   return (
     <div className="view active" id="view-demandes">
 
       <div className="tabs">
-        <button className="tab-btn on" >En cours <span style={{'background': 'rgba(78,205,196,.15)', 'color': 'var(--accent)', 'padding': '.1rem .4rem', 'borderRadius': '20px', 'fontSize': '.65rem', 'marginLeft': '.2rem'}}>2</span></button>
-        <button className="tab-btn" >Terminées <span style={{'background': 'rgba(82,214,138,.1)', 'color': 'var(--success)', 'padding': '.1rem .4rem', 'borderRadius': '20px', 'fontSize': '.65rem', 'marginLeft': '.2rem'}}>3</span></button>
-        <button className="tab-btn" >Archives</button>
+        <button className="tab-btn on" onClick={handleTabClick}>En cours <span style={{'background': 'rgba(78,205,196,.15)', 'color': 'var(--accent)', 'padding': '.1rem .4rem', 'borderRadius': '20px', 'fontSize': '.65rem', 'marginLeft': '.2rem'}}>2</span></button>
+        <button className="tab-btn" onClick={handleTabClick}>Terminées <span style={{'background': 'rgba(82,214,138,.1)', 'color': 'var(--success)', 'padding': '.1rem .4rem', 'borderRadius': '20px', 'fontSize': '.65rem', 'marginLeft': '.2rem'}}>3</span></button>
+        <button className="tab-btn" onClick={handleTabClick}>Archives</button>
       </div>
       <div className="tab-panel on" id="tab-encours">
         <div className="ticket">
@@ -45,7 +53,6 @@ export const DemandesView: React.FC = () => {
 };
 
 export const FluxView: React.FC = () => {
-  const { showView, user } = useApp();
   return (
     <div className="view active" id="view-flux">
 
@@ -78,18 +85,38 @@ export const FluxView: React.FC = () => {
 };
 
 export const AgendaView: React.FC = () => {
-  const { showView, user } = useApp();
+  const [filter, setFilter] = useState<string>('');
+
+  const handleAgendaFilter = (e: React.MouseEvent<HTMLSpanElement>) => {
+    const chips = document.querySelectorAll('.agenda-cats .chip');
+    chips.forEach(chip => (chip as HTMLElement).classList.remove('on'));
+    (e.currentTarget as HTMLElement).classList.add('on');
+    
+    const category = e.currentTarget.textContent?.replace(/^[^\w]*/, '').trim() || '';
+    setFilter(category === 'Tout' ? '' : category.split(' ')[0].toLowerCase());
+    
+    const cards = document.querySelectorAll('.event-card');
+    cards.forEach(card => {
+      if (!filter) {
+        (card as HTMLElement).style.display = 'block';
+      } else {
+        const tag = card.getAttribute('data-tag');
+        (card as HTMLElement).style.display = tag === filter || tag?.includes(filter) ? 'block' : 'none';
+      }
+    });
+  };
+
   return (
     <div className="view active" id="view-agenda">
 
       <div className="search-wrap"><div className="search"><span className="si">🔍</span><input type="text" placeholder="Rechercher un événement…" /><span className="si">🎯</span></div></div>
       <div className="agenda-cats">
-        <span className="chip on" >Tout</span>
-        <span className="chip" >🎵 Culture</span>
-        <span className="chip" >🏆 Sport</span>
-        <span className="chip" >🤝 Social</span>
-        <span className="chip" >🛒 Marchés</span>
-        <span className="chip" >ℹ️ Info</span>
+        <span className="chip on" onClick={handleAgendaFilter}>Tout</span>
+        <span className="chip" onClick={handleAgendaFilter}>🎵 Culture</span>
+        <span className="chip" onClick={handleAgendaFilter}>🏆 Sport</span>
+        <span className="chip" onClick={handleAgendaFilter}>🤝 Social</span>
+        <span className="chip" onClick={handleAgendaFilter}>🛒 Marchés</span>
+        <span className="chip" onClick={handleAgendaFilter}>ℹ️ Info</span>
       </div>
       <div className="sec-head"><div className="sec-title">Cette semaine</div></div>
       <div className="event-card" data-tag="culture" ><div className="event-date-col"><div className="ev-day" style={{'color': 'var(--accent)'}}>30</div><div className="ev-month">avr</div></div><div className="event-body"><div className="event-title">Concert Jazz · Parc de la Méridienne</div><div className="event-meta"><span>🕗 20h00</span><span>📍 Parc central</span><span className="event-tag tag-culture">Culture</span></div><div style={{'marginTop': '.4rem', 'fontSize': '.72rem', 'color': 'var(--muted)'}}>Entrée libre · Prévoir une chaise</div></div></div>
@@ -103,7 +130,6 @@ export const AgendaView: React.FC = () => {
 };
 
 export const ProfilView: React.FC = () => {
-  const { showView, user } = useApp();
   return (
     <div className="view active" id="view-profil">
 
@@ -168,26 +194,79 @@ export const ProfilView: React.FC = () => {
 };
 
 export const AssosView: React.FC = () => {
-  const { showView, user } = useApp();
+  const [, setFilter] = useState<string>('');
+
+  const associations = [
+    { name: 'FC Villejuif United', category: 'sport', members: 145, icon: '⚽' },
+    { name: 'Villejuif Jazz Society', category: 'culture', members: 87, icon: '🎵' },
+    { name: 'Les Amis de la Nature', category: 'environnement', members: 234, icon: '🌿' },
+    { name: 'Villejuif Social', category: 'social', members: 156, icon: '🤝' },
+    { name: 'Jeunes Talents', category: 'jeunesse', members: 203, icon: '👦' },
+    { name: 'Cœur de Villejuif', category: 'sante', members: 98, icon: '❤️' },
+    { name: 'Arts & Création', category: 'culture', members: 112, icon: '🎭' },
+    { name: 'Club de Badminton', category: 'sport', members: 67, icon: '🏸' },
+    { name: 'Villejuif Verte', category: 'environnement', members: 189, icon: '♻️' },
+    { name: 'Aide Alimentaire', category: 'social', members: 245, icon: '🍲' },
+    { name: 'École de Musique', category: 'jeunesse', members: 178, icon: '🎹' },
+    { name: 'Prévention Santé', category: 'sante', members: 64, icon: '🏥' },
+  ];
+
+  const handleAssoFilter = (e: React.MouseEvent<HTMLSpanElement>) => {
+    const chips = document.querySelectorAll('.asso-filter-row .chip');
+    chips.forEach(chip => (chip as HTMLElement).classList.remove('on'));
+    (e.currentTarget as HTMLElement).classList.add('on');
+    
+    const text = e.currentTarget.textContent || '';
+    const category = text === 'Toutes' ? '' : text.toLowerCase().replace(/^[^a-z]*/, '');
+    setFilter(category);
+
+    const cards = document.querySelectorAll('.asso-card');
+    let visible = 0;
+    cards.forEach(card => {
+      if (!category) {
+        (card as HTMLElement).style.display = 'block';
+        visible++;
+      } else {
+        const assoCategory = card.getAttribute('data-category') || '';
+        if (assoCategory.includes(category)) {
+          (card as HTMLElement).style.display = 'block';
+          visible++;
+        } else {
+          (card as HTMLElement).style.display = 'none';
+        }
+      }
+    });
+    
+    const count = document.getElementById('assoCount');
+    if (count) count.textContent = visible.toString();
+  };
+
   return (
     <div className="view active" id="view-assos">
 
       <div className="search-wrap"><div className="search"><span className="si">🔍</span><input type="text" placeholder="Rechercher une association…" /><span className="si">🎯</span></div></div>
       <div className="asso-filter-row" id="assoChips">
-        <span className="chip on" >Toutes</span>
-        <span className="chip" >🏆 Sport</span>
-        <span className="chip" >🎭 Culture</span>
-        <span className="chip" >🤝 Social</span>
-        <span className="chip" >🌿 Environnement</span>
-        <span className="chip" >👦 Jeunesse</span>
-        <span className="chip" >❤️ Santé</span>
+        <span className="chip on" onClick={handleAssoFilter}>Toutes</span>
+        <span className="chip" onClick={handleAssoFilter}>🏆 Sport</span>
+        <span className="chip" onClick={handleAssoFilter}>🎭 Culture</span>
+        <span className="chip" onClick={handleAssoFilter}>🤝 Social</span>
+        <span className="chip" onClick={handleAssoFilter}>🌿 Environnement</span>
+        <span className="chip" onClick={handleAssoFilter}>👦 Jeunesse</span>
+        <span className="chip" onClick={handleAssoFilter}>❤️ Santé</span>
       </div>
       <div style={{'padding': '0 1rem .5rem', 'display': 'flex', 'justifyContent': 'space-between', 'alignItems': 'center'}}>
-        <div style={{'fontFamily': 'var(--fd)', 'fontWeight': '700', 'fontSize': '.82rem'}}><span id="assoCount">12</span> associations</div>
+        <div style={{'fontFamily': 'var(--fd)', 'fontWeight': '700', 'fontSize': '.82rem'}}><span id="assoCount">{associations.length}</span> associations</div>
         <span className="live">À jour</span>
       </div>
-      <div className="asso-grid" id="assoGrid">
-        {/* injected by JS */}
+      <div className="asso-grid" id="assoGrid" style={{'display': 'grid', 'gridTemplateColumns': 'repeat(auto-fill, minmax(150px, 1fr))', 'gap': '.8rem', 'padding': '0 1rem 1rem'}}>
+        {associations.map((asso, idx) => (
+          <div key={idx} className="asso-card" data-category={asso.category} style={{'padding': '.8rem', 'borderRadius': 'var(--rm)', 'background': 'var(--surface)', 'border': '1px solid var(--border)', 'cursor': 'pointer', 'transition': '.2s', 'textAlign': 'center'}}>
+            <div style={{'fontSize': '2rem', 'marginBottom': '.4rem'}}>{asso.icon}</div>
+            <div style={{'fontFamily': 'var(--fd)', 'fontWeight': '600', 'fontSize': '.8rem', 'marginBottom': '.3rem'}}>{asso.name}</div>
+            <div style={{'fontSize': '.7rem', 'color': 'var(--muted)', 'marginBottom': '.3rem'}}>{asso.members} membres</div>
+            <button style={{'width': '100%', 'padding': '.4rem', 'borderRadius': '.3rem', 'background': 'var(--accent)', 'color': 'white', 'border': 'none', 'cursor': 'pointer', 'fontSize': '.7rem', 'fontWeight': '600'}}>Voir</button>
+          </div>
+        ))}
       </div>
     </div>
   );

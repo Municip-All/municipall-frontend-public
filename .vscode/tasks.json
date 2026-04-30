@@ -1,0 +1,229 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Run Fix",
+			"type": "shell",
+			"command": "node run_fix.js",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "run shell rewrite",
+			"type": "shell",
+			"command": "node rewrite_shell.js",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "check exports",
+			"type": "shell",
+			"command": "grep \"export const\" src/test/otherviews.tsx",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "check bot",
+			"type": "shell",
+			"command": "grep -A 20 \"export const MuniBot\" src/test/layout.tsx",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "ts check",
+			"type": "shell",
+			"command": "tsc --noEmit || echo \"Typescript check failed\"",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "npx tsc",
+			"type": "shell",
+			"command": "npx tsc --noEmit",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "fix otherviews tags",
+			"type": "shell",
+			"command": "node -e \"const fs=require('fs'); let t=fs.readFileSync('src/test/otherviews.tsx','utf8'); t=t.replace(/<br>/g, '<br/>').replace(/<hr>/g, '<hr/>').replace(/<input([^>]+?)(?<!\\/)>/g, '<input\\$1 />').replace(/<img([^>]+?)(?<!\\/)>/g, '<img\\$1 />'); fs.writeFileSync('src/test/otherviews.tsx', t);\"",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "check lines",
+			"type": "shell",
+			"command": "cat -n src/test/otherviews.tsx | tail -n 30",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "check errors",
+			"type": "shell",
+			"command": "npx tsc --noEmit",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "lines 45",
+			"type": "shell",
+			"command": "cat -n src/test/otherviews.tsx | head -n 60 | tail -n 25",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "lines 36-45",
+			"type": "shell",
+			"command": "cat -n src/test/otherviews.tsx | head -n 45 | tail -n 10",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "lines 45-55",
+			"type": "shell",
+			"command": "cat -n src/test/otherviews.tsx | head -n 55 | tail -n 20",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "fix unclosed divs",
+			"type": "shell",
+			"command": "node -e \"const fs=require('fs'); let t=fs.readFileSync('src/test/otherviews.tsx','utf8'); t=t.replace(/\\{\\/\\* ╔[\\s\\S]+?╝ \\*\\/\\}/g, ''); t=t.replace(/<\\/div>\\s*<\\/div>\\s*\\);\\s*\\};/g, '</div>\\n  );\\n};\\n'); fs.writeFileSync('src/test/otherviews.tsx', t);\" && npx tsc --noEmit",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "tsc",
+			"type": "shell",
+			"command": "npx tsc --noEmit",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "check 190",
+			"type": "shell",
+			"command": "cat -n src/test/otherviews.tsx | head -n 210 | tail -n 30",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "check 198",
+			"type": "shell",
+			"command": "cat -n src/test/otherviews.tsx | head -n 205 | tail -n 20",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "truncate assos",
+			"type": "shell",
+			"command": "node -e \"const fs=require('fs'); let t=fs.readFileSync('src/test/otherviews.tsx','utf8'); t=t.split('</main>')[0] + '  </div>\\n  );\\n};\\n'; fs.writeFileSync('src/test/otherviews.tsx', t);\" && npx tsc --noEmit",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "198",
+			"type": "shell",
+			"command": "cat -n src/test/otherviews.tsx | head -n 210 | tail -n 20",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "format",
+			"type": "shell",
+			"command": "npx eslint --fix src/test/otherviews.tsx || npx prettier --write src/test/otherviews.tsx",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "repair tags",
+			"type": "shell",
+			"command": "node -e \"const fs=require('fs'); let t=fs.readFileSync('src/test/otherviews.tsx', 'utf-8'); let p=t.split('id=\\\"assoGrid\\\">'); p[1] = '\\n{/* injected */}\\n</div>\\n</div>\\n);\\n};\\n'; fs.writeFileSync('src/test/otherviews.tsx', p[0] + 'id=\\\"assoGrid\\\">' + p[1]);\" && npx tsc --noEmit",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "fix oninput",
+			"type": "shell",
+			"command": "node -e \"const fs=require('fs'); let t=fs.readFileSync('src/test/otherviews.tsx', 'utf-8'); t = t.replace(/oninput=\\\"[^\\\"]*\\\"/g, 'onChange={() => {}}');  fs.writeFileSync('src/test/otherviews.tsx', t);\" && npx tsc --noEmit",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "check app",
+			"type": "shell",
+			"command": "cat src/App.tsx",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "check html sidebar",
+			"type": "shell",
+			"command": "cat src/test.html | grep -A 20 \"class=\\\"desktop-sidebar\"",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "check src sidebar",
+			"type": "shell",
+			"command": "cat src/test/layout.tsx | grep -A 20 \"DesktopSidebar\"",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "check layout 120",
+			"type": "shell",
+			"command": "head -n 120 src/test/layout.tsx | tail -n 30",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "get desktop sidebar",
+			"type": "shell",
+			"command": "sed -n '/DesktopSidebar/,/};/p' src/test/layout.tsx",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "check dsb-logo",
+			"type": "shell",
+			"command": "grep -B 2 -A 5 \"dsb-logo\" src/test.html",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "get assos",
+			"type": "shell",
+			"command": "grep -A 20 \"const ASSOS =\" src/test.html",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "get assos array",
+			"type": "shell",
+			"command": "python3 -c \"\nwith open('src/test.html', 'r') as f:\n    text = f.read()\n    \nidx = text.find('const ASSOS = [')\nidxEnd = text.find('];', idx) + 2\nprint(text[idx:idxEnd])\n\"",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "check profil",
+			"type": "shell",
+			"command": "python3 -c \"\nwith open('src/test.html', 'r') as f:\n    text = f.read()\n\nprofil_start = text.find('<div class=\\\"view\\\" id=\\\"view-profil\\\">')\nprofil_end = text.find('</div>', text.find('id=\\\"view-assos\\\"')) # Just somewhere after\nprint(text[profil_start:profil_start+2000])\n\"",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "fix nav text",
+			"type": "shell",
+			"command": "cat << 'EOF' > fix_views.py\nimport re\n\nwith open('src/test/layout.tsx', 'r') as f:\n    layout = f.read()\n    \n# Clean up \"NAVIGATION\" text issues? \n# Maybe he meant: \"genre le mot navigation tu vois c'est banale mais règle tous ces petit problème\"\n# In desktop sidebar, maybe replace \"NAVIGATION\" with \"MUNICIP'ALL\" or just remove it or change style. Let's make it look cooler.\n\nlayout = layout.replace('<div className=\"dsb-logo\"><span>NAVIGATION</span></div>', '<div className=\"dsb-logo\"><div className=\"topbar__mark\" style={{width: 24, height: 24, fontSize: \".6rem\"}}>M</div><span>MUNICIP\\'ALL</span></div>')\n\nwith open('src/test/layout.tsx', 'w') as f:\n    f.write(layout)\nEOF\npython3 fix_views.py",
+			"args": [],
+			"isBackground": false
+		},
+		{
+			"label": "rewrite otherviews",
+			"type": "shell",
+			"command": "cat << 'EOF' > rewrite_otherviews.js\nconst fs = require('fs');\n\nlet out = `import React, { useState } from 'react';\nimport { useApp } from './Appcontext';\n\nexport const DemandesView: React.FC = () => {\n  const { showView, signalements } = useApp();\n  const [tab, setTab] = useState<'encours'|'terminees'|'archives'>('encours');\n  \n  const encours = signalements.filter((s:any) => s.statut === 'attente' || s.statut === 'en-cours');\n  const terminees = signalements.filter((s:any) => s.statut === 'resolu' || s.statut === 'rejete');\n\n  return (\n    <div className=\"view active\" id=\"view-demandes\">\n      <div className=\"tabs\">\n        <button className={\\`tab-btn \\${tab==='encours'?'on':''}\\`} onClick={() => setTab('encours')}>\n          En cours <span style={{background: 'rgba(78,205,196,.15)', color: 'var(--accent)', padding: '.1rem .4rem', borderRadius: '20px', fontSize: '.65rem', marginLeft: '.2rem'}}>{encours.length}</span>\n        </button>\n        <button className={\\`tab-btn \\${tab==='terminees'?'on':''}\\`} onClick={() => setTab('terminees')}>\n          Terminées <span style={{background: 'rgba(82,214,138,.1)', color: 'var(--success)', padding: '.1rem .4rem', borderRadius: '20px', fontSize: '.65rem', marginLeft: '.2rem'}}>{terminees.length}</span>\n        </button>\n        <button className={\\`tab-btn \\${tab==='archives'?'on':''}\\`} onClick={() => setTab('archives')}>Archives</button>\n      </div>\n\n      <div className={\\`tab-panel \\${tab==='encours'?'on':''}\\`}>\n        {encours.length === 0 ? (\n          <div style={{padding: '3rem 1rem', textAlign: 'center', color: 'var(--muted)'}}>\n            <div style={{fontSize: '2.5rem', marginBottom: '.8rem'}}>📋</div>\n            <div style={{fontFamily: 'var(--fd)', fontWeight: 600, fontSize: '.9rem'}}>Aucune demande en cours</div>\n          </div>\n        ) : encours.map((s:any) => (\n          <div className=\"ticket\" key={s.id}>\n            <div className=\"ticket-head\">\n              <div className=\"ticket-cat\">\n                <span className=\"ticket-cat-icon\">🛠️</span>\n                <div>\n                  <div className=\"ticket-title\">{s.categorie}</div>\n                  <div className=\"ticket-id\">{s.id}</div>\n                </div>\n              </div>\n              <span className={\\`status \\${s.statut==='attente'?'status-wait':'status-prog'}\\`}>{s.statut==='attente'?'En attente':'En cours'}</span>\n            </div>\n            <div className=\"ticket-loc\">📍 {s.adresse} · {s.dateCreation}</div>\n            <div className=\"ticket-footer\">\n              <span className=\"ticket-time\">⏱ Délai estimé : 3j restants</span>\n              <div className=\"ticket-actions\">\n                <button className=\"ta-btn chat\">💬 Chatter</button>\n                <button className=\"ta-btn\">↗ Partager</button>\n              </div>\n            </div>\n          </div>\n        ))}\n      </div>\n\n      <div className={\\`tab-panel \\${tab==='terminees'?'on':''}\\`}>\n        {terminees.length === 0 ? (\n          <div style={{padding: '3rem 1rem', textAlign: 'center', color: 'var(--muted)'}}>\n             <div style={{fontSize: '2.5rem', marginBottom: '.8rem'}}>✅</div>\n             <div style={{fontFamily: 'var(--fd)', fontWeight: 600, fontSize: '.9rem'}}>Aucune demande terminée</div>\n          </div>\n        ) : terminees.map((s:any) => (\n          <div className=\"ticket\" key={s.id}>\n             <div className=\"ticket-head\">\n              <div className=\"ticket-cat\">\n                <span className=\"ticket-cat-icon\">✅</span>\n                <div>\n                  <div className=\"ticket-title\">{s.categorie}</div>\n                  <div className=\"ticket-id\">{s.id}</div>\n                </div>\n              </div>\n              <span className=\"status status-done\">Résolu</span>\n            </div>\n            <div className=\"ticket-loc\">📍 {s.adresse} · {s.dateCreation}</div>\n             <div className=\"ticket-footer\">\n              <span className=\"ticket-time\" style={{color:'var(--success)'}}>✓ Résolu</span>\n              <div className=\"ticket-actions\">\n                <button className=\"ta-btn\">⭐ Évaluer</button>\n              </div>\n            </div>\n          </div>\n        ))}\n      </div>\n\n      <div className={\\`tab-panel \\${tab==='archives'?'on':''}\\`}>\n          <div style={{padding: '3rem 1rem', textAlign: 'center', color: 'var(--muted)'}}>\n            <div style={{fontSize: '2.5rem', marginBottom: '.8rem'}}>🗃️</div>\n            <div style={{fontFamily: 'var(--fd)', fontWeight: 600, fontSize: '.9rem', marginBottom: '.4rem'}}>Aucune archive</div>\n            <div style={{fontSize: '.8rem', lineHeight: 1.6}}>Vos demandes classées apparaîtront ici après 90 jours.</div>\n          </div>\n      </div>\n    </div>\n  );\n};\n\nexport const FluxView: React.FC = () => {\n  return (\n    <div className=\"view active\" id=\"view-flux\">\n      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '.9rem 1rem .5rem' }}>\n        <div style={{ fontFamily: 'var(--fd)', fontWeight: 800, fontSize: '1rem' }}>Flux en direct</div>\n        <span className=\"live\">Temps réel</span>\n      </div>\n      <div style={{ padding: '0 1rem .9rem' }}>\n        <div className=\"weather-big\">\n          <div className=\"wb-left\">\n            <div className=\"wb-icon\">🌤️</div>\n            <div className=\"wb-temp\">19°</div>\n            <div className=\"wb-desc\">Ciel dégagé<br/>Qualité air : Bonne</div>\n          </div>\n          <div className=\"wb-right\">\n            <div className=\"wb-item\"><span>Humidité</span><span>42%</span></div>\n            <div className=\"wb-item\"><span>Vent</span><span>12 km/h</span></div>\n            <div className=\"wb-item\"><span>UV</span><span>Faible</span></div>\n          </div>\n        </div>\n      </div>\n\n      <div className=\"feed-list\">\n        <div className=\"feed-item urgent\">\n          <div className=\"fi-icon\" style={{background: 'rgba(255,107,107,.15)'}}>⚠️</div>\n          <div className=\"fi-content\">\n            <div className=\"fi-head\"><span className=\"fi-title\">Urgence Voirie</span><span className=\"fi-time\">À l'instant</span></div>\n            <div className=\"fi-desc\">Fuite d'eau importante Route de Corbeil. Équipes sur place. Évitez le secteur.</div>\n          </div>\n        </div>\n        <div className=\"feed-item\">\n          <div className=\"fi-icon\" style={{background: 'rgba(78,205,196,.15)'}}>🚌</div>\n          <div className=\"fi-content\">\n             <div className=\"fi-head\"><span className=\"fi-title\">Info Trafic</span><span className=\"fi-time\">Il y a 12 min</span></div>\n             <div className=\"fi-desc\">Ligne 131 : Retours à la normale des horaires prévus d'ici 15 minutes.</div>\n          </div>\n        </div>\n        <div className=\"feed-item\">\n          <div className=\"fi-icon\" style={{background: 'rgba(82,214,138,.15)'}}>🌳</div>\n          <div className=\"fi-content\">\n             <div className=\"fi-head\"><span className=\"fi-title\">Espaces Verts</span><span className=\"fi-time\">Il y a 1h</span></div>\n             <div className=\"fi-desc\">Les parcs et jardins ferment exceptionnellement à 19h ce soir pour entretien.</div>\n          </div>\n        </div>\n      </div>\n    </div>\n  );\n};\n\nexport const AgendaView: React.FC = () => {\n  return (\n    <div className=\"view active\" id=\"view-agenda\">\n      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '.9rem 1rem .5rem' }}>\n         <div style={{ fontFamily: 'var(--fd)', fontWeight: 800, fontSize: '1rem' }}>Agenda de la ville</div>\n         <div className=\"icon-btn\" style={{ width: 32, height: 32 }}>🔍</div>\n      </div>\n\n      <div className=\"chips-row\">\n        <span className=\"chip on\">Ce week-end</span>\n        <span className=\"chip\">Culture</span>\n        <span className=\"chip\">Sport</span>\n        <span className=\"chip\">Famille</span>\n      </div>\n\n      <div style={{ padding: '0 1rem' }}>\n        <p style={{ fontSize: '.8rem', color: 'var(--muted)', marginBottom: '1rem' }}>3 événements à venir</p>\n        \n        <div className=\"event-card\">\n          <div className=\"ec-date\"><div className=\"ec-day\">24</div><div className=\"ec-month\">AVR</div></div>\n          <div className=\"ec-content\">\n            <div className=\"ec-title\">Concert Jazz en plein air</div>\n            <div className=\"ec-info\">📍 Parc de la Méridienne · 20h00</div>\n            <div className=\"ec-info\">Gratuit · Restauration sur place</div>\n          </div>\n        </div>\n\n        <div className=\"event-card\">\n          <div className=\"ec-date\"><div className=\"ec-day\">25</div><div className=\"ec-month\">AVR</div></div>\n          <div className=\"ec-content\">\n            <div className=\"ec-title\">Brocante de Printemps</div>\n             <div className=\"ec-info\">📍 Centre-ville · 08h00 - 18h00</div>\n             <div className=\"ec-info\">Plus de 200 exposants attendus</div>\n          </div>\n        </div>\n\n        <div className=\"event-card\">\n           <div className=\"ec-date\"><div className=\"ec-day\">27</div><div className=\"ec-month\">AVR</div></div>\n           <div className=\"ec-content\">\n             <div className=\"ec-title\">Atelier numérique Senior</div>\n             <div className=\"ec-info\">📍 Médiathèque · 14h30</div>\n             <div className=\"ec-info\">Sur inscription (reste 3 places)</div>\n           </div>\n        </div>\n      </div>\n    </div>\n  );\n};\n\nexport const ProfilView: React.FC = () => {\n  const { user } = useApp();\n  const [modal, setModal] = useState<string|null>(null);\n\n  return (\n    <div className=\"view active\" id=\"view-profil\">\n      <div className=\"profil-head\">\n        <div className=\"ph-avatar\">{user?.avatar || 'MB'}</div>\n        <div className=\"ph-name\">{user?.prenom} {user?.nom}</div>\n        <div className=\"ph-email\">{user?.email}</div>\n      </div>\n      \n      <div className=\"settings-list\">\n        <div className=\"settings-section\">Mon Compte</div>\n        <div className=\"setting-row\" onClick={() => setModal('identity')}>\n          <div className=\"sr-left\">\n            <div className=\"sr-icon\">👤</div>\n            <div>\n              <div className=\"sr-label\">Informations personnelles</div>\n              <div className=\"sr-sub\">{user?.prenom} {user?.nom}</div>\n            </div>\n          </div>\n          <div className=\"sr-right\"><span style={{fontSize:'.7rem', color:'var(--accent)'}}>Modifier</span><span className=\"sr-chevron\">›</span></div>\n        </div>\n        <div className=\"setting-row\" onClick={() => setModal('address')}>\n          <div className=\"sr-left\">\n             <div className=\"sr-icon\">📍</div>\n             <div>\n               <div className=\"sr-label\">Mon adresse</div>\n               <div className=\"sr-sub\">12 Rue Pasteur, {user?.ville}</div>\n             </div>\n          </div>\n          <div className=\"sr-right\"><span style={{fontSize:'.7rem', color:'var(--accent)'}}>Modifier</span><span className=\"sr-chevron\">›</span></div>\n        </div>\n      </div>\n\n       {modal === 'identity' && (\n        <div className=\"modal-overlay\" style={{opacity:1, pointerEvents:'auto'}} onClick={() => setModal(null)}>\n          <div className=\"modal-sheet\" style={{transform:'translateY(0)'}} onClick={e => e.stopPropagation()}>\n            <div className=\"modal-header\"><div className=\"modal-title\">✏️ Informations</div><div className=\"modal-close\" onClick={() => setModal(null)}>✕</div></div>\n            <div className=\"form-row\">\n              <div className=\"form-group\"><label className=\"form-label\">Prénom</label><input className=\"form-input\" value={user?.prenom} readOnly /></div>\n              <div className=\"form-group\"><label className=\"form-label\">Nom</label><input className=\"form-input\" value={user?.nom} readOnly /></div>\n            </div>\n             <button className=\"btn btn-accent btn-full\" onClick={() => setModal(null)}>Enregistrer</button>\n          </div>\n        </div>\n      )}\n\n      {modal === 'address' && (\n        <div className=\"modal-overlay\" style={{opacity:1, pointerEvents:'auto'}} onClick={() => setModal(null)}>\n          <div className=\"modal-sheet\" style={{transform:'translateY(0)'}} onClick={e => e.stopPropagation()}>\n            <div className=\"modal-header\"><div className=\"modal-title\">📍 Mon adresse</div><div className=\"modal-close\" onClick={() => setModal(null)}>✕</div></div>\n            <div className=\"form-group\"><label className=\"form-label\">Adresse complète</label><input className=\"form-input\" defaultValue={\\`12 Rue Pasteur, \\${user?.codePostal} \\${user?.ville}\\`} /></div>\n            <button className=\"btn btn-accent btn-full\" onClick={() => setModal(null)}>Enregistrer</button>\n          </div>\n        </div>\n      )}\n    </div>\n  );\n};\n\nconst ASSOS = [\n  {id:1,nom:\"AS Villejuif Football\",cat:\"sport\",icon:\"⚽\",color:\"#52D68A\",desc:\"Club de football amateur fondé en 1932. Entraînements 3x/semaine.\",lieu:\"Stade de la Redoute\"},\n  {id:2,nom:\"Harmonie Municipale\",cat:\"culture\",icon:\"🎺\",color:\"#9370DB\",desc:\"Orchestre d'harmonie fondé en 1948. Concerts tout au long de l'année.\",lieu:\"Conservatoire\"},\n  {id:3,nom:\"Secours Populaire\",cat:\"social\",icon:\"🤝\",color:\"#FFB347\",desc:\"Distribution alimentaire, aide aux familles, permanences sociales.\",lieu:\"15 Rue Pasteur\"},\n  {id:4,nom:\"Villejuif En Vert\",cat:\"environnement\",icon:\"🌿\",color:\"#52D68A\",desc:\"Jardins partagés, ateliers de compostage, biodiversité.\",lieu:\"Jardin des Cèdres\"},\n  {id:5,nom:\"Danse Classique & Contemporaine\",cat:\"culture\",icon:\"🩰\",color:\"#9370DB\",desc:\"École de danse pour tous les âges.\",lieu:\"Maison des Associations\"},\n  {id:6,nom:\"Club des Aînés Actifs\",cat:\"social\",icon:\"👴\",color:\"#FFB347\",desc:\"Sorties culturelles, activités pour seniors.\",lieu:\"Centre Social Paul Hochart\"}\n];\n\nconst ASSOS_FILTERS = [\n  {id:'tout', label:'Toutes'},\n  {id:'sport', label:'⚽ Sport'},\n  {id:'culture', label:'🎨 Culture'},\n  {id:'social', label:'🤝 Social'},\n  {id:'environnement', label:'🌱 Écologie'}\n];\n\nexport const AssosView: React.FC = () => {\n  const [filter, setFilter] = useState('tout');\n  const [search, setSearch] = useState('');\n\n  const filtered = ASSOS.filter(a => {\n    if (filter !== 'tout' && a.cat !== filter) return false;\n    if (search && !a.nom.toLowerCase().includes(search.toLowerCase()) && !a.desc.toLowerCase().includes(search.toLowerCase())) return false;\n    return true;\n  });\n\n  return (\n    <div className=\"view active\" id=\"view-assos\">\n      <div className=\"search-wrap\">\n        <div className=\"search\">\n          <span className=\"si\">🔍</span>\n          <input \n            type=\"text\" \n            placeholder=\"Rechercher une association…\" \n            value={search}\n            onChange={e => setSearch(e.target.value)}\n          />\n          <span className=\"si\">🎯</span>\n        </div>\n      </div>\n\n      <div className=\"chips-row\">\n        {ASSOS_FILTERS.map(f => (\n          <span \n            key={f.id} \n            className={\\`chip \\${filter === f.id ? 'on' : ''}\\`} \n            onClick={() => setFilter(f.id)}\n          >\n            {f.label}\n          </span>\n        ))}\n      </div>\n\n      <div style={{ padding: '0 1rem' }}>\n        <div className=\"asso-grid\">\n           {filtered.map(a => (\n             <div className=\"asso-card\" key={a.id}>\n               <div className=\"ac-head\">\n                 <div className=\"ac-icon\" style={{background: \\`\\${a.color}22\\`, color: a.color}}>{a.icon}</div>\n                 <div><div className=\"ac-name\">{a.nom}</div><div className=\"ac-lieu\">📍 {a.lieu}</div></div>\n               </div>\n               <div className=\"ac-desc\">{a.desc}</div>\n               <div className=\"ac-footer\">\n                 <button className=\"btn btn-ghost btn-sm\" style={{flex: 1}}>Contacter</button>\n                 <button className=\"btn btn-primary btn-sm\" style={{flex: 1}}>Rejoindre</button>\n               </div>\n             </div>\n           ))}\n           {filtered.length === 0 && (\n             <div style={{textAlign:'center', padding:'2rem', color:'var(--muted)', gridColumn:'span 2'}}>Aucune association trouvée</div>\n           )}\n        </div>\n      </div>\n    </div>\n  );\n};\n`\nfs.writeFileSync('src/test/otherviews.tsx', out);\nEOF\nnode rewrite_otherviews.js",
+			"args": [],
+			"isBackground": false
+		}
+	]
+}

@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import api from '../services/api';
+import { useApp } from './Appcontext';
 
 const handleTabClick = (e: React.MouseEvent<HTMLButtonElement>) => {
   const tabs = document.querySelectorAll('.tab-btn');
@@ -11,42 +13,79 @@ const handleTabClick = (e: React.MouseEvent<HTMLButtonElement>) => {
 };
 
 export const DemandesView: React.FC = () => {
+  const [reports, setReports] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchReports = async () => {
+      try {
+        const data = await api.get('/reports');
+        if (data && Array.isArray(data)) setReports(data);
+      } catch (e) { console.error(e); }
+      finally { setLoading(false); }
+    };
+    fetchReports();
+  }, []);
+
+  const inProgress = reports.filter(r => r.status !== 'Terminé' && r.status !== 'Résolu');
+  const finished = reports.filter(r => r.status === 'Terminé' || r.status === 'Résolu');
+
   return (
     <div className="view active" id="view-demandes">
-
       <div className="tabs">
-        <button className="tab-btn on" onClick={handleTabClick}>En cours <span style={{'background': 'rgba(78,205,196,.15)', 'color': 'var(--accent)', 'padding': '.1rem .4rem', 'borderRadius': '20px', 'fontSize': '.65rem', 'marginLeft': '.2rem'}}>2</span></button>
-        <button className="tab-btn" onClick={handleTabClick}>Terminées <span style={{'background': 'rgba(82,214,138,.1)', 'color': 'var(--success)', 'padding': '.1rem .4rem', 'borderRadius': '20px', 'fontSize': '.65rem', 'marginLeft': '.2rem'}}>3</span></button>
+        <button className="tab-btn on" onClick={handleTabClick}>En cours <span style={{'background': 'rgba(78,205,196,.15)', 'color': 'var(--accent)', 'padding': '.1rem .4rem', 'borderRadius': '20px', 'fontSize': '.65rem', 'marginLeft': '.2rem'}}>{inProgress.length}</span></button>
+        <button className="tab-btn" onClick={handleTabClick}>Terminées <span style={{'background': 'rgba(82,214,138,.1)', 'color': 'var(--success)', 'padding': '.1rem .4rem', 'borderRadius': '20px', 'fontSize': '.65rem', 'marginLeft': '.2rem'}}>{finished.length}</span></button>
         <button className="tab-btn" onClick={handleTabClick}>Archives</button>
       </div>
       <div className="tab-panel on" id="tab-encours">
-        <div className="ticket">
-          <div className="ticket-head"><div className="ticket-cat"><span className="ticket-cat-icon">🛣️</span><div><div className="ticket-title">Nid-de-poule dangereux</div><div className="ticket-id">#MA-2026-04847</div></div></div><span className="status status-prog">En cours</span></div>
-          <div className="ticket-loc">📍 Rue Victor Hugo · Il y a 2 jours</div>
-          <div style={{'padding': '0 1rem .6rem'}}><div style={{'height': '2px', 'background': 'var(--border)', 'borderRadius': '2px', 'overflow': 'hidden'}}><div style={{'width': '35%', 'height': '100%', 'background': 'linear-gradient(90deg,var(--accent),var(--blue-l))', 'borderRadius': '2px'}}></div></div><div style={{'fontSize': '.65rem', 'color': 'var(--muted)', 'marginTop': '.3rem'}}>Assigné au Service Voirie · Traitement 35%</div></div>
-          <div className="ticket-footer"><span className="ticket-time">⏱ Délai estimé : 3j restants</span><div className="ticket-actions"><button className="ta-btn chat" >💬 Chatter</button><button className="ta-btn" >↗ Partager</button></div></div>
-        </div>
-        <div className="ticket">
-          <div className="ticket-head"><div className="ticket-cat"><span className="ticket-cat-icon">💡</span><div><div className="ticket-title">Éclairage public défaillant</div><div className="ticket-id">#MA-2026-04812</div></div></div><span className="status status-wait">En attente</span></div>
-          <div className="ticket-loc">📍 Avenue de la République · Il y a 5 jours</div>
-          <div className="ticket-footer"><span className="ticket-time">⏱ Pas encore assigné</span><div className="ticket-actions"><button className="ta-btn" >🔁 Relancer</button><button className="ta-btn" >↗ Partager</button></div></div>
-        </div>
+        {loading ? <div style={{'padding': '2rem', 'textAlign': 'center'}}>Chargement...</div> : 
+         inProgress.length === 0 ? <div style={{'padding': '2rem', 'textAlign': 'center', 'color': 'var(--muted)'}}>Aucune demande en cours</div> :
+         inProgress.map((report, idx) => (
+          <div key={idx} className="ticket">
+            <div className="ticket-head">
+              <div className="ticket-cat">
+                <span className="ticket-cat-icon">📍</span>
+                <div>
+                  <div className="ticket-title">{report.title || report.category}</div>
+                  <div className="ticket-id">#{report.id}</div>
+                </div>
+              </div>
+              <span className={`status ${report.status === 'En cours' ? 'status-prog' : 'status-wait'}`}>{report.status}</span>
+            </div>
+            <div className="ticket-loc">📍 {report.address || report.locationName} · Il y a {new Date(report.createdAt).toLocaleDateString()}</div>
+            <div className="ticket-footer">
+              <span className="ticket-time">⏱ Traitement en cours</span>
+              <div className="ticket-actions">
+                <button className="ta-btn chat">💬 Chatter</button>
+                <button className="ta-btn">↗ Partager</button>
+              </div>
+            </div>
+          </div>
+        ))}
       </div>
       <div className="tab-panel" id="tab-terminees">
-        <div className="ticket">
-          <div className="ticket-head"><div className="ticket-cat"><span className="ticket-cat-icon">🗑️</span><div><div className="ticket-title">Poubelle débordante</div><div className="ticket-id">#MA-2026-04756</div></div></div><span className="status status-done">Résolu</span></div>
-          <div className="ticket-loc">📍 Parc de la Méridienne · Il y a 12 jours</div>
-          <div style={{'padding': '0 1rem .5rem', 'fontSize': '.75rem', 'color': 'var(--muted)', 'fontStyle': 'italic'}}>"Intervention effectuée le 17/04. Zone nettoyée et bac remplacé." — Agent Dubois</div>
-          <div className="ticket-footer"><span className="ticket-time" style={{'color': 'var(--success)'}}>✓ Résolu en 2 jours</span><div className="ticket-actions"><button className="ta-btn" >⭐ Évaluer</button></div></div>
-        </div>
-        <div className="ticket">
-          <div className="ticket-head"><div className="ticket-cat"><span className="ticket-cat-icon">🌳</span><div><div className="ticket-title">Branche d'arbre dangereuse</div><div className="ticket-id">#MA-2026-04701</div></div></div><span className="status status-done">Résolu</span></div>
-          <div className="ticket-loc">📍 Rue Paul Vaillant-Couturier · Il y a 18 jours</div>
-          <div className="ticket-footer"><span className="ticket-time" style={{'color': 'var(--success)'}}>✓ Résolu en 4 jours</span><div className="ticket-actions"><button className="ta-btn" >⭐ Évaluer</button></div></div>
-        </div>
+        {finished.length === 0 ? <div style={{'padding': '2rem', 'textAlign': 'center', 'color': 'var(--muted)'}}>Aucune demande terminée</div> :
+         finished.map((report, idx) => (
+          <div key={idx} className="ticket">
+            <div className="ticket-head">
+              <div className="ticket-cat">
+                <span className="ticket-cat-icon">📍</span>
+                <div>
+                  <div className="ticket-title">{report.title || report.category}</div>
+                  <div className="ticket-id">#{report.id}</div>
+                </div>
+              </div>
+              <span className="status status-done">Résolu</span>
+            </div>
+            <div className="ticket-loc">📍 {report.address || report.locationName}</div>
+            <div className="ticket-footer">
+              <span className="ticket-time" style={{'color': 'var(--success)'}}>✓ Résolu</span>
+            </div>
+          </div>
+        ))}
       </div>
       <div className="tab-panel" id="tab-archives">
-        <div style={{'padding': '3rem 1rem', 'textAlign': 'center', 'color': 'var(--muted)'}}><div style={{'fontSize': '2.5rem', 'marginBottom': '.8rem'}}>🗃️</div><div style={{'fontFamily': 'var(--fd)', 'fontWeight': '600', 'fontSize': '.9rem', 'marginBottom': '.4rem'}}>Aucune archive</div><div style={{'fontSize': '.8rem', 'lineHeight': '1.6'}}>Vos demandes classées apparaîtront ici après 90 jours.</div></div>
+        <div style={{'padding': '3rem 1rem', 'textAlign': 'center', 'color': 'var(--muted)'}}><div style={{'fontSize': '2.5rem', 'marginBottom': '.8rem'}}>🗃️</div><div style={{'fontFamily': 'var(--fd)', 'fontWeight': '600', 'fontSize': '.9rem', 'marginBottom': '.4rem'}}>Aucune archive</div></div>
       </div>
     </div>
   );
@@ -71,10 +110,8 @@ export const FluxView: React.FC = () => {
         <div className="flux-card"><div className="fc-icon">🚇</div><div className="fc-body"><div className="fc-title">Métro 7 · Trafic normal</div><div className="fc-sub">Mairie d'Ivry ↔ La Courneuve</div></div><div className="fc-right"><div className="fc-time">4'</div><div className="fc-unit">prochain train</div></div></div>
       </div>
       <div className="flux-section">
-        <div className="flux-section-head"><div className="flux-section-title">🚧 Travaux en cours</div><span style={{'fontSize': '.65rem', 'color': 'var(--warn)', 'background': 'rgba(255,179,71,.1)', 'padding': '.2rem .6rem', 'borderRadius': '20px', 'fontFamily': 'var(--fd)', 'fontWeight': '700'}}>3 actifs</span></div>
-        <div className="flux-card" style={{'borderLeft': '3px solid var(--warn)'}}><div className="fc-icon">🚧</div><div className="fc-body"><div className="fc-title">Rue Victor Hugo</div><div className="fc-sub">Réfection de chaussée · Voie unique</div><div style={{'marginTop': '.3rem', 'height': '2px', 'background': 'var(--border)', 'borderRadius': '2px', 'overflow': 'hidden'}}><div style={{'width': '45%', 'height': '100%', 'background': 'var(--warn)'}}></div></div><div style={{'fontSize': '.62rem', 'color': 'var(--muted)', 'marginTop': '.2rem'}}>45% · Fin prévue 15/06/2026</div></div></div>
-        <div className="flux-card"><div className="fc-icon">🚧</div><div className="fc-body"><div className="fc-title">Avenue de la Paix</div><div className="fc-sub">Réseaux souterrains · Voie fermée le matin</div><div style={{'marginTop': '.3rem', 'height': '2px', 'background': 'var(--border)', 'borderRadius': '2px', 'overflow': 'hidden'}}><div style={{'width': '80%', 'height': '100%', 'background': 'var(--success)'}}></div></div><div style={{'fontSize': '.62rem', 'color': 'var(--muted)', 'marginTop': '.2rem'}}>80% · Fin prévue 05/05/2026</div></div></div>
-        <div className="flux-card"><div className="fc-icon">🚧</div><div className="fc-body"><div className="fc-title">Rond-point Aragon</div><div className="fc-sub">Aménagement cyclable</div><div style={{'marginTop': '.3rem', 'height': '2px', 'background': 'var(--border)', 'borderRadius': '2px', 'overflow': 'hidden'}}><div style={{'width': '15%', 'height': '100%', 'background': 'var(--blue-l)'}}></div></div><div style={{'fontSize': '.62rem', 'color': 'var(--muted)', 'marginTop': '.2rem'}}>15% · Fin prévue 30/08/2026</div></div></div>
+        <div className="flux-section-head"><div className="flux-section-title">🚧 Travaux en cours</div></div>
+        <ConstructionWorksList />
       </div>
       <div className="flux-section">
         <div className="flux-section-head"><div className="flux-section-title">⚠️ Alertes municipales</div></div>
@@ -84,67 +121,141 @@ export const FluxView: React.FC = () => {
   );
 };
 
-export const AgendaView: React.FC = () => {
-  const [filter, setFilter] = useState<string>('');
+const ConstructionWorksList: React.FC = () => {
+  const [works, setWorks] = useState<any[]>([]);
 
-  const handleAgendaFilter = (e: React.MouseEvent<HTMLSpanElement>) => {
-    const chips = document.querySelectorAll('.agenda-cats .chip');
-    chips.forEach(chip => (chip as HTMLElement).classList.remove('on'));
-    (e.currentTarget as HTMLElement).classList.add('on');
-    
-    const category = e.currentTarget.textContent?.replace(/^[^\w]*/, '').trim() || '';
-    setFilter(category === 'Tout' ? '' : category.split(' ')[0].toLowerCase());
-    
-    const cards = document.querySelectorAll('.event-card');
-    cards.forEach(card => {
-      if (!filter) {
-        (card as HTMLElement).style.display = 'block';
-      } else {
-        const tag = card.getAttribute('data-tag');
-        (card as HTMLElement).style.display = tag === filter || tag?.includes(filter) ? 'block' : 'none';
-      }
-    });
+  useEffect(() => {
+    const fetchWorks = async () => {
+      try {
+        const data = await api.get('/construction-works');
+        if (data && Array.isArray(data)) setWorks(data);
+      } catch (e) { console.error(e); }
+    };
+    fetchWorks();
+  }, []);
+
+  if (works.length === 0) return <div style={{'padding': '1rem', 'textAlign': 'center', 'fontSize': '.8rem', 'color': 'var(--muted)'}}>Aucun travail signalé</div>;
+
+  return (
+    <>
+      {works.map((work, idx) => (
+        <div key={idx} className="flux-card" style={{'borderLeft': `3px solid ${work.status === 'En cours' ? 'var(--warn)' : 'var(--blue-l)'}`}}>
+          <div className="fc-icon">🚧</div>
+          <div className="fc-body">
+            <div className="fc-title">{work.locationName}</div>
+            <div className="fc-sub">{work.title} · {work.impactType}</div>
+            <div style={{'marginTop': '.3rem', 'height': '2px', 'background': 'var(--border)', 'borderRadius': '2px', 'overflow': 'hidden'}}>
+              <div style={{'width': work.status === 'En cours' ? '45%' : '10%', 'height': '100%', 'background': work.status === 'En cours' ? 'var(--warn)' : 'var(--blue-l)'}}></div>
+            </div>
+            <div style={{'fontSize': '.62rem', 'color': 'var(--muted)', 'marginTop': '.2rem'}}>Fin prévue : {new Date(work.endDate).toLocaleDateString()}</div>
+          </div>
+        </div>
+      ))}
+    </>
+  );
+};
+
+export const AgendaView: React.FC = () => {
+  const [events, setEvents] = useState<any[]>([]);
+  const [filter, setFilter] = useState<string>('Tout');
+
+  useEffect(() => {
+    const fetchEvents = async () => {
+      try {
+        const data = await api.get('/events');
+        if (data && Array.isArray(data)) setEvents(data);
+      } catch (e) { console.error(e); }
+    };
+    fetchEvents();
+  }, []);
+
+  const handleAgendaFilter = (category: string) => {
+    setFilter(category);
   };
+
+  const filteredEvents = filter === 'Tout' 
+    ? events 
+    : events.filter(e => e.category === filter || e.category.toLowerCase().includes(filter.toLowerCase()));
 
   return (
     <div className="view active" id="view-agenda">
-
       <div className="search-wrap"><div className="search"><span className="si">🔍</span><input type="text" placeholder="Rechercher un événement…" /><span className="si">🎯</span></div></div>
       <div className="agenda-cats">
-        <span className="chip on" onClick={handleAgendaFilter}>Tout</span>
-        <span className="chip" onClick={handleAgendaFilter}>🎵 Culture</span>
-        <span className="chip" onClick={handleAgendaFilter}>🏆 Sport</span>
-        <span className="chip" onClick={handleAgendaFilter}>🤝 Social</span>
-        <span className="chip" onClick={handleAgendaFilter}>🛒 Marchés</span>
-        <span className="chip" onClick={handleAgendaFilter}>ℹ️ Info</span>
+        {['Tout', 'Culture', 'Sport', 'Social', 'Marché', 'Info'].map(cat => (
+          <span key={cat} className={`chip ${filter === cat ? 'on' : ''}`} onClick={() => handleAgendaFilter(cat)}>
+            {cat === 'Culture' ? '🎵 ' : cat === 'Sport' ? '🏆 ' : cat === 'Social' ? '🤝 ' : cat === 'Marché' ? '🛒 ' : cat === 'Info' ? 'ℹ️ ' : ''}{cat}
+          </span>
+        ))}
       </div>
-      <div className="sec-head"><div className="sec-title">Cette semaine</div></div>
-      <div className="event-card" data-tag="culture" ><div className="event-date-col"><div className="ev-day" style={{'color': 'var(--accent)'}}>30</div><div className="ev-month">avr</div></div><div className="event-body"><div className="event-title">Concert Jazz · Parc de la Méridienne</div><div className="event-meta"><span>🕗 20h00</span><span>📍 Parc central</span><span className="event-tag tag-culture">Culture</span></div><div style={{'marginTop': '.4rem', 'fontSize': '.72rem', 'color': 'var(--muted)'}}>Entrée libre · Prévoir une chaise</div></div></div>
-      <div className="event-card" data-tag="marche" ><div className="event-date-col"><div className="ev-day">02</div><div className="ev-month">mai</div></div><div className="event-body"><div className="event-title">Marché de Printemps</div><div className="event-meta"><span>🕗 8h – 13h</span><span>📍 Place du Marché</span><span className="event-tag tag-marche">Marché</span></div><div style={{'marginTop': '.4rem', 'fontSize': '.72rem', 'color': 'var(--muted)'}}>Producteurs locaux, artisanat</div></div></div>
-      <div className="event-card" data-tag="sport" ><div className="event-date-col"><div className="ev-day">03</div><div className="ev-month">mai</div></div><div className="event-body"><div className="event-title">Tournoi de pétanque inter-quartiers</div><div className="event-meta"><span>🕗 14h00</span><span>📍 Boulodrome municipal</span><span className="event-tag tag-sport">Sport</span></div><div style={{'marginTop': '.4rem', 'fontSize': '.72rem', 'color': 'var(--muted)'}}>Inscription gratuite · Ouvert à tous</div></div></div>
-      <div className="sec-head" style={{'marginTop': '.4rem'}}><div className="sec-title">Prochainement</div></div>
-      <div className="event-card" data-tag="info" ><div className="event-date-col"><div className="ev-day">10</div><div className="ev-month">mai</div></div><div className="event-body"><div className="event-title">Réunion publique — Budget participatif</div><div className="event-meta"><span>🕗 18h30</span><span>📍 Salle des fêtes</span><span className="event-tag tag-info">Info</span></div><div style={{'marginTop': '.4rem', 'fontSize': '.72rem', 'color': 'var(--muted)'}}>100 000€ à allouer aux projets citoyens</div></div></div>
-      <div className="event-card" data-tag="social" ><div className="event-date-col"><div className="ev-day">17</div><div className="ev-month">mai</div></div><div className="event-body"><div className="event-title">Atelier vélo · Entretien & sécurité</div><div className="event-meta"><span>🕗 10h00</span><span>📍 Maison des Associations</span><span className="event-tag tag-social">Social</span></div><div style={{'marginTop': '.4rem', 'fontSize': '.72rem', 'color': 'var(--muted)'}}>Gratuit · Amenez votre vélo</div></div></div>
+      
+      <div className="sec-head"><div className="sec-title">Prochainement</div></div>
+      
+      {filteredEvents.length === 0 ? (
+        <div style={{'padding': '2rem', 'textAlign': 'center', 'color': 'var(--muted)'}}>Aucun événement trouvé</div>
+      ) : (
+        filteredEvents.map((event, idx) => {
+          const date = new Date(event.startDate);
+          const day = date.getDate();
+          const month = date.toLocaleString('default', { month: 'short' });
+          return (
+            <div key={idx} className="event-card" data-tag={event.category.toLowerCase()}>
+              <div className="event-date-col">
+                <div className="ev-day" style={{'color': 'var(--accent)'}}>{day}</div>
+                <div className="ev-month">{month}</div>
+              </div>
+              <div className="event-body">
+                <div className="event-title">{event.title} · {event.location}</div>
+                <div className="event-meta">
+                  <span>🕗 {date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                  <span className={`event-tag tag-${event.category.toLowerCase()}`}>{event.category}</span>
+                </div>
+                <div style={{'marginTop': '.4rem', 'fontSize': '.72rem', 'color': 'var(--muted)'}}>{event.description}</div>
+              </div>
+            </div>
+          );
+        })
+      )}
     </div>
   );
 };
 
 export const ProfilView: React.FC = () => {
+  const { user, updateUser, logout: logoutApp } = useApp();
+  
   const [userInfo, setUserInfo] = useState({
-    prenom: 'Marie',
-    nom: 'Beaumont',
-    email: 'marie.beaumont@email.fr',
-    tel: '06 12 34 56 78',
-    dob: '1985-06-14'
+    prenom: user?.prenom || '',
+    nom: user?.nom || '',
+    email: user?.email || '',
+    tel: user?.telephone || '',
+    dob: user?.dateNaissance || ''
   });
 
   const [address, setAddress] = useState({
-    rue: '12 Rue Pasteur',
-    cp: '94800',
-    ville: 'Villejuif',
-    quartier: 'paul-hochart',
+    rue: user?.rue || '',
+    cp: user?.codePostal || '',
+    ville: user?.ville || '',
+    quartier: user?.quartier || '',
     comp: ''
   });
+
+  useEffect(() => {
+    if (user) {
+      setUserInfo({
+        prenom: user.prenom,
+        nom: user.nom,
+        email: user.email,
+        tel: user.telephone || '',
+        dob: user.dateNaissance || ''
+      });
+      setAddress({
+        rue: user.rue || '',
+        cp: user.codePostal || '',
+        ville: user.ville || '',
+        quartier: user.quartier || '',
+        comp: ''
+      });
+    }
+  }, [user]);
 
   const [notifications, setNotifications] = useState({
     demandes: true,
@@ -180,9 +291,17 @@ export const ProfilView: React.FC = () => {
     alert('Code copié!');
   };
 
-  const updateProfile = () => {
-    setUserInfo(userInfo);
-    setAddress(address);
+  const updateProfile = async () => {
+    await updateUser({
+      prenom: userInfo.prenom,
+      nom: userInfo.nom,
+      telephone: userInfo.tel,
+      dateNaissance: userInfo.dob,
+      rue: address.rue,
+      codePostal: address.cp,
+      ville: address.ville as any,
+      quartier: address.quartier as any
+    });
     closeModal();
     alert('✅ Profil mis à jour!');
   };

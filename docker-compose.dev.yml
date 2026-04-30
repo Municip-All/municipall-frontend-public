@@ -1,0 +1,14 @@
+services:
+  frontend-dev:
+    image: ghcr.io/${GITHUB_REPOSITORY_OWNER}/municipall-frontend-dev:latest
+    container_name: municipall-frontend-dev
+    restart: always
+    ports:
+      - "3002:80"
+    networks:
+      - proxy-bridge
+
+networks:
+  proxy-bridge:
+    external: true
+    name: municipall_default

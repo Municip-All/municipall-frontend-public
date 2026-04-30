@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useApp } from './Appcontext';
 import { SignalementCategory, Signalement } from '../types';
+import api from '../services/api';
 
 const CATEGORIES: { label: SignalementCategory; icon: string }[] = [
   { label: 'Voirie', icon: '🛣️' },
@@ -22,7 +23,7 @@ export const SignalementView: React.FC = () => {
   const [category, setCategory] = useState<SignalementCategory | null>(null);
   const [description, setDescription] = useState('');
   const [urgent, setUrgent] = useState(false);
-  const [ticketId] = useState(() => `#MA-2026-${Math.floor(Math.random() * 90000) + 10000}`);
+  const [ticketId, setTicketId] = useState('');
 
   const goStep = (n: number) => setStep(n);
 
@@ -37,14 +38,29 @@ export const SignalementView: React.FC = () => {
     reader.readAsDataURL(file);
   };
 
-  const submit = () => {
+  const submit = async () => {
     if (!category || description.length < 10) return;
-    const s: Signalement = {
-      id: ticketId, categorie: category, description, adresse: address,
-      statut: 'attente', dateCreation: "À l'instant", urgent,
+    const token = localStorage.getItem('auth_token');
+    
+    const reportData = {
+      category,
+      description,
+      address,
+      latitude: pinPos.y,
+      longitude: pinPos.x,
+      urgent,
     };
-    addSignalement(s);
-    goStep(4);
+
+    try {
+      const data = await api.post('/reports', reportData, token || undefined);
+      if (data && !data.error) {
+        setTicketId(data.id || ticketId);
+        goStep(4);
+      }
+    } catch (e) {
+      console.error(e);
+      showToast("Erreur lors de l'envoi du signalement");
+    }
   };
 
   return (

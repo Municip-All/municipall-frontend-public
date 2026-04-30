@@ -27,11 +27,11 @@ export const AuthScreen: React.FC = () => {
   };
 
   // ── LOGIN ──
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginEmail || !loginPw) { setLoginError('Remplissez tous les champs.'); return; }
-    const ok = login(loginEmail, loginPw);
-    if (!ok) setLoginError('Email ou mot de passe incorrect. (Démo : marie.beaumont@email.fr / demo1234)');
+    const ok = await login(loginEmail, loginPw);
+    if (!ok) setLoginError('Email ou mot de passe incorrect.');
   };
 
   // ── REGISTER ──
@@ -65,7 +65,7 @@ export const AuthScreen: React.FC = () => {
     updateReg('password', pw);
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     // Validation
     if (!reg.prenom || !reg.nom || !reg.email || !reg.telephone || !reg.dateNaissance) {
@@ -85,7 +85,7 @@ export const AuthScreen: React.FC = () => {
     }
 
     const initials = `${reg.prenom[0]}${reg.nom[0]}`.toUpperCase();
-    const newUser: User = {
+    const newUser: any = {
       prenom: reg.prenom.trim(),
       nom: reg.nom.trim(),
       email: reg.email.trim(),
@@ -98,7 +98,7 @@ export const AuthScreen: React.FC = () => {
       complementAdresse: reg.complementAdresse.trim() || undefined,
       avatar: initials,
     };
-    register(newUser, reg.password);
+    await register(newUser, reg.password);
     showToast('✅ Compte créé avec succès !');
   };
 

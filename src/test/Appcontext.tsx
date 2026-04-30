@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { User, ViewName, AuthView, Signalement } from '../types';
 import { DEMO_SIGNALEMENTS } from '../data';
+import api from '../services/api';
 
 interface AppContextType {
   // Auth
@@ -8,10 +9,10 @@ interface AppContextType {
   isAuthenticated: boolean;
   authView: AuthView;
   setAuthView: (v: AuthView) => void;
-  login: (email: string, password: string) => boolean;
-  register: (user: User, password: string) => void;
+  login: (email: string, password: string) => Promise<boolean>;
+  register: (user: User, password: string) => Promise<void>;
   logout: () => void;
-  updateUser: (partial: Partial<User>) => void;
+  updateUser: (partial: Partial<User>) => Promise<void>;
 
   // Navigation
   currentView: ViewName;
@@ -46,29 +47,13 @@ export const useApp = () => {
   return ctx;
 };
 
-// Fake stored users (in-memory)
-const storedUsers: Array<{ user: User; password: string }> = [
-  {
-    user: {
-      prenom: 'Marie', nom: 'Beaumont',
-      email: 'marie.beaumont@email.fr',
-      telephone: '06 12 34 56 78',
-      dateNaissance: '1985-06-14',
-      rue: '12 Rue Pasteur',
-      codePostal: '94270',
-      ville: 'Kremlin-Bicêtre',
-      quartier: 'Paul Hochart',
-      avatar: 'MB',
-    },
-    password: 'demo1234',
-  },
-];
+// No more fake stored users
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [authView, setAuthView] = useState<AuthView>('login');
   const [currentView, setCurrentView] = useState<ViewName>('home');
-  const [signalements, setSignalements] = useState<Signalement[]>(DEMO_SIGNALEMENTS);
+  const [signalements, setSignalements] = useState<Signalement[]>([]);
   const [toast, setToast] = useState('');
   const [botOpen, setBotOpen] = useState(false);
   const [pendingBotMsg, setPendingBotMsg] = useState('');
@@ -81,25 +66,71 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     setTimeout(() => setToast(''), 2600);
   }, []);
 
-  const login = useCallback((email: string, password: string): boolean => {
-    const found = storedUsers.find(u => u.user.email === email && u.password === password);
-    if (found) { setUser(found.user); return true; }
-    return false;
-  }, []);
-
-  const register = useCallback((newUser: User, password: string) => {
-    storedUsers.push({ user: newUser, password });
-    setUser(newUser);
-  }, []);
-
   const logout = useCallback(() => {
+    localStorage.removeItem('auth_token');
     setUser(null);
     setAuthView('login');
     setCurrentView('home');
   }, []);
 
-  const updateUser = useCallback((partial: Partial<User>) => {
-    setUser((prev: User | null) => prev ? { ...prev, ...partial } : prev);
+  const fetchMe = useCallback(async (token: string) => {
+    try {
+      const data = await api.get('/auth/me', token);
+      if (data && !data.error) {
+        setUser(data);
+      } else {
+        logout();
+      }
+    } catch (e) {
+      logout();
+    }
+  }, [logout]);
+
+  React.useEffect(() => {
+    const token = localStorage.getItem('auth_token');
+    if (token) {
+      fetchMe(token);
+    }
+  }, [fetchMe]);
+
+  const login = useCallback(async (email: string, password: string): Promise<boolean> => {
+    try {
+      const data = await api.post('/auth/login', { email, password });
+      if (data && data.access_token) {
+        localStorage.setItem('auth_token', data.access_token);
+        await fetchMe(data.access_token);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }, [fetchMe]);
+
+  const register = useCallback(async (newUser: any, password: string) => {
+    try {
+      const data = await api.post('/auth/signup', { ...newUser, password });
+      if (data && data.access_token) {
+        localStorage.setItem('auth_token', data.access_token);
+        await fetchMe(data.access_token);
+      }
+    } catch (e) {
+      console.error(e);
+    }
+  }, [fetchMe]);
+
+
+  const updateUser = useCallback(async (partial: Partial<User>) => {
+    const token = localStorage.getItem('auth_token');
+    if (!token) return;
+    try {
+      const data = await api.post('/users/profile', partial, token);
+      if (data && !data.error) {
+        setUser(data);
+      }
+    } catch (e) {
+      console.error(e);
+    }
   }, []);
 
   const showView = useCallback((v: ViewName) => {

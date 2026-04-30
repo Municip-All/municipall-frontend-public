@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useApp } from './Appcontext';
+import api from '../services/api';
 
 const FILTERS = ['tout', 'travaux', 'transport', 'evenements', 'urgences', 'associations'] as const;
 type Filter = typeof FILTERS[number];
@@ -20,11 +21,23 @@ const CARD_TAGS: Record<string, Filter[]> = {
 };
 
 export const HomeView: React.FC = () => {
-  const { showView, signalements, user } = useApp();
+  const { showView, user } = useApp();
   const [activeFilter, setActiveFilter] = useState<Filter>('tout');
   const [search, setSearch] = useState('');
+  const [stats, setStats] = useState({ reportsCount: 0, resolvedCount: 0, eventsCount: 0, worksCount: 0 });
 
-  const enCours = signalements.filter((s: any) => s.statut === 'attente' || s.statut === 'en-cours');
+  useEffect(() => {
+    const fetchStats = async () => {
+      const token = localStorage.getItem('auth_token');
+      if (!token) return;
+      try {
+        const data = await api.get('/users/stats', token);
+        if (data && !data.error) setStats(data);
+      } catch (e) { console.error(e); }
+    };
+    fetchStats();
+  }, []);
+
 
   const isVisible = (card: string): boolean => {
     if (activeFilter === 'tout') return true;
@@ -102,10 +115,10 @@ export const HomeView: React.FC = () => {
           <div className="bc wide g-warn filterable-section" onClick={() => showView('flux')}>
             <div style={{display:'flex',justifyContent:'space-between',alignItems:'flex-start'}}>
               <div><div className="bc__icon" style={{display:'inline'}}>🚧</div><span className="bc__tag" style={{display:'inline',marginLeft:'.4rem'}}>Travaux actifs</span></div>
-              <span style={{padding:'.2rem .55rem',borderRadius:'var(--rx)',background:'rgba(255,179,71,.15)',color:'var(--warn)',fontSize:'.65rem',fontFamily:'var(--fd)',fontWeight:700}}>3 chantiers</span>
+              <span style={{padding:'.2rem .55rem',borderRadius:'var(--rx)',background:'rgba(255,179,71,.15)',color:'var(--warn)',fontSize:'.65rem',fontFamily:'var(--fd)',fontWeight:700}}>{stats.worksCount} chantiers</span>
             </div>
-            <div className="bc__val" style={{margin:'.3rem 0 .15rem',fontSize:'1rem'}}>Rue Victor Hugo · Avenue de la Paix · <span style={{color:'var(--muted)'}}>+1</span></div>
-            <div className="bc__sub">Chantier principal : 45% terminé</div>
+            <div className="bc__val" style={{margin:'.3rem 0 .15rem',fontSize:'1rem'}}>Consultez le flux en direct pour voir les impacts routiers.</div>
+            <div className="bc__sub">Chantier principal : En cours</div>
             <div className="trav-bar"><div className="trav-fill" style={{width:'45%'}}></div></div>
             <div className="bc__arrow">→</div>
           </div>
@@ -115,8 +128,8 @@ export const HomeView: React.FC = () => {
           <div className="bc g-blue filterable-section" onClick={() => showView('demandes')}>
             <div className="bc__icon">📋</div>
             <div className="bc__tag">Mes demandes</div>
-            <div className="bc__val">{enCours.length}</div>
-            <div className="bc__sub"><span className="status status-prog" style={{fontSize:'.6rem'}}>En cours</span></div>
+            <div className="bc__val">{stats.reportsCount}</div>
+            <div className="bc__sub"><span className="status status-prog" style={{fontSize:'.6rem'}}>Dont {stats.resolvedCount} résolues</span></div>
             <div className="bc__arrow">→</div>
           </div>
         )}
@@ -125,7 +138,7 @@ export const HomeView: React.FC = () => {
           <div className="bc g-teal filterable-section" onClick={() => showView('agenda')}>
             <div className="bc__icon">📅</div>
             <div className="bc__tag">Agenda</div>
-            <div className="bc__val">3</div>
+            <div className="bc__val">{stats.eventsCount}</div>
             <div className="bc__sub">Événements<br/>cette semaine</div>
             <div className="bc__arrow">→</div>
           </div>

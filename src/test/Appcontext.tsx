@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, ReactNode } from 'react';
 import { User, ViewName, AuthView, Signalement } from '../types';
-import { DEMO_SIGNALEMENTS } from '../data';
 import api from '../services/api';
 
 interface AppContextType {
@@ -132,11 +131,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       console.error(e);
     }
   }, []);
+  const closeNotif = useCallback(() => setNotifOpen(false), []);
 
   const showView = useCallback((v: ViewName) => {
     setCurrentView(v);
     closeNotif();
-  }, []);
+  }, [closeNotif]);
 
   const addSignalement = useCallback((s: Signalement) => {
     setSignalements(((prev: any) => [s, ...prev]));
@@ -150,7 +150,6 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const clearPendingBotMsg = useCallback(() => setPendingBotMsg(''), []);
 
   const toggleNotif = useCallback(() => setNotifOpen(p => !p), []);
-  const closeNotif = useCallback(() => setNotifOpen(false), []);
 
   return (
     <AppContext.Provider value={{

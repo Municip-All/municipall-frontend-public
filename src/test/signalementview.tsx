@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from './Appcontext';
-import { SignalementCategory, Signalement } from '../types';
+import { SignalementCategory } from '../types';
 import api from '../services/api';
 
 const CATEGORIES: { label: SignalementCategory; icon: string }[] = [
@@ -15,7 +15,7 @@ const CATEGORIES: { label: SignalementCategory; icon: string }[] = [
 ];
 
 export const SignalementView: React.FC = () => {
-  const { showView, addSignalement, user, showToast } = useApp();
+  const { showView, user, showToast } = useApp();
   const [step, setStep] = useState(1);
   const [photo, setPhoto] = useState<string | null>(null);
   const [pinPos, setPinPos] = useState({ x: 50, y: 50 });

@@ -1,3 +1,4 @@
+/* eslint-disable */
 const fs = require('fs');
 
 let layout = fs.readFileSync('src/test/layout.tsx', 'utf8');
@@ -28,7 +29,7 @@ export const DesktopSidebar: React.FC = () => {
   );
 };`;
 
-layout = layout.replace(/\/\/ ── DESKTOP SIDEBAR ───────────────────────────────────[\s\S]+?\}\;/m, newDesktopSidebar);
+layout = layout.replace(/\/\/ ── DESKTOP SIDEBAR ───────────────────────────────────[\s\S]+?};/m, newDesktopSidebar);
 
 const newBottomNav = `// ── BOTTOM NAV (mobile) ───────────────────────────────
 export const BottomNav: React.FC = () => {
@@ -45,7 +46,7 @@ export const BottomNav: React.FC = () => {
   );
 };`;
 
-layout = layout.replace(/\/\/ ── BOTTOM NAV \(mobile\) ───────────────────────────────[\s\S]+?\}\;/m, newBottomNav);
+layout = layout.replace(/\/\/ ── BOTTOM NAV \(mobile\) ───────────────────────────────[\s\S]+?};/m, newBottomNav);
 
 fs.writeFileSync('src/test/layout.tsx', layout);
 console.log('Rewrote layout.tsx');

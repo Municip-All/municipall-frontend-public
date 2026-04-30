@@ -220,7 +220,7 @@ export const AgendaView: React.FC = () => {
 };
 
 export const ProfilView: React.FC = () => {
-  const { user, updateUser, logout: logoutApp } = useApp();
+  const { user, updateUser } = useApp();
   
   const [userInfo, setUserInfo] = useState({
     prenom: user?.prenom || '',

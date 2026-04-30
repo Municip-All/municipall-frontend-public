@@ -1,11 +1,11 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { useApp } from './Appcontext';
 import { ViewName } from '../types';
 import { NOTIFICATIONS, BOT_RESPONSES } from '../data';
 
 // ── TOP BAR ──────────────────────────────────────────
 export const TopBar: React.FC = () => {
-  const { currentView, showView, user, toggleNotif, notifOpen, toggleBot } = useApp();
+  const { currentView, showView, user, toggleNotif, toggleBot } = useApp();
   const showBack = currentView !== 'home';
   const titles: Record<ViewName, string> = {
     home: `${user?.ville || 'Municip\'All'} · ${user?.codePostal || ''}`,
@@ -128,13 +128,9 @@ export const MuniBot: React.FC = () => {
 
   useEffect(() => { messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' }); }, [messages]);
 
-  useEffect(() => {
-    if (pendingBotMsg) { setInput(pendingBotMsg); clearPendingBotMsg(); setTimeout(() => sendMessage(pendingBotMsg), 50); }
-  }, [pendingBotMsg]);
-
   const now = () => new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
 
-  const sendMessage = (override?: string) => {
+  const sendMessage = useCallback((override?: string) => {
     const msg = (override ?? input).trim();
     if (!msg) return;
     setInput('');
@@ -148,7 +144,11 @@ export const MuniBot: React.FC = () => {
       const reply = BOT_RESPONSES[key];
       setMessages(prev => prev.map(m => m.id === typId ? { ...m, typing: false, text: reply, time: now() } : m));
     }, 1100);
-  };
+  }, [input]);
+
+  useEffect(() => {
+    if (pendingBotMsg) { setInput(pendingBotMsg); clearPendingBotMsg(); setTimeout(() => sendMessage(pendingBotMsg), 50); }
+  }, [pendingBotMsg, clearPendingBotMsg, sendMessage]);
 
   const quickReplies = ['🛣️ Signaler', '🏛️ Horaires', '🚲 Aide vélo', '📋 Mes demandes'];
   const quickMessages = ['Signaler un problème', 'Horaires Mairie', 'Aide vélo disponible ?', 'État de ma demande'];

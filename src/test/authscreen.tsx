@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useApp } from './Appcontext';
-import { User, Commune } from '../types';
+import { Commune } from '../types';
 import { COMMUNES, QUARTIERS_BY_COMMUNE, CP_BY_COMMUNE } from '../data';
 
 export const AuthScreen: React.FC = () => {

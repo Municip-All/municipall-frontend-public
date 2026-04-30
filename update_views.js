@@ -1,3 +1,4 @@
+/* eslint-disable */
 const fs = require('fs');
 
 let homeHtml = fs.readFileSync('src/test.html', 'utf8').split('id="view-home"')[1].split('id="view-sig"')[0];

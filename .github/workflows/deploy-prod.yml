@@ -29,7 +29,7 @@ jobs:
       - name: Build Verification
         run: npm run build
         env:
-          REACT_APP_API_URL: https://api.municipall.dev
+          NEXT_PUBLIC_BACKOFFICE_URL: https://mairie.municipall.dev
 
   build-and-push:
     needs: validate
@@ -57,7 +57,7 @@ jobs:
           context: .
           push: true
           build-args: |
-            REACT_APP_API_URL=https://api.municipall.dev
+            NEXT_PUBLIC_BACKOFFICE_URL=https://mairie.municipall.dev
           tags: ghcr.io/${{ env.OWNER_LC }}/municipall-frontend-prod:latest
 
   deploy:

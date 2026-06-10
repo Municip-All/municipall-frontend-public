@@ -1,0 +1,86 @@
+@import "tailwindcss";
+
+@theme {
+  --color-municipall-blue: #0b0080;
+  --color-municipall-blue-hover: #070054;
+  --color-municipall-violet: #4f46e5;
+  --color-municipall-sky: #e8e6ff;
+  --font-sans:
+    "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+
+  --shadow-premium:
+    0 1px 2px rgba(15, 23, 42, 0.04), 0 8px 24px -4px rgba(11, 0, 128, 0.08);
+  --shadow-hero:
+    0 24px 64px -12px rgba(11, 0, 128, 0.18);
+}
+
+@layer base {
+  :root {
+    --background: #fafbfc;
+    --foreground: #0f172a;
+    --muted: #64748b;
+    --accent: #0b0080;
+    --card: #ffffff;
+    --border: rgba(15, 23, 42, 0.08);
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    background: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    @apply antialiased;
+  }
+
+  ::selection {
+    background: rgba(11, 0, 128, 0.12);
+    color: var(--accent);
+  }
+}
+
+@layer utilities {
+  .text-gradient {
+    @apply bg-gradient-to-r from-[#0b0080] via-[#3730a3] to-[#6366f1] bg-clip-text text-transparent;
+  }
+
+  .hero-glow {
+    background:
+      radial-gradient(
+        ellipse 80% 60% at 50% -10%,
+        rgba(99, 102, 241, 0.18),
+        transparent
+      ),
+      radial-gradient(
+        ellipse 50% 40% at 90% 20%,
+        rgba(11, 0, 128, 0.1),
+        transparent
+      );
+  }
+
+  .card-surface {
+    @apply rounded-2xl border border-[var(--border)] bg-[var(--card)] shadow-premium;
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl bg-[var(--accent)] px-6 py-3 text-sm font-semibold text-white shadow-sm transition-all hover:bg-[#070054] active:scale-[0.98];
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-[var(--border)] bg-white px-6 py-3 text-sm font-semibold text-[var(--foreground)] transition-all hover:border-[var(--accent)]/30 hover:bg-municipall-sky/40 active:scale-[0.98];
+  }
+
+  .section-eyebrow {
+    @apply text-xs font-bold uppercase tracking-[0.2em] text-[var(--accent)];
+  }
+
+  .section-title {
+    @apply text-3xl font-bold tracking-tight text-[var(--foreground)] sm:text-4xl lg:text-5xl;
+  }
+
+  .section-lead {
+    @apply mt-4 max-w-2xl text-lg leading-relaxed text-[var(--muted)];
+  }
+}

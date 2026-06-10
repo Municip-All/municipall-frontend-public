@@ -1,17 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useSyncExternalStore } from "react";
 import {
   getBackofficeUrl,
   resolveBackofficeUrlFromHostname,
 } from "@/lib/backoffice";
 
+function getClientUrl(): string {
+  if (process.env.NEXT_PUBLIC_BACKOFFICE_URL) {
+    return process.env.NEXT_PUBLIC_BACKOFFICE_URL;
+  }
+  return resolveBackofficeUrlFromHostname(window.location.hostname);
+}
+
 export function useBackofficeUrl(): string {
-  const [url, setUrl] = useState(getBackofficeUrl);
-
-  useEffect(() => {
-    setUrl(resolveBackofficeUrlFromHostname(window.location.hostname));
-  }, []);
-
-  return url;
+  return useSyncExternalStore(
+    () => () => {},
+    getClientUrl,
+    getBackofficeUrl,
+  );
 }

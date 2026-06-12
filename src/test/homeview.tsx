@@ -180,13 +180,13 @@ const css = `
   -webkit-text-stroke: 1px rgba(59,85,143,.07);
   pointer-events: none; user-select: none; letter-spacing: -6px;
   white-space: nowrap;
-  animation: hv-fade 1.2s ease .4s both;
+  animation: hv-fade 1.8s ease .6s both;
 }
 .hv-hero-left { position: relative; z-index: 1; flex: 1; }
 .hv-hero-eyebrow {
   font-size: .73rem; font-weight: 600; letter-spacing: .15em;
   text-transform: uppercase; color: #3B558F; margin-bottom: 1.1rem;
-  animation: hv-up .7s cubic-bezier(.22,1,.36,1) .1s both;
+  animation: hv-up 1.1s cubic-bezier(.22,1,.36,1) .25s both;
   display: flex; align-items: center; gap: .6rem;
 }
 .hv-hero-eyebrow-dot {
@@ -197,16 +197,16 @@ const css = `
   font-family: 'Playfair Display', serif; font-weight: 800;
   font-size: clamp(2.4rem, 4vw, 3.6rem); letter-spacing: -2px;
   color: #0F0F0E; line-height: 1.08; margin-bottom: .6rem;
-  animation: hv-up .75s cubic-bezier(.22,1,.36,1) .2s both;
+  animation: hv-up 1.2s cubic-bezier(.22,1,.36,1) .5s both;
 }
 .hv-hero-greeting em { font-style: italic; color: #3B558F; }
 .hv-hero-sub {
   font-size: .98rem; color: rgba(15,15,14,.42); line-height: 1.65;
-  animation: hv-up .75s cubic-bezier(.22,1,.36,1) .32s both;
+  animation: hv-up 1.2s cubic-bezier(.22,1,.36,1) .75s both;
 }
 .hv-hero-ctas {
   display: flex; gap: .85rem; margin-top: 1.8rem;
-  animation: hv-up .75s cubic-bezier(.22,1,.36,1) .44s both;
+  animation: hv-up 1.2s cubic-bezier(.22,1,.36,1) 1s both;
 }
 .hv-hero-btn {
   padding: .75rem 1.6rem; border-radius: 2rem; font-size: .84rem;
@@ -240,7 +240,7 @@ const css = `
   border: 1px solid rgba(15,15,14,.1);
   border-radius: 18px; padding: 1.8rem 2.25rem 1.5rem;
   min-width: 230px;
-  animation: hv-up .75s cubic-bezier(.22,1,.36,1) .5s both;
+  animation: hv-up 1.2s cubic-bezier(.22,1,.36,1) 1.2s both;
   box-shadow: 0 8px 32px rgba(15,15,14,.07);
 }
 .hv-weather-label {
@@ -249,13 +249,12 @@ const css = `
 }
 .hv-weather-row {
   display: flex; align-items: flex-end; gap: .75rem; margin-bottom: .4rem;
-  animation: hv-weather-row-in .6s cubic-bezier(.22,1,.36,1) .6s both;
+  animation: hv-weather-row-in 1s cubic-bezier(.22,1,.36,1) 1.4s both;
 }
 .hv-weather-temp {
   font-family: 'Playfair Display', serif; font-weight: 800;
   font-size: 3.4rem; color: #0F0F0E; letter-spacing: -2px; line-height: 1;
 }
-.hv-weather-icon { font-size: 2.4rem; opacity: .85; padding-bottom: .15rem; }
 .hv-weather-desc { font-size: .88rem; color: rgba(15,15,14,.5); }
 .hv-weather-city {
   font-size: .7rem; color: rgba(15,15,14,.28); margin-top: .2rem; letter-spacing: .04em;
@@ -314,7 +313,7 @@ const css = `
 .hv-ticker::after  { right: 0; background: linear-gradient(270deg, #534AB7, transparent); }
 .hv-ticker-track {
   display: flex; gap: 0; white-space: nowrap;
-  animation: hv-ticker 30s linear infinite;
+  animation: hv-ticker 48s linear infinite;
   width: max-content;
 }
 .hv-ticker:hover .hv-ticker-track { animation-play-state: paused; }
@@ -373,7 +372,7 @@ const css = `
   padding: 1.5rem 1.3rem 1.4rem;
   cursor: pointer;
   transition: box-shadow .25s, border-color .25s;
-  animation: hv-card-enter .6s cubic-bezier(.22,1,.36,1) both;
+  animation: hv-card-enter 1s cubic-bezier(.22,1,.36,1) both;
   display: flex; flex-direction: column; gap: .9rem;
   position: relative; overflow: hidden; will-change: transform;
 }
@@ -395,10 +394,6 @@ const css = `
 }
 .hv-service-card:hover .hv-service-icon { transform: scale(1.08) rotate(-4deg); }
 .hv-service-icon svg { width: 22px; height: 22px; }
-.hv-service-num {
-  font-family: 'Playfair Display', serif; font-size: .72rem;
-  font-weight: 700; color: rgba(15,15,14,.18); letter-spacing: .04em;
-}
 .hv-service-title {
   font-weight: 600; font-size: .93rem; color: #0F0F0E; line-height: 1.3;
 }
@@ -430,7 +425,7 @@ const css = `
   display: flex; align-items: flex-start; gap: .95rem;
   cursor: pointer;
   transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s, border-color .22s;
-  animation: hv-sig-enter .55s cubic-bezier(.22,1,.36,1) both;
+  animation: hv-sig-enter 1s cubic-bezier(.22,1,.36,1) both;
 }
 .hv-sig-card:hover {
   transform: translateX(4px);
@@ -488,7 +483,7 @@ const css = `
 .hv-aside-card {
   background: #F4F2ED; border: 1px solid rgba(15,15,14,.08);
   border-radius: 14px; overflow: hidden;
-  animation: hv-card-enter .7s cubic-bezier(.22,1,.36,1) .5s both;
+  animation: hv-card-enter 1.1s cubic-bezier(.22,1,.36,1) .9s both;
   box-shadow: 0 4px 20px rgba(15,15,14,.05);
 }
 .hv-aside-top {
@@ -568,7 +563,7 @@ const css = `
   background: #F4F2ED; border: 1px solid rgba(15,15,14,.08); border-radius: 12px;
   padding: 1.1rem 1.2rem; cursor: pointer;
   transition: transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s;
-  animation: hv-card-enter .6s cubic-bezier(.22,1,.36,1) both;
+  animation: hv-card-enter 1s cubic-bezier(.22,1,.36,1) both;
 }
 .hv-event-card:hover { transform: translateY(-4px); box-shadow: 0 10px 30px rgba(15,15,14,.1); }
 .hv-event-date-tag {
@@ -602,7 +597,7 @@ const css = `
   display: flex; align-items: center; justify-content: center;
   box-shadow: 0 6px 28px rgba(15,15,14,.22);
   transition: background .22s, transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s;
-  animation: hv-up .6s cubic-bezier(.22,1,.36,1) .9s both;
+  animation: hv-up 1s cubic-bezier(.22,1,.36,1) 1.6s both;
 }
 .hv-map-fab:hover {
   background: #1A3A8F; transform: translateY(-3px) scale(1.06);
@@ -861,7 +856,6 @@ export const HomeView: React.FC = () => {
           <div className="hv-weather-label">Météo · {ville}</div>
           <div className="hv-weather-row">
             <div className="hv-weather-temp">{weather.temp}°</div>
-            <div className="hv-weather-icon">{weather.icon}</div>
           </div>
           <div className="hv-weather-desc">{weather.desc}</div>
           <div className="hv-weather-forecast">
@@ -908,7 +902,7 @@ export const HomeView: React.FC = () => {
               key={s.key}
               className="hv-service-card"
               style={{
-                animationDelay: `${.4 + i * .08}s`,
+                animationDelay: `${.7 + i * .14}s`,
                 '--accent-color': s.accentColor,
                 '--accent-text': s.color,
               } as React.CSSProperties}
@@ -919,7 +913,6 @@ export const HomeView: React.FC = () => {
               <div className="hv-service-icon" style={{ background: s.bg, color: s.color }}>
                 {s.icon}
               </div>
-              <p className="hv-service-num">{s.num}</p>
               <h3 className="hv-service-title">{s.title}</h3>
               <p className="hv-service-desc">{s.desc}</p>
               <span className="hv-service-arrow" style={{ '--accent-text': s.color } as React.CSSProperties}>
@@ -945,7 +938,7 @@ export const HomeView: React.FC = () => {
             <div
               key={ev.id}
               className="hv-event-card"
-              style={{ animationDelay: `${.5 + i * .09}s` }}
+              style={{ animationDelay: `${.9 + i * .13}s` }}
               onClick={() => showView('evenement')}
             >
               <div className="hv-event-date-tag">📅 {ev.date}</div>
@@ -983,7 +976,7 @@ export const HomeView: React.FC = () => {
                       key={sig.id}
                       className="hv-sig-card"
                       style={{
-                        animationDelay: `${.5 + i * .09}s`,
+                        animationDelay: `${.9 + i * .13}s`,
                         '--sig-color': statusColor,
                       } as React.CSSProperties}
                       onClick={() => showView('sig')}

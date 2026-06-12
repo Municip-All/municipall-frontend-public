@@ -45,7 +45,7 @@ Copier `.env.example` vers `.env` pour personnaliser.
 
 | Champ | Valeur |
 |-------|--------|
-| Email | `@demo.municipall.dev` |
+| Email | `citoyen1@demo.municipall.dev` |
 | Mot de passe | `Demo2026!` |
 
 Connexion via `POST /auth/login` — JWT stocké en `localStorage`.
@@ -117,7 +117,7 @@ municipall-frontend-public/
 | Branche | Workflow | Image Docker | Variable build |
 |---------|----------|--------------|----------------|
 | `dev` | `deploy-dev.yml` | `ghcr.io/<owner>/municipall-frontend-dev` | `REACT_APP_API_URL=https://dev.api.municipall.dev/api/v1/` |
-| `main` | `deploy-prod.yml` | `ghcr.io/<owner>/municipall-frontend-prod` | `REACT_APP_API_URL=https://api.municipall.dev/api/v1/` |
+| `main` | `deploy-prod.yml` | `ghcr.io/<owner>/municipall-frontend-prod` | `REACT_APP_API_URL=https://dev.api.municipall.dev/api/v1/` |
 
 Secrets requis sur le dépôt : `VPS_IP`, `VPS_USER`, `SSH_PRIVATE_KEY`.
 

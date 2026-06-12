@@ -2,7 +2,7 @@
 FROM node:20-alpine AS builder
 WORKDIR /app
 
-ARG REACT_APP_API_URL=https://api.municipall.dev/api/v1/
+ARG REACT_APP_API_URL=https://dev.api.municipall.dev/api/v1/
 ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
 COPY package.json package-lock.json ./

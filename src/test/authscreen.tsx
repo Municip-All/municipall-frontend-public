@@ -475,7 +475,7 @@ export const AuthScreen: React.FC = () => {
     setLoginError('');
     const ok = await login(loginEmail, loginPw);
     setSubmitting(false);
-    if (!ok) setLoginError('Email ou mot de passe incorrect.\nDémo : @demo.municipall.dev / Demo2026!');
+    if (!ok) setLoginError('Email ou mot de passe incorrect.\nDémo : citoyen1@demo.municipall.dev / Demo2026!');
   };
 
   // ── REGISTER ──

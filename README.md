@@ -1,46 +1,148 @@
-# Getting Started with Create React App
+# Municipall — Frontend web (prototype)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Application web **React** de démonstration pour l’expérience citoyenne Municipall : accueil, signalements, carte (Leaflet), transports, contact, profil, etc.
 
-## Available Scripts
+> **Note** — Ce dépôt est un **prototype UI** avec données mockées en mémoire. L’application mobile de production est **municipall-app-public** (Expo / React Native). Le backoffice mairie est **municipall-web-backoffice-public**.
 
-In the project directory, you can run:
+## Stack
 
-### `npm start`
+| Technologie | Usage |
+|-------------|--------|
+| [Create React App](https://create-react-app.dev/) 5 | Build & dev server |
+| React 19 + TypeScript | Interface |
+| Sass / CSS | Styles par écran |
+| [Leaflet](https://leafletjs.com/) + react-leaflet | Carte interactive |
+| Docker + nginx | Déploiement statique (CI) |
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+## Prérequis
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+- **Node.js** 20 LTS (recommandé, aligné sur la CI)
+- **npm** 9+
 
-### `npm test`
+## Démarrage rapide
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+```bash
+git clone <repo>
+cd municipall-frontend-public
+npm ci
+npm start
+```
 
-### `npm run build`
+L’app est disponible sur [http://localhost:3000](http://localhost:3000).
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Compte démo (auth locale)
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+L’authentification est simulée côté client (`src/test/Appcontext.tsx`) :
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+| Champ | Valeur |
+|-------|--------|
+| Email | `marie.beaumont@email.fr` |
+| Mot de passe | `demo1234` |
 
-### `npm run eject`
+Aucun appel API backend n’est requis pour naviguer dans le prototype.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## Scripts npm
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+| Commande | Description |
+|----------|-------------|
+| `npm start` | Serveur de développement (port 3000) |
+| `npm run build` | Build de production → dossier `build/` |
+| `npm test` | Tests Jest (mode interactif) |
+| `npm run lint` | ESLint sur `src/` |
+| `npm run typecheck` | Vérification TypeScript |
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+## Parcours utilisateur
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+Au lancement :
 
-## Learn More
+1. **Écran de chargement** (`LoadingView`) — ~5 s
+2. **Présentation** (`PresentationView`) — onboarding produit
+3. **Application** — navigation par vues via le contexte React
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+### Vues disponibles
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+| Vue | Fichier | Description |
+|-----|---------|-------------|
+| `home` | `src/test/homeview.tsx` | Accueil citoyen |
+| `sig` | `src/test/signalementview.tsx` | Signalements |
+| `evenement` | `src/test/otherviews.tsx` | Événements |
+| `contact` | `src/test/otherviews.tsx` | Contact mairie |
+| `profil` | `src/test/otherviews.tsx` | Profil utilisateur |
+| `collecte` | `src/test/otherviews.tsx` | Déchets & toilettes |
+| `travaux` | `src/test/otherviews.tsx` | Travaux |
+| `transports` | `src/test/otherviews.tsx` | Transports |
+| `social` | `src/test/otherviews.tsx` | Vie associative |
+
+La carte plein écran (`src/test/mapview.tsx`) s’ouvre depuis l’accueil. Le chatbot **MuniBot** et le tiroir de notifications sont montés globalement dans `App.tsx`.
+
+## Structure du projet
+
+```
+municipall-frontend-public/
+├── public/                 # Assets statiques (index.html, manifest)
+├── src/
+│   ├── App.tsx             # Shell : loading → présentation → routing
+│   ├── data.ts             # Données démo (signalements, etc.)
+│   ├── types/              # Types TypeScript (User, Signalement, …)
+│   ├── context/
+│   │   └── AppContext.tsx  # Re-export du contexte
+│   └── test/               # Écrans prototype + styles
+│       ├── Appcontext.tsx  # État global (auth, navigation, toasts)
+│       ├── homeview.tsx
+│       ├── mapview.tsx     # Leaflet
+│       ├── signalementview.tsx
+│       ├── layout.tsx      # NotifDrawer, MuniBot
+│       └── …
+├── Dockerfile              # Image nginx (build statique)
+├── docker-compose.dev.yml  # Déploiement dev (port 3002)
+├── docker-compose.prod.yml # Déploiement prod (port 3003)
+└── .github/workflows/
+    ├── deploy-dev.yml      # Push sur `dev` → GHCR + VPS
+    └── deploy-prod.yml     # Push sur `main` → GHCR + VPS
+```
+
+## Déploiement
+
+### CI/CD (GitHub Actions)
+
+| Branche | Workflow | Image Docker | Variable build |
+|---------|----------|--------------|----------------|
+| `dev` | `deploy-dev.yml` | `ghcr.io/<owner>/municipall-frontend-dev` | `REACT_APP_API_URL=https://dev.api.municipall.dev/api/v1/` |
+| `main` | `deploy-prod.yml` | `ghcr.io/<owner>/municipall-frontend-prod` | `REACT_APP_API_URL=https://api.municipall.dev/api/v1/` |
+
+Secrets requis sur le dépôt : `VPS_IP`, `VPS_USER`, `SSH_PRIVATE_KEY`.
+
+Sur le VPS, les conteneurs exposent :
+
+- **Dev** : port `3002` → nginx
+- **Prod** : port `3003` → nginx
+
+### Docker en local
+
+```bash
+npm run build
+docker build -t municipall-frontend .
+```
+
+Le `Dockerfile` copie le dossier CRA `build/` et le sert via nginx.
+
+## Écosystème Municipall
+
+| Dépôt | Rôle |
+|-------|------|
+| `municipall-backend-public` | API NestJS, multi-tenant |
+| `municipall-app-public` | App mobile citoyenne (Expo) |
+| `municipall-frontend-public` | **Ce dépôt** — prototype web |
+| `municipall-web-backoffice-public` | Backoffice mairie |
+| `municipall-webadmin-public` | Administration plateforme |
+
+## Évolutions prévues
+
+- Brancher les écrans sur l’API `municipall-backend-public` (auth JWT, signalements, config ville)
+- Remplacer les données mockées par des appels `REACT_APP_*`
+- Aligner le pipeline Docker/CI sur le output CRA (`build/`) si nécessaire
+- Consolider les écrans hors du dossier `test/` une fois l’intégration API faite
+
+## Licence
+
+Projet privé Municipall.

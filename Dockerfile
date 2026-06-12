@@ -1,17 +1,18 @@
-# Stage 1: Build
+# Stage 1: Build (Create React App → dossier build/)
 FROM node:20-alpine AS builder
 WORKDIR /app
-ARG NEXT_PUBLIC_BACKOFFICE_URL=https://mairie.municipall.dev
-ENV NEXT_PUBLIC_BACKOFFICE_URL=$NEXT_PUBLIC_BACKOFFICE_URL
+
+ARG REACT_APP_API_URL=https://api.municipall.dev/api/v1/
+ENV REACT_APP_API_URL=$REACT_APP_API_URL
 
 COPY package.json package-lock.json ./
 RUN npm ci
 COPY . .
 RUN npm run build
 
-# Stage 2: Serve static export
+# Stage 2: Serve static build via nginx
 FROM nginx:alpine
-COPY --from=builder /app/out /usr/share/nginx/html
+COPY --from=builder /app/build /usr/share/nginx/html
 RUN echo 'server { \
     listen 80; \
     location / { \

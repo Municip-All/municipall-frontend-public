@@ -1,0 +1,287 @@
+    <div class="view" id="view-demandes">
+      <div class="tabs">
+        <button class="tab-btn on" onclick="switchTab('encours',this)">En cours <span style="background:rgba(78,205,196,.15);color:var(--accent);padding:.1rem .4rem;border-radius:20px;font-size:.65rem;margin-left:.2rem;">2</span></button>
+        <button class="tab-btn" onclick="switchTab('terminees',this)">Terminées <span style="background:rgba(82,214,138,.1);color:var(--success);padding:.1rem .4rem;border-radius:20px;font-size:.65rem;margin-left:.2rem;">3</span></button>
+        <button class="tab-btn" onclick="switchTab('archives',this)">Archives</button>
+      </div>
+      <div class="tab-panel on" id="tab-encours">
+        <div class="ticket">
+          <div class="ticket-head"><div class="ticket-cat"><span class="ticket-cat-icon">🛣️</span><div><div class="ticket-title">Nid-de-poule dangereux</div><div class="ticket-id">#MA-2026-04847</div></div></div><span class="status status-prog">En cours</span></div>
+          <div class="ticket-loc">📍 Rue Victor Hugo · Il y a 2 jours</div>
+          <div style="padding:0 1rem .6rem;"><div style="height:2px;background:var(--border);border-radius:2px;overflow:hidden;"><div style="width:35%;height:100%;background:linear-gradient(90deg,var(--accent),var(--blue-l));border-radius:2px;"></div></div><div style="font-size:.65rem;color:var(--muted);margin-top:.3rem;">Assigné au Service Voirie · Traitement 35%</div></div>
+          <div class="ticket-footer"><span class="ticket-time">⏱ Délai estimé : 3j restants</span><div class="ticket-actions"><button class="ta-btn chat" onclick="openBotWith('Bonjour, je voudrais suivre mon dossier #MA-2026-04847.')">💬 Chatter</button><button class="ta-btn" onclick="shareTicket()">↗ Partager</button></div></div>
+        </div>
+        <div class="ticket">
+          <div class="ticket-head"><div class="ticket-cat"><span class="ticket-cat-icon">💡</span><div><div class="ticket-title">Éclairage public défaillant</div><div class="ticket-id">#MA-2026-04812</div></div></div><span class="status status-wait">En attente</span></div>
+          <div class="ticket-loc">📍 Avenue de la République · Il y a 5 jours</div>
+          <div class="ticket-footer"><span class="ticket-time">⏱ Pas encore assigné</span><div class="ticket-actions"><button class="ta-btn" onclick="relancer(event)">🔁 Relancer</button><button class="ta-btn" onclick="shareTicket()">↗ Partager</button></div></div>
+        </div>
+      </div>
+      <div class="tab-panel" id="tab-terminees">
+        <div class="ticket">
+          <div class="ticket-head"><div class="ticket-cat"><span class="ticket-cat-icon">🗑️</span><div><div class="ticket-title">Poubelle débordante</div><div class="ticket-id">#MA-2026-04756</div></div></div><span class="status status-done">Résolu</span></div>
+          <div class="ticket-loc">📍 Parc de la Méridienne · Il y a 12 jours</div>
+          <div style="padding:0 1rem .5rem;font-size:.75rem;color:var(--muted);font-style:italic;">"Intervention effectuée le 17/04. Zone nettoyée et bac remplacé." — Agent Dubois</div>
+          <div class="ticket-footer"><span class="ticket-time" style="color:var(--success)">✓ Résolu en 2 jours</span><div class="ticket-actions"><button class="ta-btn" onclick="rateTicket()">⭐ Évaluer</button></div></div>
+        </div>
+        <div class="ticket">
+          <div class="ticket-head"><div class="ticket-cat"><span class="ticket-cat-icon">🌳</span><div><div class="ticket-title">Branche d'arbre dangereuse</div><div class="ticket-id">#MA-2026-04701</div></div></div><span class="status status-done">Résolu</span></div>
+          <div class="ticket-loc">📍 Rue Paul Vaillant-Couturier · Il y a 18 jours</div>
+          <div class="ticket-footer"><span class="ticket-time" style="color:var(--success)">✓ Résolu en 4 jours</span><div class="ticket-actions"><button class="ta-btn" onclick="rateTicket()">⭐ Évaluer</button></div></div>
+        </div>
+      </div>
+      <div class="tab-panel" id="tab-archives">
+        <div style="padding:3rem 1rem;text-align:center;color:var(--muted);"><div style="font-size:2.5rem;margin-bottom:.8rem;">🗃️</div><div style="font-family:var(--fd);font-weight:600;font-size:.9rem;margin-bottom:.4rem;">Aucune archive</div><div style="font-size:.8rem;line-height:1.6;">Vos demandes classées apparaîtront ici après 90 jours.</div></div>
+      </div>
+    </div>
+
+    <!-- ╔══════════════════╗
+         ║  FLUX LIVE       ║
+         ╚══════════════════╝ -->
+    <div class="view" id="view-flux">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:.9rem 1rem .5rem;"><div style="font-family:var(--fd);font-weight:800;font-size:1rem;">Flux en direct</div><span class="live">Temps réel</span></div>
+      <div style="padding:0 1rem .9rem;">
+        <div class="weather-big">
+          <div class="weather-main"><div class="weather-icon">🌤️</div><div><div class="weather-temp">19°<span style="font-size:1.2rem">C</span></div><div class="weather-cond">Ensoleillé · Villejuif</div></div></div>
+          <div class="weather-stats"><div class="weather-stat">💨 <strong>12 km/h</strong></div><div class="weather-stat">💧 <strong>45%</strong></div><div class="weather-stat">👁️ <strong>10 km</strong></div><div style="margin-top:.4rem;font-size:.68rem;color:var(--muted);">Demain : 17°C 🌦️</div></div>
+        </div>
+      </div>
+      <div class="flux-section">
+        <div class="flux-section-head"><div class="flux-section-title">🚌 Transports <span class="live" style="margin-left:.4rem;">Live</span></div></div>
+        <div class="flux-card" style="border-left:3px solid var(--warn);"><div class="fc-icon">⚠️</div><div class="fc-body"><div class="fc-title">Ligne 131 — PERTURBÉE</div><div class="fc-sub">Bus dévié via Avenue de Paris · Jusqu'à 18h30</div></div><div class="fc-right"><span style="font-size:.65rem;color:var(--warn);background:rgba(255,179,71,.1);padding:.2rem .5rem;border-radius:20px;font-family:var(--fd);font-weight:700;">Dévié</span></div></div>
+        <div class="flux-card"><div class="fc-icon">🚌</div><div class="fc-body"><div class="fc-title">Ligne 131 · Direction Créteil</div><div class="fc-sub">Arrêt : Hôtel de Ville</div></div><div class="fc-right"><div class="fc-time">2'</div><div class="fc-unit">prochain bus</div></div></div>
+        <div class="flux-card"><div class="fc-icon">🚌</div><div class="fc-body"><div class="fc-title">Ligne 172 · Direction Rungis</div><div class="fc-sub">Arrêt : Hôtel de Ville</div></div><div class="fc-right"><div class="fc-time">7'</div><div class="fc-unit">prochain bus</div></div></div>
+        <div class="flux-card"><div class="fc-icon">🚇</div><div class="fc-body"><div class="fc-title">Métro 7 · Trafic normal</div><div class="fc-sub">Mairie d'Ivry ↔ La Courneuve</div></div><div class="fc-right"><div class="fc-time">4'</div><div class="fc-unit">prochain train</div></div></div>
+      </div>
+      <div class="flux-section">
+        <div class="flux-section-head"><div class="flux-section-title">🚧 Travaux en cours</div><span style="font-size:.65rem;color:var(--warn);background:rgba(255,179,71,.1);padding:.2rem .6rem;border-radius:20px;font-family:var(--fd);font-weight:700;">3 actifs</span></div>
+        <div class="flux-card" style="border-left:3px solid var(--warn);"><div class="fc-icon">🚧</div><div class="fc-body"><div class="fc-title">Rue Victor Hugo</div><div class="fc-sub">Réfection de chaussée · Voie unique</div><div style="margin-top:.3rem;height:2px;background:var(--border);border-radius:2px;overflow:hidden;"><div style="width:45%;height:100%;background:var(--warn);"></div></div><div style="font-size:.62rem;color:var(--muted);margin-top:.2rem;">45% · Fin prévue 15/06/2026</div></div></div>
+        <div class="flux-card"><div class="fc-icon">🚧</div><div class="fc-body"><div class="fc-title">Avenue de la Paix</div><div class="fc-sub">Réseaux souterrains · Voie fermée le matin</div><div style="margin-top:.3rem;height:2px;background:var(--border);border-radius:2px;overflow:hidden;"><div style="width:80%;height:100%;background:var(--success);"></div></div><div style="font-size:.62rem;color:var(--muted);margin-top:.2rem;">80% · Fin prévue 05/05/2026</div></div></div>
+        <div class="flux-card"><div class="fc-icon">🚧</div><div class="fc-body"><div class="fc-title">Rond-point Aragon</div><div class="fc-sub">Aménagement cyclable</div><div style="margin-top:.3rem;height:2px;background:var(--border);border-radius:2px;overflow:hidden;"><div style="width:15%;height:100%;background:var(--blue-l);"></div></div><div style="font-size:.62rem;color:var(--muted);margin-top:.2rem;">15% · Fin prévue 30/08/2026</div></div></div>
+      </div>
+      <div class="flux-section">
+        <div class="flux-section-head"><div class="flux-section-title">⚠️ Alertes municipales</div></div>
+        <div class="flux-card" style="background:rgba(255,107,107,.05);border-color:rgba(255,107,107,.2);"><div class="fc-icon">🔴</div><div class="fc-body"><div class="fc-title" style="color:var(--danger)">Perturbation réseau bus</div><div class="fc-sub">Ligne 131 déviée — Prévoir +10 min de trajet</div></div></div>
+      </div>
+    </div>
+
+    <!-- ╔══════════════════╗
+         ║  AGENDA          ║
+         ╚══════════════════╝ -->
+    <div class="view" id="view-agenda">
+      <div class="search-wrap"><div class="search"><span class="si">🔍</span><input type="text" placeholder="Rechercher un événement…"><span class="si">🎯</span></div></div>
+      <div class="agenda-cats">
+        <span class="chip on" onclick="filterAgenda(this,'tout')">Tout</span>
+        <span class="chip" onclick="filterAgenda(this,'culture')">🎵 Culture</span>
+        <span class="chip" onclick="filterAgenda(this,'sport')">🏆 Sport</span>
+        <span class="chip" onclick="filterAgenda(this,'social')">🤝 Social</span>
+        <span class="chip" onclick="filterAgenda(this,'marche')">🛒 Marchés</span>
+        <span class="chip" onclick="filterAgenda(this,'info')">ℹ️ Info</span>
+      </div>
+      <div class="sec-head"><div class="sec-title">Cette semaine</div></div>
+      <div class="event-card" data-tag="culture" onclick="openEvent(this)"><div class="event-date-col"><div class="ev-day" style="color:var(--accent)">30</div><div class="ev-month">avr</div></div><div class="event-body"><div class="event-title">Concert Jazz · Parc de la Méridienne</div><div class="event-meta"><span>🕗 20h00</span><span>📍 Parc central</span><span class="event-tag tag-culture">Culture</span></div><div style="margin-top:.4rem;font-size:.72rem;color:var(--muted);">Entrée libre · Prévoir une chaise</div></div></div>
+      <div class="event-card" data-tag="marche" onclick="openEvent(this)"><div class="event-date-col"><div class="ev-day">02</div><div class="ev-month">mai</div></div><div class="event-body"><div class="event-title">Marché de Printemps</div><div class="event-meta"><span>🕗 8h – 13h</span><span>📍 Place du Marché</span><span class="event-tag tag-marche">Marché</span></div><div style="margin-top:.4rem;font-size:.72rem;color:var(--muted);">Producteurs locaux, artisanat</div></div></div>
+      <div class="event-card" data-tag="sport" onclick="openEvent(this)"><div class="event-date-col"><div class="ev-day">03</div><div class="ev-month">mai</div></div><div class="event-body"><div class="event-title">Tournoi de pétanque inter-quartiers</div><div class="event-meta"><span>🕗 14h00</span><span>📍 Boulodrome municipal</span><span class="event-tag tag-sport">Sport</span></div><div style="margin-top:.4rem;font-size:.72rem;color:var(--muted);">Inscription gratuite · Ouvert à tous</div></div></div>
+      <div class="sec-head" style="margin-top:.4rem;"><div class="sec-title">Prochainement</div></div>
+      <div class="event-card" data-tag="info" onclick="openEvent(this)"><div class="event-date-col"><div class="ev-day">10</div><div class="ev-month">mai</div></div><div class="event-body"><div class="event-title">Réunion publique — Budget participatif</div><div class="event-meta"><span>🕗 18h30</span><span>📍 Salle des fêtes</span><span class="event-tag tag-info">Info</span></div><div style="margin-top:.4rem;font-size:.72rem;color:var(--muted);">100 000€ à allouer aux projets citoyens</div></div></div>
+      <div class="event-card" data-tag="social" onclick="openEvent(this)"><div class="event-date-col"><div class="ev-day">17</div><div class="ev-month">mai</div></div><div class="event-body"><div class="event-title">Atelier vélo · Entretien & sécurité</div><div class="event-meta"><span>🕗 10h00</span><span>📍 Maison des Associations</span><span class="event-tag tag-social">Social</span></div><div style="margin-top:.4rem;font-size:.72rem;color:var(--muted);">Gratuit · Amenez votre vélo</div></div></div>
+    </div>
+
+    <!-- ╔══════════════════╗
+         ║  PROFIL          ║
+         ╚══════════════════╝ -->
+    <div class="view" id="view-profil">
+      <div class="profil-hero">
+        <div class="profil-avatar-wrap">
+          <div class="profil-avatar" id="profilAvatar">MB</div>
+          <div class="profil-avatar-edit" onclick="openModal('modal-avatar')" title="Modifier la photo">✏️</div>
+        </div>
+        <div class="profil-name" id="profilName">Marie Beaumont</div>
+        <div class="profil-commune">📍 Villejuif · Quartier Paul Hochart</div>
+      </div>
+      <div class="profil-stats">
+        <div class="ps-card"><div class="ps-val">5</div><div class="ps-lbl">Signalements</div></div>
+        <div class="ps-card"><div class="ps-val" style="color:var(--success)">3</div><div class="ps-lbl">Résolus</div></div>
+        <div class="ps-card"><div class="ps-val" style="color:var(--warn)">12</div><div class="ps-lbl">Jours moy.</div></div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Mon compte</div>
+        <div class="setting-row" onclick="openModal('modal-identity')">
+          <div class="sr-left"><div class="sr-icon">👤</div><div><div class="sr-label">Informations personnelles</div><div class="sr-sub" id="sr-sub-email">marie.beaumont@email.fr</div></div></div>
+          <div class="sr-right"><span style="font-size:.7rem;color:var(--accent)">Modifier</span><span class="sr-chevron">›</span></div>
+        </div>
+        <div class="setting-row" onclick="openModal('modal-address')">
+          <div class="sr-left"><div class="sr-icon">📍</div><div><div class="sr-label">Mon adresse</div><div class="sr-sub" id="sr-sub-address">12 Rue Pasteur, Villejuif</div></div></div>
+          <div class="sr-right"><span style="font-size:.7rem;color:var(--accent)">Modifier</span><span class="sr-chevron">›</span></div>
+        </div>
+        <div class="setting-row" onclick="openModal('modal-password')">
+          <div class="sr-left"><div class="sr-icon">🔑</div><div><div class="sr-label">Mot de passe</div><div class="sr-sub">Dernière modification : il y a 3 mois</div></div></div>
+          <div class="sr-right"><span style="font-size:.7rem;color:var(--accent)">Modifier</span><span class="sr-chevron">›</span></div>
+        </div>
+        <div class="setting-row">
+          <div class="sr-left"><div class="sr-icon">📄</div><div><div class="sr-label">Mes documents</div><div class="sr-sub">Attestations, courriers</div></div></div>
+          <span class="sr-chevron">›</span>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Notifications</div>
+        <div class="setting-row"><div class="sr-left"><div class="sr-icon">🔔</div><div class="sr-label">Mises à jour de mes demandes</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="setting-row"><div class="sr-left"><div class="sr-icon">📢</div><div class="sr-label">Alertes de la commune</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="setting-row"><div class="sr-left"><div class="sr-icon">📅</div><div class="sr-label">Rappels événements</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Intégration Commune</div>
+        <div style="padding:.4rem 0 .8rem;">
+          <div class="wp-code">&lt;script src="https://cdn.municipall.fr/widget.js" data-commune="villejuif"&gt;&lt;/script&gt;</div>
+          <button class="btn btn-ghost" style="width:100%;margin-top:.5rem;font-size:.78rem;" onclick="copyCode()">📋 Copier le code d'intégration</button>
+        </div>
+      </div>
+
+      <div class="settings-section">
+        <div class="settings-title">Application</div>
+        <div class="setting-row"><div class="sr-left"><div class="sr-icon">🌙</div><div class="sr-label">Mode sombre</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+        <div class="setting-row" onclick="openModal('modal-lang')"><div class="sr-left"><div class="sr-icon">🗣️</div><div class="sr-label">Langue</div></div><div class="sr-right"><span>Français</span><span class="sr-chevron">›</span></div></div>
+        <div class="setting-row" style="color:var(--danger)"><div class="sr-left"><div class="sr-icon" style="border-color:rgba(255,107,107,.2)">🚪</div><div class="sr-label" style="color:var(--danger)">Se déconnecter</div></div></div>
+      </div>
+      <div style="text-align:center;padding:.8rem;font-size:.68rem;color:var(--dim);">Municip'All v2.2.0 · Données RGPD · Politique de confidentialité</div>
+    </div>
+
+    <!-- ╔══════════════════╗
+         ║  ASSOCIATIONS    ║
+         ╚══════════════════╝ -->
+    <div class="view" id="view-assos">
+      <div class="search-wrap"><div class="search"><span class="si">🔍</span><input type="text" placeholder="Rechercher une association…" oninput="filterAssos(this.value)"><span class="si">🎯</span></div></div>
+      <div class="asso-filter-row" id="assoChips">
+        <span class="chip on" onclick="filterAssoChip(this,'tout')">Toutes</span>
+        <span class="chip" onclick="filterAssoChip(this,'sport')">🏆 Sport</span>
+        <span class="chip" onclick="filterAssoChip(this,'culture')">🎭 Culture</span>
+        <span class="chip" onclick="filterAssoChip(this,'social')">🤝 Social</span>
+        <span class="chip" onclick="filterAssoChip(this,'environnement')">🌿 Environnement</span>
+        <span class="chip" onclick="filterAssoChip(this,'jeunesse')">👦 Jeunesse</span>
+        <span class="chip" onclick="filterAssoChip(this,'sante')">❤️ Santé</span>
+      </div>
+      <div style="padding:0 1rem .5rem;display:flex;justify-content:space-between;align-items:center;">
+        <div style="font-family:var(--fd);font-weight:700;font-size:.82rem;"><span id="assoCount">12</span> associations</div>
+        <span class="live">À jour</span>
+      </div>
+      <div class="asso-grid" id="assoGrid">
+        <!-- injected by JS -->
+      </div>
+    </div>
+
+  </main><!-- .main -->
+</div><!-- .desktop-wrapper -->
+
+<!-- ══════════ MODALS ══════════ -->
+
+<!-- Identity modal -->
+<div class="modal-overlay" id="modal-identity" onclick="closeModalIfOutside(event,'modal-identity')">
+  <div class="modal-sheet">
+    <div class="modal-header"><div class="modal-title">✏️ Informations personnelles</div><div class="modal-close" onclick="closeModal('modal-identity')">✕</div></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Prénom</label><input class="form-input" id="inp-prenom" value="Marie" placeholder="Prénom"></div>
+      <div class="form-group"><label class="form-label">Nom</label><input class="form-input" id="inp-nom" value="Beaumont" placeholder="Nom"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Email</label><input class="form-input" id="inp-email" type="email" value="marie.beaumont@email.fr" placeholder="email@example.fr"></div>
+    <div class="form-group"><label class="form-label">Téléphone</label><input class="form-input" id="inp-tel" type="tel" value="06 12 34 56 78" placeholder="06 XX XX XX XX"></div>
+    <div class="form-group"><label class="form-label">Date de naissance</label><input class="form-input" id="inp-dob" type="date" value="1985-06-14"></div>
+    <div class="save-bar"><button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-identity')">Annuler</button><button class="btn btn-accent" style="flex:2" onclick="saveIdentity()">💾 Enregistrer</button></div>
+  </div>
+</div>
+
+<!-- Address modal -->
+<div class="modal-overlay" id="modal-address" onclick="closeModalIfOutside(event,'modal-address')">
+  <div class="modal-sheet">
+    <div class="modal-header"><div class="modal-title">📍 Mon adresse</div><div class="modal-close" onclick="closeModal('modal-address')">✕</div></div>
+    <div class="form-group"><label class="form-label">Adresse</label><input class="form-input" id="inp-rue" value="12 Rue Pasteur" placeholder="Numéro et rue"></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Code postal</label><input class="form-input" id="inp-cp" value="94800" placeholder="94800"></div>
+      <div class="form-group"><label class="form-label">Ville</label><input class="form-input" id="inp-ville" value="Villejuif" placeholder="Villejuif"></div>
+    </div>
+    <div class="form-group"><label class="form-label">Quartier</label>
+      <select class="form-input" id="inp-quartier" style="cursor:pointer;">
+        <option value="paul-hochart" selected>Paul Hochart</option>
+        <option value="centre-ville">Centre-Ville</option>
+        <option value="rouget-de-lisle">Rouget de Lisle</option>
+        <option value="quartiers-sud">Quartiers Sud</option>
+        <option value="stade">Stade</option>
+      </select>
+    </div>
+    <div class="form-group"><label class="form-label">Complément d'adresse</label><input class="form-input" id="inp-comp" placeholder="Bât, étage, code…"></div>
+    <div class="save-bar"><button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-address')">Annuler</button><button class="btn btn-accent" style="flex:2" onclick="saveAddress()">💾 Enregistrer</button></div>
+  </div>
+</div>
+
+<!-- Password modal -->
+<div class="modal-overlay" id="modal-password" onclick="closeModalIfOutside(event,'modal-password')">
+  <div class="modal-sheet">
+    <div class="modal-header"><div class="modal-title">🔑 Changer le mot de passe</div><div class="modal-close" onclick="closeModal('modal-password')">✕</div></div>
+    <div class="form-group"><label class="form-label">Mot de passe actuel</label><input class="form-input" type="password" id="inp-pw-old" placeholder="••••••••"></div>
+    <div class="form-group"><label class="form-label">Nouveau mot de passe</label><input class="form-input" type="password" id="inp-pw-new" placeholder="••••••••" oninput="checkPwStrength(this.value)"></div>
+    <div id="pw-strength-bar" style="height:3px;border-radius:3px;background:var(--border);margin-bottom:.8rem;overflow:hidden;"><div id="pw-strength-fill" style="height:100%;width:0%;border-radius:3px;transition:.3s;"></div></div>
+    <div style="font-size:.7rem;color:var(--muted);margin-bottom:.8rem;" id="pw-strength-label"></div>
+    <div class="form-group"><label class="form-label">Confirmer</label><input class="form-input" type="password" id="inp-pw-confirm" placeholder="••••••••"></div>
+    <div class="save-bar"><button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-password')">Annuler</button><button class="btn btn-accent" style="flex:2" onclick="savePassword()">💾 Enregistrer</button></div>
+  </div>
+</div>
+
+<!-- Avatar modal -->
+<div class="modal-overlay" id="modal-avatar" onclick="closeModalIfOutside(event,'modal-avatar')">
+  <div class="modal-sheet">
+    <div class="modal-header"><div class="modal-title">🖼️ Photo de profil</div><div class="modal-close" onclick="closeModal('modal-avatar')">✕</div></div>
+    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:.6rem;margin-bottom:1rem;">
+      <div onclick="selectEmoji(this,'MB')" data-init="MB" style="width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--accent));display:flex;align-items:center;justify-content:center;font-family:var(--fd);font-weight:800;font-size:.85rem;cursor:pointer;border:2px solid var(--border-a);">MB</div>
+      <div onclick="selectEmoji(this,'😊')" style="width:48px;height:48px;border-radius:50%;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;">😊</div>
+      <div onclick="selectEmoji(this,'🦁')" style="width:48px;height:48px;border-radius:50%;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;">🦁</div>
+      <div onclick="selectEmoji(this,'🌸')" style="width:48px;height:48px;border-radius:50%;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;">🌸</div>
+      <div onclick="selectEmoji(this,'🎯')" style="width:48px;height:48px;border-radius:50%;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;">🎯</div>
+      <div onclick="selectEmoji(this,'⚡')" style="width:48px;height:48px;border-radius:50%;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;">⚡</div>
+      <div onclick="selectEmoji(this,'🎨')" style="width:48px;height:48px;border-radius:50%;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;">🎨</div>
+      <div onclick="selectEmoji(this,'🏄')" style="width:48px;height:48px;border-radius:50%;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;">🏄</div>
+      <div onclick="selectEmoji(this,'🌍')" style="width:48px;height:48px;border-radius:50%;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;">🌍</div>
+      <div onclick="selectEmoji(this,'🎸')" style="width:48px;height:48px;border-radius:50%;background:var(--surface);border:2px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:1.6rem;cursor:pointer;">🎸</div>
+    </div>
+    <div class="save-bar"><button class="btn btn-ghost" style="flex:1" onclick="closeModal('modal-avatar')">Annuler</button><button class="btn btn-accent" style="flex:2" onclick="saveAvatar()">💾 Enregistrer</button></div>
+  </div>
+</div>
+
+<!-- Lang modal -->
+<div class="modal-overlay" id="modal-lang" onclick="closeModalIfOutside(event,'modal-lang')">
+  <div class="modal-sheet">
+    <div class="modal-header"><div class="modal-title">🗣️ Langue</div><div class="modal-close" onclick="closeModal('modal-lang')">✕</div></div>
+    <div style="display:flex;flex-direction:column;gap:.3rem;">
+      <div onclick="selectLang(this,'Français')" style="padding:.75rem 1rem;border-radius:var(--rm);background:rgba(78,205,196,.1);border:1px solid var(--border-a);cursor:pointer;display:flex;justify-content:space-between;align-items:center;font-size:.88rem;font-family:var(--fd);font-weight:600;color:var(--accent);">🇫🇷 Français <span>✓</span></div>
+      <div onclick="selectLang(this,'English')" style="padding:.75rem 1rem;border-radius:var(--rm);background:var(--surface);border:1px solid var(--border);cursor:pointer;font-size:.88rem;font-family:var(--fd);font-weight:500;">🇬🇧 English</div>
+      <div onclick="selectLang(this,'العربية')" style="padding:.75rem 1rem;border-radius:var(--rm);background:var(--surface);border:1px solid var(--border);cursor:pointer;font-size:.88rem;font-family:var(--fd);font-weight:500;">🇲🇦 العربية</div>
+      <div onclick="selectLang(this,'Español')" style="padding:.75rem 1rem;border-radius:var(--rm);background:var(--surface);border:1px solid var(--border);cursor:pointer;font-size:.88rem;font-family:var(--fd);font-weight:500;">🇪🇸 Español</div>
+      <div onclick="selectLang(this,'Portugais')" style="padding:.75rem 1rem;border-radius:var(--rm);background:var(--surface);border:1px solid var(--border);cursor:pointer;font-size:.88rem;font-family:var(--fd);font-weight:500;">🇵🇹 Português</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ MUNIBOT ══════════ -->
+<div class="bot-overlay" id="munibot">
+  <div class="bot-header">
+    <div class="bot-ava">🤖</div>
+    <div><div class="bot-name">Muni-Bot</div><div class="bot-desc">Assistant IA · Disponible 24h/24</div></div>
+    <button class="bot-close" onclick="toggleBot()">✕</button>
+  </div>
+  <div class="bot-messages" id="botMessages">
+    <div class="msg bot"><div class="msg-bubble">Bonjour 👋 Je suis <strong>Muni-Bot</strong>. Comment puis-je vous aider ?</div><div class="msg-time">Maintenant</div></div>
+  </div>
+  <div class="quick-replies">
+    <button class="qr-btn" onclick="sendQuick('Signaler un trou')">🛣️ Signaler</button>
+    <button class="qr-btn" onclick="sendQuick('Horaires Mairie')">🏛️ Horaires</button>
+    <button class="qr-btn" onclick="sendQuick('Aide vélo disponible ?')">🚲 Aide vélo</button>
+    <button class="qr-btn" onclick="sendQuick('État de ma demande')">📋 Mes demandes</button>
+  </div>
+  <div class="bot-input-row">
+    <input class="bot-input" id="botInput" placeholder="Votre message…" onkeydown="if(event.key==='Enter')sendMessage()">
+    <button class="bot-send" onclick="sendMessage()">➤</button>
+  </div>
+</div>
+
+<!-- ══════════ BOTTOM NAV (mobile) ══════════ -->

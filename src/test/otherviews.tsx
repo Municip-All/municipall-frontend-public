@@ -1,544 +1,1331 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useApp } from './Appcontext';
+import { TopNav } from './layout';
+import { EVENEMENTS, ASSOS, QUARTIERS_BY_COMMUNE } from '../data';
+import { Commune, Quartier } from '../types';
 
-const handleTabClick = (e: React.MouseEvent<HTMLButtonElement>) => {
-  const tabs = document.querySelectorAll('.tab-btn');
-  const panels = document.querySelectorAll('.tab-panel');
-  tabs.forEach(tab => (tab as HTMLElement).classList.remove('on'));
-  panels.forEach(panel => (panel as HTMLElement).classList.remove('on'));
-  e.currentTarget.classList.add('on');
-  const index = Array.from(tabs).indexOf(e.currentTarget as Element);
-  if (panels[index]) (panels[index] as HTMLElement).classList.add('on');
+/* ═══════════════════════════════════════════
+   CSS INJECTION HELPER
+═══════════════════════════════════════════ */
+function injectCss(id: string, css: string) {
+  if (!document.getElementById(id)) {
+    const s = document.createElement('style');
+    s.id = id; s.textContent = css;
+    document.head.appendChild(s);
+  }
+}
+
+/* ═══════════════════════════════════════════
+   ÉVÈNEMENTS VIEW
+═══════════════════════════════════════════ */
+const evCss = `
+.ev-grid { display: flex; flex-direction: column; gap: .8rem; }
+.ev-row {
+  display: flex; gap: 1.4rem; align-items: stretch;
+  animation: ma-up .6s cubic-bezier(.22,1,.36,1) both;
+}
+.ev-date-col {
+  width: 68px; flex-shrink: 0; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: .1rem;
+  border-radius: 12px; padding: .85rem .4rem;
+}
+.ev-date-day { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 1.75rem; line-height: 1; }
+.ev-date-mois { font-size: .65rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; opacity: .65; margin-top: .1rem; }
+.ev-card-inner { flex: 1; }
+.ev-tag {
+  display: inline-block; font-size: .6rem; font-weight: 700; letter-spacing: .1em;
+  text-transform: uppercase; padding: .25rem .7rem; border-radius: 1rem;
+  margin-bottom: .45rem;
+}
+.ev-title { font-size: 1rem; font-weight: 700; color: #0F0F0E; margin-bottom: .3rem; line-height: 1.3; }
+.ev-meta { font-size: .78rem; color: rgba(15,15,14,.38); display: flex; gap: .9rem; flex-wrap: wrap; }
+.ev-meta span { display: flex; align-items: center; gap: .3rem; }
+.ev-desc { font-size: .78rem; color: rgba(15,15,14,.4); margin-top: .4rem; }
+.ev-accent-strip { width: 3px; border-radius: 2px; flex-shrink: 0; align-self: stretch; }
+`;
+
+const TAG_STYLE: Record<string, { bg: string; color: string }> = {
+  culture:  { bg: 'rgba(147,112,219,.12)', color: '#7B58B0' },
+  marche:   { bg: 'rgba(224,123,32,.12)',  color: '#B96A12' },
+  sport:    { bg: 'rgba(24,109,16,.12)',   color: '#186D10' },
+  info:     { bg: 'rgba(59,85,143,.12)',   color: '#3B558F' },
+  social:   { bg: 'rgba(255,180,80,.15)',  color: '#B87B00' },
 };
 
-export const DemandesView: React.FC = () => {
-  return (
-    <div className="view active" id="view-demandes">
+export const EvenementView: React.FC = () => {
+  useEffect(() => injectCss('municipall-ev-css', evCss), []);
+  const { showView } = useApp();
 
-      <div className="tabs">
-        <button className="tab-btn on" onClick={handleTabClick}>En cours <span style={{'background': 'rgba(78,205,196,.15)', 'color': 'var(--accent)', 'padding': '.1rem .4rem', 'borderRadius': '20px', 'fontSize': '.65rem', 'marginLeft': '.2rem'}}>2</span></button>
-        <button className="tab-btn" onClick={handleTabClick}>Terminées <span style={{'background': 'rgba(82,214,138,.1)', 'color': 'var(--success)', 'padding': '.1rem .4rem', 'borderRadius': '20px', 'fontSize': '.65rem', 'marginLeft': '.2rem'}}>3</span></button>
-        <button className="tab-btn" onClick={handleTabClick}>Archives</button>
-      </div>
-      <div className="tab-panel on" id="tab-encours">
-        <div className="ticket">
-          <div className="ticket-head"><div className="ticket-cat"><span className="ticket-cat-icon">🛣️</span><div><div className="ticket-title">Nid-de-poule dangereux</div><div className="ticket-id">#MA-2026-04847</div></div></div><span className="status status-prog">En cours</span></div>
-          <div className="ticket-loc">📍 Rue Victor Hugo · Il y a 2 jours</div>
-          <div style={{'padding': '0 1rem .6rem'}}><div style={{'height': '2px', 'background': 'var(--border)', 'borderRadius': '2px', 'overflow': 'hidden'}}><div style={{'width': '35%', 'height': '100%', 'background': 'linear-gradient(90deg,var(--accent),var(--blue-l))', 'borderRadius': '2px'}}></div></div><div style={{'fontSize': '.65rem', 'color': 'var(--muted)', 'marginTop': '.3rem'}}>Assigné au Service Voirie · Traitement 35%</div></div>
-          <div className="ticket-footer"><span className="ticket-time">⏱ Délai estimé : 3j restants</span><div className="ticket-actions"><button className="ta-btn chat" >💬 Chatter</button><button className="ta-btn" >↗ Partager</button></div></div>
+  return (
+    <div className="ma-root">
+      <TopNav active="evenement" />
+
+      <section className="ma-hero">
+        <div className="ma-hero-blob ma-hero-b1" style={{ background: 'rgba(147,112,219,.1)' }} />
+        <div className="ma-hero-blob ma-hero-b2" style={{ background: 'rgba(224,123,32,.07)' }} />
+        <div className="ma-hero-blob ma-hero-b3" style={{ background: 'rgba(59,85,143,.05)' }} />
+        <div className="ma-hero-ghost">Agenda</div>
+
+        <div className="ma-hero-left">
+          <p className="ma-eyebrow">Agenda · Mai 2026</p>
+          <h1 className="ma-h1">La vie de <em>la ville</em>.</h1>
+          <p className="ma-sub">Concerts, marchés, réunions publiques, tournois — voici ce qui se passe près de chez vous.</p>
         </div>
-        <div className="ticket">
-          <div className="ticket-head"><div className="ticket-cat"><span className="ticket-cat-icon">💡</span><div><div className="ticket-title">Éclairage public défaillant</div><div className="ticket-id">#MA-2026-04812</div></div></div><span className="status status-wait">En attente</span></div>
-          <div className="ticket-loc">📍 Avenue de la République · Il y a 5 jours</div>
-          <div className="ticket-footer"><span className="ticket-time">⏱ Pas encore assigné</span><div className="ticket-actions"><button className="ta-btn" >🔁 Relancer</button><button className="ta-btn" >↗ Partager</button></div></div>
+
+        <div className="ma-hero-right">
+          <div className="ma-hero-stats">
+            <div className="ma-stat-block">
+              <div className="ma-stat-num">{EVENEMENTS.length}<em>+</em></div>
+              <div className="ma-stat-label">À venir</div>
+            </div>
+            <div className="ma-stat-block">
+              <div className="ma-stat-num" style={{ color: '#7B58B0' }}>3</div>
+              <div className="ma-stat-label">Gratuits</div>
+            </div>
+            <div className="ma-stat-block">
+              <div className="ma-stat-num" style={{ color: '#186D10' }}>2</div>
+              <div className="ma-stat-label">Ce mois</div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div className="tab-panel" id="tab-terminees">
-        <div className="ticket">
-          <div className="ticket-head"><div className="ticket-cat"><span className="ticket-cat-icon">🗑️</span><div><div className="ticket-title">Poubelle débordante</div><div className="ticket-id">#MA-2026-04756</div></div></div><span className="status status-done">Résolu</span></div>
-          <div className="ticket-loc">📍 Parc de la Méridienne · Il y a 12 jours</div>
-          <div style={{'padding': '0 1rem .5rem', 'fontSize': '.75rem', 'color': 'var(--muted)', 'fontStyle': 'italic'}}>"Intervention effectuée le 17/04. Zone nettoyée et bac remplacé." — Agent Dubois</div>
-          <div className="ticket-footer"><span className="ticket-time" style={{'color': 'var(--success)'}}>✓ Résolu en 2 jours</span><div className="ticket-actions"><button className="ta-btn" >⭐ Évaluer</button></div></div>
+      </section>
+
+      <div className="ma-content">
+        <div className="ma-sec-head">
+          <div>
+            <p className="ma-sec-label">Prochains rendez-vous</p>
+            <h2 className="ma-sec-title">Agenda <em>local</em>.</h2>
+          </div>
+          <button className="ma-btn-ghost" onClick={() => showView('home')}>← Retour</button>
         </div>
-        <div className="ticket">
-          <div className="ticket-head"><div className="ticket-cat"><span className="ticket-cat-icon">🌳</span><div><div className="ticket-title">Branche d'arbre dangereuse</div><div className="ticket-id">#MA-2026-04701</div></div></div><span className="status status-done">Résolu</span></div>
-          <div className="ticket-loc">📍 Rue Paul Vaillant-Couturier · Il y a 18 jours</div>
-          <div className="ticket-footer"><span className="ticket-time" style={{'color': 'var(--success)'}}>✓ Résolu en 4 jours</span><div className="ticket-actions"><button className="ta-btn" >⭐ Évaluer</button></div></div>
+
+        <div className="ev-grid">
+          {EVENEMENTS.map((ev, i) => {
+            const ts = TAG_STYLE[ev.tag] ?? { bg: 'rgba(15,15,14,.07)', color: '#555' };
+            return (
+              <div key={ev.id} className="ev-row ma-card" style={{ animationDelay: `${i * .09}s` }}>
+                {ev.accent && <div className="ev-accent-strip" style={{ background: '#9370DB' }} />}
+                <div className="ev-date-col" style={{ background: ts.bg }}>
+                  <div className="ev-date-day" style={{ color: ts.color }}>{ev.jour}</div>
+                  <div className="ev-date-mois" style={{ color: ts.color }}>{ev.mois}</div>
+                </div>
+                <div className="ev-card-inner">
+                  <span className="ev-tag" style={{ background: ts.bg, color: ts.color }}>{ev.tag}</span>
+                  <div className="ev-title">{ev.titre}</div>
+                  <div className="ev-meta">
+                    <span>🕐 {ev.heure}</span>
+                    <span>📍 {ev.lieu}</span>
+                  </div>
+                  {ev.desc && <div className="ev-desc">{ev.desc}</div>}
+                </div>
+              </div>
+            );
+          })}
         </div>
-      </div>
-      <div className="tab-panel" id="tab-archives">
-        <div style={{'padding': '3rem 1rem', 'textAlign': 'center', 'color': 'var(--muted)'}}><div style={{'fontSize': '2.5rem', 'marginBottom': '.8rem'}}>🗃️</div><div style={{'fontFamily': 'var(--fd)', 'fontWeight': '600', 'fontSize': '.9rem', 'marginBottom': '.4rem'}}>Aucune archive</div><div style={{'fontSize': '.8rem', 'lineHeight': '1.6'}}>Vos demandes classées apparaîtront ici après 90 jours.</div></div>
       </div>
     </div>
   );
 };
 
-export const FluxView: React.FC = () => {
-  return (
-    <div className="view active" id="view-flux">
+/* ═══════════════════════════════════════════
+   CONTACT VIEW
+═══════════════════════════════════════════ */
+const ctCss = `
+.ct-info-grid { display: flex; flex-direction: column; gap: .7rem; }
+.ct-info-row {
+  display: flex; align-items: center; gap: 1rem; padding: .8rem 1rem;
+  background: rgba(15,15,14,.03); border-radius: 10px;
+  border: 1px solid rgba(15,15,14,.06);
+}
+.ct-info-icon {
+  width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.1rem;
+}
+.ct-info-label { font-size: .7rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: rgba(15,15,14,.3); margin-bottom: .12rem; }
+.ct-info-val { font-size: .9rem; font-weight: 500; color: #0F0F0E; }
+.ct-hours-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .45rem; margin-top: .5rem; }
+.ct-hours-row { font-size: .82rem; color: rgba(15,15,14,.55); display: flex; justify-content: space-between; padding: .45rem .7rem; background: rgba(15,15,14,.025); border-radius: 8px; }
+.ct-hours-day { font-weight: 500; }
+.ct-submit {
+  width: 100%; padding: .88rem 1.5rem; background: #0F0F0E; border: none; border-radius: 2rem;
+  font-family: 'Inter', sans-serif; font-size: .9rem; font-weight: 500; color: #FAFAF8;
+  cursor: pointer; letter-spacing: .02em; margin-top: .25rem;
+  transition: background .22s, transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s;
+}
+.ct-submit:hover { background: #1A3A8F; transform: translateY(-2px); box-shadow: 0 8px 24px rgba(26,58,143,.22); }
+`;
 
-      <div style={{'display': 'flex', 'alignItems': 'center', 'justifyContent': 'space-between', 'padding': '.9rem 1rem .5rem'}}><div style={{'fontFamily': 'var(--fd)', 'fontWeight': '800', 'fontSize': '1rem'}}>Flux en direct</div><span className="live">Temps réel</span></div>
-      <div style={{'padding': '0 1rem .9rem'}}>
-        <div className="weather-big">
-          <div className="weather-main"><div className="weather-icon">🌤️</div><div><div className="weather-temp">19°<span style={{'fontSize': '1.2rem'}}>C</span></div><div className="weather-cond">Ensoleillé · Villejuif</div></div></div>
-          <div className="weather-stats"><div className="weather-stat">💨 <strong>12 km/h</strong></div><div className="weather-stat">💧 <strong>45%</strong></div><div className="weather-stat">👁️ <strong>10 km</strong></div><div style={{'marginTop': '.4rem', 'fontSize': '.68rem', 'color': 'var(--muted)'}}>Demain : 17°C 🌦️</div></div>
-        </div>
-      </div>
-      <div className="flux-section">
-        <div className="flux-section-head"><div className="flux-section-title">🚌 Transports <span className="live" style={{'marginLeft': '.4rem'}}>Live</span></div></div>
-        <div className="flux-card" style={{'borderLeft': '3px solid var(--warn)'}}><div className="fc-icon">⚠️</div><div className="fc-body"><div className="fc-title">Ligne 131 — PERTURBÉE</div><div className="fc-sub">Bus dévié via Avenue de Paris · Jusqu'à 18h30</div></div><div className="fc-right"><span style={{'fontSize': '.65rem', 'color': 'var(--warn)', 'background': 'rgba(255,179,71,.1)', 'padding': '.2rem .5rem', 'borderRadius': '20px', 'fontFamily': 'var(--fd)', 'fontWeight': '700'}}>Dévié</span></div></div>
-        <div className="flux-card"><div className="fc-icon">🚌</div><div className="fc-body"><div className="fc-title">Ligne 131 · Direction Créteil</div><div className="fc-sub">Arrêt : Hôtel de Ville</div></div><div className="fc-right"><div className="fc-time">2'</div><div className="fc-unit">prochain bus</div></div></div>
-        <div className="flux-card"><div className="fc-icon">🚌</div><div className="fc-body"><div className="fc-title">Ligne 172 · Direction Rungis</div><div className="fc-sub">Arrêt : Hôtel de Ville</div></div><div className="fc-right"><div className="fc-time">7'</div><div className="fc-unit">prochain bus</div></div></div>
-        <div className="flux-card"><div className="fc-icon">🚇</div><div className="fc-body"><div className="fc-title">Métro 7 · Trafic normal</div><div className="fc-sub">Mairie d'Ivry ↔ La Courneuve</div></div><div className="fc-right"><div className="fc-time">4'</div><div className="fc-unit">prochain train</div></div></div>
-      </div>
-      <div className="flux-section">
-        <div className="flux-section-head"><div className="flux-section-title">🚧 Travaux en cours</div><span style={{'fontSize': '.65rem', 'color': 'var(--warn)', 'background': 'rgba(255,179,71,.1)', 'padding': '.2rem .6rem', 'borderRadius': '20px', 'fontFamily': 'var(--fd)', 'fontWeight': '700'}}>3 actifs</span></div>
-        <div className="flux-card" style={{'borderLeft': '3px solid var(--warn)'}}><div className="fc-icon">🚧</div><div className="fc-body"><div className="fc-title">Rue Victor Hugo</div><div className="fc-sub">Réfection de chaussée · Voie unique</div><div style={{'marginTop': '.3rem', 'height': '2px', 'background': 'var(--border)', 'borderRadius': '2px', 'overflow': 'hidden'}}><div style={{'width': '45%', 'height': '100%', 'background': 'var(--warn)'}}></div></div><div style={{'fontSize': '.62rem', 'color': 'var(--muted)', 'marginTop': '.2rem'}}>45% · Fin prévue 15/06/2026</div></div></div>
-        <div className="flux-card"><div className="fc-icon">🚧</div><div className="fc-body"><div className="fc-title">Avenue de la Paix</div><div className="fc-sub">Réseaux souterrains · Voie fermée le matin</div><div style={{'marginTop': '.3rem', 'height': '2px', 'background': 'var(--border)', 'borderRadius': '2px', 'overflow': 'hidden'}}><div style={{'width': '80%', 'height': '100%', 'background': 'var(--success)'}}></div></div><div style={{'fontSize': '.62rem', 'color': 'var(--muted)', 'marginTop': '.2rem'}}>80% · Fin prévue 05/05/2026</div></div></div>
-        <div className="flux-card"><div className="fc-icon">🚧</div><div className="fc-body"><div className="fc-title">Rond-point Aragon</div><div className="fc-sub">Aménagement cyclable</div><div style={{'marginTop': '.3rem', 'height': '2px', 'background': 'var(--border)', 'borderRadius': '2px', 'overflow': 'hidden'}}><div style={{'width': '15%', 'height': '100%', 'background': 'var(--blue-l)'}}></div></div><div style={{'fontSize': '.62rem', 'color': 'var(--muted)', 'marginTop': '.2rem'}}>15% · Fin prévue 30/08/2026</div></div></div>
-      </div>
-      <div className="flux-section">
-        <div className="flux-section-head"><div className="flux-section-title">⚠️ Alertes municipales</div></div>
-        <div className="flux-card" style={{'background': 'rgba(255,107,107,.05)', 'borderColor': 'rgba(255,107,107,.2)'}}><div className="fc-icon">🔴</div><div className="fc-body"><div className="fc-title" style={{'color': 'var(--danger)'}}>Perturbation réseau bus</div><div className="fc-sub">Ligne 131 déviée — Prévoir +10 min de trajet</div></div></div>
-      </div>
-    </div>
-  );
-};
+export const ContactView: React.FC = () => {
+  useEffect(() => injectCss('municipall-ct-css', ctCss), []);
+  const [nom, setNom]   = useState('');
+  const [email, setEmail] = useState('');
+  const [sujet, setSujet] = useState('');
+  const [msg, setMsg]   = useState('');
+  const [sent, setSent] = useState(false);
+  const { showToast } = useApp();
 
-export const AgendaView: React.FC = () => {
-  const [filter, setFilter] = useState<string>('');
-
-  const handleAgendaFilter = (e: React.MouseEvent<HTMLSpanElement>) => {
-    const chips = document.querySelectorAll('.agenda-cats .chip');
-    chips.forEach(chip => (chip as HTMLElement).classList.remove('on'));
-    (e.currentTarget as HTMLElement).classList.add('on');
-    
-    const category = e.currentTarget.textContent?.replace(/^[^\w]*/, '').trim() || '';
-    setFilter(category === 'Tout' ? '' : category.split(' ')[0].toLowerCase());
-    
-    const cards = document.querySelectorAll('.event-card');
-    cards.forEach(card => {
-      if (!filter) {
-        (card as HTMLElement).style.display = 'block';
-      } else {
-        const tag = card.getAttribute('data-tag');
-        (card as HTMLElement).style.display = tag === filter || tag?.includes(filter) ? 'block' : 'none';
-      }
-    });
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!nom || !email || !msg) return;
+    setSent(true);
+    showToast('Message envoyé à la mairie !');
+    setNom(''); setEmail(''); setSujet(''); setMsg('');
+    setTimeout(() => setSent(false), 5000);
   };
 
   return (
-    <div className="view active" id="view-agenda">
+    <div className="ma-root">
+      <TopNav active="contact" />
 
-      <div className="search-wrap"><div className="search"><span className="si">🔍</span><input type="text" placeholder="Rechercher un événement…" /><span className="si">🎯</span></div></div>
-      <div className="agenda-cats">
-        <span className="chip on" onClick={handleAgendaFilter}>Tout</span>
-        <span className="chip" onClick={handleAgendaFilter}>🎵 Culture</span>
-        <span className="chip" onClick={handleAgendaFilter}>🏆 Sport</span>
-        <span className="chip" onClick={handleAgendaFilter}>🤝 Social</span>
-        <span className="chip" onClick={handleAgendaFilter}>🛒 Marchés</span>
-        <span className="chip" onClick={handleAgendaFilter}>ℹ️ Info</span>
+      <section className="ma-hero">
+        <div className="ma-hero-blob ma-hero-b1" style={{ background: 'rgba(59,85,143,.08)' }} />
+        <div className="ma-hero-blob ma-hero-b2" style={{ background: 'rgba(24,109,16,.06)' }} />
+        <div className="ma-hero-blob ma-hero-b3" style={{ background: 'rgba(224,123,32,.04)' }} />
+        <div className="ma-hero-ghost">Mairie</div>
+
+        <div className="ma-hero-left">
+          <p className="ma-eyebrow">Administration · Contact</p>
+          <h1 className="ma-h1"><em>Contactez</em> la mairie.</h1>
+          <p className="ma-sub">Vos questions, demandes et suggestions méritent une réponse. Notre équipe vous répondra sous 48h ouvrées.</p>
+        </div>
+
+        <div className="ma-hero-right">
+          <div className="ma-hero-stats">
+            <div className="ma-stat-block">
+              <div className="ma-stat-num">48<em>h</em></div>
+              <div className="ma-stat-label">Délai réponse</div>
+            </div>
+            <div className="ma-stat-block">
+              <div className="ma-stat-num" style={{ color: '#186D10' }}>5</div>
+              <div className="ma-stat-label">Services</div>
+            </div>
+            <div className="ma-stat-block">
+              <div className="ma-stat-num" style={{ color: '#3B558F' }}>01</div>
+              <div className="ma-stat-label">Numéro direct</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="ma-content">
+        <div className="ma-two-col">
+          {/* Infos */}
+          <div>
+            <div className="ma-sec-head">
+              <div>
+                <p className="ma-sec-label">Coordonnées</p>
+                <h2 className="ma-sec-title">Nous <em>trouver</em>.</h2>
+              </div>
+            </div>
+
+            <div className="ma-info-card" style={{ marginBottom: '1.5rem' }}>
+              <div className="ma-info-head">
+                <span className="ma-info-head-label">Mairie</span>
+                <span className="ma-info-head-title">Hôtel de Ville</span>
+              </div>
+              <div className="ma-info-body">
+                <div className="ct-info-grid">
+                  <div className="ct-info-row">
+                    <div className="ct-info-icon" style={{ background: 'rgba(59,85,143,.1)' }}>📍</div>
+                    <div><div className="ct-info-label">Adresse</div><div className="ct-info-val">1 Place du Général de Gaulle</div></div>
+                  </div>
+                  <div className="ct-info-row">
+                    <div className="ct-info-icon" style={{ background: 'rgba(24,109,16,.1)' }}>📞</div>
+                    <div><div className="ct-info-label">Téléphone</div><div className="ct-info-val">01 49 58 60 00</div></div>
+                  </div>
+                  <div className="ct-info-row">
+                    <div className="ct-info-icon" style={{ background: 'rgba(224,123,32,.1)' }}>✉️</div>
+                    <div><div className="ct-info-label">E-mail</div><div className="ct-info-val">contact@mairie.fr</div></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="ma-info-card">
+              <div className="ma-info-head">
+                <span className="ma-info-head-label">Horaires</span>
+                <span className="ma-info-head-title">Ouverture au public</span>
+              </div>
+              <div className="ma-info-body">
+                <div className="ct-hours-grid">
+                  {[
+                    { j:'Lundi', h:'8h30 – 17h00' },
+                    { j:'Mardi', h:'8h30 – 17h00' },
+                    { j:'Mercredi', h:'8h30 – 19h30' },
+                    { j:'Jeudi', h:'8h30 – 17h00' },
+                    { j:'Vendredi', h:'8h30 – 16h30' },
+                    { j:'Samedi', h:'Fermé' },
+                  ].map(r => (
+                    <div key={r.j} className="ct-hours-row">
+                      <span className="ct-hours-day">{r.j}</span>
+                      <span>{r.h}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Formulaire */}
+          <div>
+            <div className="ma-sec-head" style={{ marginTop: '3.25rem' }}>
+              <div>
+                <p className="ma-sec-label">Message</p>
+                <h2 className="ma-sec-title">Nous <em>écrire</em>.</h2>
+              </div>
+            </div>
+
+            <div className="ma-info-card">
+              <div className="ma-info-body" style={{ padding: '1.5rem' }}>
+                {sent && <div className="ma-alert success" style={{ marginBottom: '1rem' }}>✓ Votre message a bien été envoyé.</div>}
+                <form onSubmit={handleSubmit}>
+                  <div className="ma-field">
+                    <label className="ma-field-label">Nom complet *</label>
+                    <input className="ma-input" type="text" placeholder="Jean Dupont" value={nom} onChange={e => setNom(e.target.value)} />
+                  </div>
+                  <div className="ma-field">
+                    <label className="ma-field-label">Adresse e-mail *</label>
+                    <input className="ma-input" type="email" placeholder="jean.dupont@gmail.com" value={email} onChange={e => setEmail(e.target.value)} />
+                  </div>
+                  <div className="ma-field">
+                    <label className="ma-field-label">Sujet</label>
+                    <select className="ma-select" value={sujet} onChange={e => setSujet(e.target.value)}>
+                      <option value="">Choisir un sujet…</option>
+                      <option>Urbanisme</option>
+                      <option>État civil</option>
+                      <option>Voirie & espaces verts</option>
+                      <option>Vie associative</option>
+                      <option>Autre</option>
+                    </select>
+                  </div>
+                  <div className="ma-field">
+                    <label className="ma-field-label">Message *</label>
+                    <textarea className="ma-textarea" style={{ height: '100px' }} placeholder="Votre message…" value={msg} onChange={e => setMsg(e.target.value)} />
+                  </div>
+                  <button type="submit" className="ct-submit" disabled={!nom || !email || !msg}>
+                    Envoyer →
+                  </button>
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
-      <div className="sec-head"><div className="sec-title">Cette semaine</div></div>
-      <div className="event-card" data-tag="culture" ><div className="event-date-col"><div className="ev-day" style={{'color': 'var(--accent)'}}>30</div><div className="ev-month">avr</div></div><div className="event-body"><div className="event-title">Concert Jazz · Parc de la Méridienne</div><div className="event-meta"><span>🕗 20h00</span><span>📍 Parc central</span><span className="event-tag tag-culture">Culture</span></div><div style={{'marginTop': '.4rem', 'fontSize': '.72rem', 'color': 'var(--muted)'}}>Entrée libre · Prévoir une chaise</div></div></div>
-      <div className="event-card" data-tag="marche" ><div className="event-date-col"><div className="ev-day">02</div><div className="ev-month">mai</div></div><div className="event-body"><div className="event-title">Marché de Printemps</div><div className="event-meta"><span>🕗 8h – 13h</span><span>📍 Place du Marché</span><span className="event-tag tag-marche">Marché</span></div><div style={{'marginTop': '.4rem', 'fontSize': '.72rem', 'color': 'var(--muted)'}}>Producteurs locaux, artisanat</div></div></div>
-      <div className="event-card" data-tag="sport" ><div className="event-date-col"><div className="ev-day">03</div><div className="ev-month">mai</div></div><div className="event-body"><div className="event-title">Tournoi de pétanque inter-quartiers</div><div className="event-meta"><span>🕗 14h00</span><span>📍 Boulodrome municipal</span><span className="event-tag tag-sport">Sport</span></div><div style={{'marginTop': '.4rem', 'fontSize': '.72rem', 'color': 'var(--muted)'}}>Inscription gratuite · Ouvert à tous</div></div></div>
-      <div className="sec-head" style={{'marginTop': '.4rem'}}><div className="sec-title">Prochainement</div></div>
-      <div className="event-card" data-tag="info" ><div className="event-date-col"><div className="ev-day">10</div><div className="ev-month">mai</div></div><div className="event-body"><div className="event-title">Réunion publique — Budget participatif</div><div className="event-meta"><span>🕗 18h30</span><span>📍 Salle des fêtes</span><span className="event-tag tag-info">Info</span></div><div style={{'marginTop': '.4rem', 'fontSize': '.72rem', 'color': 'var(--muted)'}}>100 000€ à allouer aux projets citoyens</div></div></div>
-      <div className="event-card" data-tag="social" ><div className="event-date-col"><div className="ev-day">17</div><div className="ev-month">mai</div></div><div className="event-body"><div className="event-title">Atelier vélo · Entretien & sécurité</div><div className="event-meta"><span>🕗 10h00</span><span>📍 Maison des Associations</span><span className="event-tag tag-social">Social</span></div><div style={{'marginTop': '.4rem', 'fontSize': '.72rem', 'color': 'var(--muted)'}}>Gratuit · Amenez votre vélo</div></div></div>
     </div>
   );
 };
+
+/* ═══════════════════════════════════════════
+   PROFIL VIEW
+═══════════════════════════════════════════ */
+const prCss = `
+@keyframes pr-in { from { opacity:0; transform:translateY(10px); } to { opacity:1; transform:translateY(0); } }
+
+/* ── Avatar section ── */
+.pr-avatar-wrap {
+  display: flex; flex-direction: column; align-items: center;
+  padding: 2.25rem 1.5rem 1.75rem;
+  background: linear-gradient(170deg, rgba(59,85,143,.06) 0%, rgba(250,250,248,0) 60%);
+  border-bottom: 1px solid rgba(15,15,14,.07);
+  position: relative; overflow: hidden;
+}
+.pr-avatar-wrap::before {
+  content: ''; position: absolute; top: -60px; right: -60px;
+  width: 220px; height: 220px; border-radius: 50%;
+  background: radial-gradient(circle, rgba(59,85,143,.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+.pr-avatar {
+  width: 92px; height: 92px; border-radius: 50%;
+  background: linear-gradient(135deg, #3B558F 0%, #1A3A8F 100%);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 2.2rem; font-weight: 800; color: #fff;
+  font-family: 'Playfair Display', serif;
+  box-shadow: 0 0 0 4px #FAFAF8, 0 0 0 7px rgba(59,85,143,.18), 0 12px 32px rgba(59,85,143,.28);
+  margin-bottom: 1.1rem; flex-shrink: 0;
+  animation: pr-in .6s cubic-bezier(.22,1,.36,1) both;
+}
+.pr-avatar-name {
+  font-family: 'Playfair Display', serif; font-weight: 800;
+  font-size: 1.45rem; color: #0F0F0E; letter-spacing: -.5px;
+  margin-bottom: .3rem; text-align: center; animation: pr-in .65s cubic-bezier(.22,1,.36,1) .06s both;
+}
+.pr-avatar-meta {
+  display: flex; align-items: center; gap: .55rem; flex-wrap: wrap; justify-content: center;
+  animation: pr-in .65s cubic-bezier(.22,1,.36,1) .12s both;
+}
+.pr-avatar-email { font-size: .78rem; color: rgba(15,15,14,.38); }
+.pr-verified {
+  display: inline-flex; align-items: center; gap: .2rem;
+  padding: .2rem .6rem; background: rgba(24,109,16,.09);
+  border-radius: 1rem; color: #186D10; font-size: .65rem; font-weight: 700;
+  letter-spacing: .05em; border: 1px solid rgba(24,109,16,.15);
+}
+
+/* ── Underline tabs ── */
+.pr-tabs {
+  display: flex; border-bottom: 1px solid rgba(15,15,14,.09); padding: 0 1.75rem;
+}
+.pr-tab {
+  padding: .9rem 1.1rem; border: none; background: transparent; cursor: pointer;
+  font-family: 'Inter', sans-serif; font-size: .82rem; font-weight: 500;
+  color: rgba(15,15,14,.38); transition: color .18s;
+  border-bottom: 2px solid transparent; margin-bottom: -1px;
+  display: flex; align-items: center; gap: .4rem;
+}
+.pr-tab:hover { color: rgba(15,15,14,.72); }
+.pr-tab.on { color: #0F0F0E; border-bottom-color: #0F0F0E; font-weight: 600; }
+.pr-tab-icon { font-size: .95rem; }
+
+/* ── Form area ── */
+.pr-form-wrap { padding: 1.5rem 1.75rem 1.75rem; animation: pr-in .4s cubic-bezier(.22,1,.36,1) both; }
+.pr-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: .8rem; }
+.pr-section-label {
+  font-size: .64rem; font-weight: 700; letter-spacing: .13em; text-transform: uppercase;
+  color: rgba(15,15,14,.28); margin: 0 0 1rem; display: flex; align-items: center; gap: .6rem;
+}
+.pr-section-label::after { content: ''; flex: 1; height: 1px; background: rgba(15,15,14,.07); }
+
+.pr-btn-row { display: flex; align-items: center; gap: .75rem; margin-top: 1.6rem; padding-top: 1.4rem; border-top: 1px solid rgba(15,15,14,.07); }
+.pr-save-btn {
+  padding: .82rem 2rem; background: #0F0F0E; border: none; border-radius: 2rem;
+  font-family: 'Inter', sans-serif; font-size: .86rem; font-weight: 600; color: #FAFAF8;
+  cursor: pointer; letter-spacing: .03em;
+  transition: background .22s, transform .22s cubic-bezier(.22,1,.36,1), box-shadow .22s;
+  display: flex; align-items: center; gap: .45rem;
+}
+.pr-save-btn:hover { background: #1A3A8F; transform: translateY(-2px); box-shadow: 0 8px 22px rgba(26,58,143,.22); }
+.pr-save-btn:disabled { opacity: .42; cursor: not-allowed; transform: none; box-shadow: none; }
+.pr-cancel-btn {
+  padding: .82rem 1.4rem; background: transparent; border: 1.5px solid rgba(15,15,14,.12); border-radius: 2rem;
+  font-family: 'Inter', sans-serif; font-size: .86rem; font-weight: 500; color: rgba(15,15,14,.45);
+  cursor: pointer; transition: all .18s;
+}
+.pr-cancel-btn:hover { border-color: rgba(15,15,14,.3); color: #0F0F0E; }
+
+/* ── Password strength ── */
+.pr-pw-track { height: 4px; background: rgba(15,15,14,.08); border-radius: 2px; margin-top: .5rem; overflow: hidden; }
+.pr-pw-fill { height: 100%; border-radius: 2px; transition: width .4s cubic-bezier(.22,1,.36,1), background .4s; }
+.pr-pw-meta { display: flex; justify-content: space-between; margin-top: .3rem; }
+.pr-pw-hint { font-size: .7rem; font-weight: 600; }
+.pr-pw-rules { margin-top: 1rem; display: grid; grid-template-columns: 1fr 1fr; gap: .35rem; }
+.pr-pw-rule { font-size: .74rem; display: flex; align-items: center; gap: .4rem; color: rgba(15,15,14,.35); transition: color .2s; }
+.pr-pw-rule .dot { width: 7px; height: 7px; border-radius: 50%; background: rgba(15,15,14,.15); flex-shrink: 0; transition: background .2s; }
+.pr-pw-rule.ok { color: #186D10; }
+.pr-pw-rule.ok .dot { background: #186D10; }
+
+/* ── Eye button ── */
+.pr-eye {
+  position: absolute; right: .8rem; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer; padding: .2rem;
+  color: rgba(15,15,14,.3); font-size: .85rem; line-height: 1;
+  transition: color .18s;
+}
+.pr-eye:hover { color: rgba(15,15,14,.65); }
+.pr-input-wrap { position: relative; }
+.pr-input-wrap .ma-input { padding-right: 2.4rem; }
+
+/* ── Right sidebar ── */
+.pr-sidebar-card {
+  border-radius: 16px; overflow: hidden;
+  border: 1px solid rgba(15,15,14,.09);
+  box-shadow: 0 2px 20px rgba(15,15,14,.06);
+  animation: pr-in .7s cubic-bezier(.22,1,.36,1) .2s both;
+}
+.pr-sidebar-top {
+  background: linear-gradient(135deg, #1A3A8F 0%, #3B558F 60%, #534AB7 100%);
+  padding: 1.75rem 1.5rem; position: relative; overflow: hidden;
+}
+.pr-sidebar-top::before {
+  content: ''; position: absolute; top: -40px; right: -40px;
+  width: 180px; height: 180px; border-radius: 50%;
+  background: rgba(255,255,255,.07); pointer-events: none;
+}
+.pr-sidebar-top::after {
+  content: ''; position: absolute; bottom: -50px; left: -30px;
+  width: 140px; height: 140px; border-radius: 50%;
+  background: rgba(255,255,255,.05); pointer-events: none;
+}
+.pr-sidebar-avatar {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: rgba(255,255,255,.18); backdrop-filter: blur(8px);
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Playfair Display', serif; font-weight: 800;
+  font-size: 1.3rem; color: #fff; margin-bottom: .9rem;
+  border: 2px solid rgba(255,255,255,.3);
+}
+.pr-sidebar-name { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 1.15rem; color: #fff; letter-spacing: -.3px; line-height: 1.2; }
+.pr-sidebar-city { font-size: .76rem; color: rgba(255,255,255,.6); margin-top: .22rem; }
+.pr-sidebar-badge {
+  display: inline-flex; align-items: center; gap: .3rem; margin-top: .65rem;
+  padding: .28rem .75rem; border-radius: 1rem; background: rgba(255,255,255,.15);
+  font-size: .68rem; font-weight: 600; color: rgba(255,255,255,.9); letter-spacing: .05em;
+  border: 1px solid rgba(255,255,255,.2);
+}
+
+.pr-stats-grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 0; background: #FAFAF8;
+}
+.pr-stat {
+  padding: 1.1rem 1.25rem; border-right: 1px solid rgba(15,15,14,.07);
+  border-bottom: 1px solid rgba(15,15,14,.07);
+  position: relative;
+}
+.pr-stat:nth-child(2n) { border-right: none; }
+.pr-stat:nth-last-child(-n+2) { border-bottom: none; }
+.pr-stat-icon { font-size: 1.1rem; margin-bottom: .35rem; }
+.pr-stat-num { font-family: 'Playfair Display', serif; font-weight: 800; font-size: 1.65rem; color: #0F0F0E; line-height: 1; }
+.pr-stat-num em { font-size: .95rem; font-style: normal; color: rgba(15,15,14,.3); }
+.pr-stat-label { font-size: .65rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: rgba(15,15,14,.32); margin-top: .2rem; }
+.pr-stat-accent { position: absolute; top: 0; left: 0; right: 0; height: 2px; border-radius: 0; }
+
+.pr-sidebar-footer { padding: 1.25rem 1.5rem; background: #FAFAF8; }
+.pr-contrib-text { font-size: .8rem; color: rgba(15,15,14,.45); line-height: 1.65; margin-bottom: .75rem; }
+
+.pr-logout {
+  width: 100%; padding: .82rem 1.5rem;
+  background: transparent; border: 1.5px solid rgba(198,40,40,.2); border-radius: 2rem;
+  font-family: 'Inter', sans-serif; font-size: .86rem; font-weight: 500; color: #C62828;
+  cursor: pointer; letter-spacing: .02em; transition: all .22s;
+  display: flex; align-items: center; justify-content: center; gap: .5rem;
+}
+.pr-logout:hover { background: #C62828; color: #fff; border-color: #C62828; box-shadow: 0 6px 20px rgba(198,40,40,.22); }
+`;
+
+type PrTab = 'infos' | 'adresse' | 'securite';
 
 export const ProfilView: React.FC = () => {
-  const [userInfo, setUserInfo] = useState({
-    prenom: 'Marie',
-    nom: 'Beaumont',
-    email: 'marie.beaumont@email.fr',
-    tel: '06 12 34 56 78',
-    dob: '1985-06-14'
-  });
+  useEffect(() => injectCss('municipall-pr-css', prCss), []);
+  const { user, logout, signalements, updateUser, showToast } = useApp();
 
-  const [address, setAddress] = useState({
-    rue: '12 Rue Pasteur',
-    cp: '94800',
-    ville: 'Villejuif',
-    quartier: 'paul-hochart',
-    comp: ''
-  });
+  const [tab, setTab] = useState<PrTab>('infos');
 
-  const [notifications, setNotifications] = useState({
-    demandes: true,
-    alertes: true,
-    evenements: false
-  });
+  /* ── Infos state ── */
+  const [prenom,  setPrenom]  = useState(user?.prenom       ?? '');
+  const [nom,     setNom]     = useState(user?.nom          ?? '');
+  const [email,   setEmail]   = useState(user?.email        ?? '');
+  const [tel,     setTel]     = useState(user?.telephone    ?? '');
+  const [dob,     setDob]     = useState(user?.dateNaissance ?? '');
 
-  const [darkMode, setDarkMode] = useState(true);
-  const [language, setLanguage] = useState('fr');
-  
-  const [activeModal, setActiveModal] = useState<string | null>(null);
-  const [pwData, setPwData] = useState({ old: '', new: '', confirm: '' });
-  const [avatar, setAvatar] = useState('MB');
+  /* ── Adresse state ── */
+  const [rue,        setRue]        = useState(user?.rue               ?? '');
+  const [cp,         setCp]         = useState(user?.codePostal        ?? '');
+  const [compl,      setCompl]      = useState(user?.complementAdresse ?? '');
+  const [ville,      setVille]      = useState<Commune>(user?.ville    ?? 'Kremlin-Bicêtre');
+  const [quartier,   setQuartier]   = useState(user?.quartier          ?? '');
 
-  const openModal = (modal: string) => setActiveModal(modal);
-  const closeModal = () => setActiveModal(null);
+  /* ── Sécurité state ── */
+  const [curPw,   setCurPw]   = useState('');
+  const [newPw,   setNewPw]   = useState('');
+  const [confPw,  setConfPw]  = useState('');
+  const [pwError, setPwError] = useState('');
+  const [showCur, setShowCur] = useState(false);
+  const [showNew, setShowNew] = useState(false);
 
-  const handleLogout = () => {
-    alert('Déconnexion... À bientôt!');
-    // Redirection vers la page de login
-  };
+  const initials  = user ? (user.prenom[0] ?? '') + (user.nom[0] ?? '') : 'XX';
+  const enCours   = signalements.filter(s => s.statut === 'en-cours').length;
+  const resolus   = signalements.filter(s => s.statut === 'resolu').length;
+  const quartiers = QUARTIERS_BY_COMMUNE[ville] ?? [];
 
-  const handleToggle = (setting: string) => {
-    if (setting === 'demandes') setNotifications({...notifications, demandes: !notifications.demandes});
-    else if (setting === 'alertes') setNotifications({...notifications, alertes: !notifications.alertes});
-    else if (setting === 'evenements') setNotifications({...notifications, evenements: !notifications.evenements});
-    else if (setting === 'dark') setDarkMode(!darkMode);
-  };
-
-  const handleCopyCode = () => {
-    const code = '<script src="https://cdn.municipall.fr/widget.js" data-commune="villejuif"></script>';
-    navigator.clipboard.writeText(code);
-    alert('Code copié!');
-  };
-
-  const updateProfile = () => {
-    setUserInfo(userInfo);
-    setAddress(address);
-    closeModal();
-    alert('✅ Profil mis à jour!');
-  };
-
-  const updatePassword = () => {
-    if (pwData.new !== pwData.confirm) {
-      alert('⚠️ Les mots de passe ne correspondent pas!');
-      return;
-    }
-    alert('✅ Mot de passe changé!');
-    setPwData({old: '', new: '', confirm: ''});
-    closeModal();
-  };
-
-  return (
-    <div className="view active" id="view-profil">
-
-      <div className="profil-hero">
-        <div className="profil-avatar-wrap">
-          <div className="profil-avatar" id="profilAvatar" onClick={() => openModal('avatar')} style={{'cursor': 'pointer'}}>{avatar}</div>
-          <div className="profil-avatar-edit" title="Modifier la photo" onClick={() => openModal('avatar')} style={{'cursor': 'pointer'}}>✏️</div>
-        </div>
-        <div className="profil-name" id="profilName">{userInfo.prenom} {userInfo.nom}</div>
-        <div className="profil-commune">📍 Villejuif · Quartier {address.quartier === 'paul-hochart' ? 'Paul Hochart' : address.quartier}</div>
-      </div>
-      <div className="profil-stats">
-        <div className="ps-card"><div className="ps-val">5</div><div className="ps-lbl">Signalements</div></div>
-        <div className="ps-card"><div className="ps-val" style={{'color': 'var(--success)'}}>3</div><div className="ps-lbl">Résolus</div></div>
-        <div className="ps-card"><div className="ps-val" style={{'color': 'var(--warn)'}}>12</div><div className="ps-lbl">Jours moy.</div></div>
-      </div>
-
-      <div className="settings-section">
-        <div className="settings-title">Mon compte</div>
-        <div className="setting-row" style={{'cursor': 'pointer'}} onClick={(e) => {e.preventDefault(); openModal('identity');}}>
-          <div className="sr-left"><div className="sr-icon">👤</div><div><div className="sr-label">Informations personnelles</div><div className="sr-sub" id="sr-sub-email">{userInfo.email}</div></div></div>
-          <div className="sr-right"><span style={{'fontSize': '.7rem', 'color': 'var(--accent)', 'cursor': 'pointer'}} onClick={(e) => {e.stopPropagation(); openModal('identity');}}>Modifier</span><span className="sr-chevron">›</span></div>
-        </div>
-        <div className="setting-row" style={{'cursor': 'pointer'}} onClick={(e) => {e.preventDefault(); openModal('address');}}>
-          <div className="sr-left"><div className="sr-icon">📍</div><div><div className="sr-label">Mon adresse</div><div className="sr-sub" id="sr-sub-address">{address.rue}, {address.cp}</div></div></div>
-          <div className="sr-right"><span style={{'fontSize': '.7rem', 'color': 'var(--accent)', 'cursor': 'pointer'}} onClick={(e) => {e.stopPropagation(); openModal('address');}}>Modifier</span><span className="sr-chevron">›</span></div>
-        </div>
-        <div className="setting-row" style={{'cursor': 'pointer'}} onClick={(e) => {e.preventDefault(); openModal('password');}}>
-          <div className="sr-left"><div className="sr-icon">🔑</div><div><div className="sr-label">Mot de passe</div><div className="sr-sub">Dernière modification : il y a 3 mois</div></div></div>
-          <div className="sr-right"><span style={{'fontSize': '.7rem', 'color': 'var(--accent)', 'cursor': 'pointer'}} onClick={(e) => {e.stopPropagation(); openModal('password');}}>Modifier</span><span className="sr-chevron">›</span></div>
-        </div>
-        <div className="setting-row">
-          <div className="sr-left"><div className="sr-icon">📄</div><div><div className="sr-label">Mes documents</div><div className="sr-sub">Attestations, courriers</div></div></div>
-          <span className="sr-chevron">›</span>
-        </div>
-      </div>
-
-      <div className="settings-section">
-        <div className="settings-title">Notifications</div>
-        <div className="setting-row"><div className="sr-left"><div className="sr-icon">🔔</div><div className="sr-label">Mises à jour de mes demandes</div></div><div className={'toggle' + (notifications.demandes ? ' on' : '')} onClick={() => handleToggle('demandes')} style={{'cursor': 'pointer'}}></div></div>
-        <div className="setting-row"><div className="sr-left"><div className="sr-icon">📢</div><div className="sr-label">Alertes de la commune</div></div><div className={'toggle' + (notifications.alertes ? ' on' : '')} onClick={() => handleToggle('alertes')} style={{'cursor': 'pointer'}}></div></div>
-        <div className="setting-row"><div className="sr-left"><div className="sr-icon">📅</div><div className="sr-label">Rappels événements</div></div><div className={'toggle' + (notifications.evenements ? ' on' : '')} onClick={() => handleToggle('evenements')} style={{'cursor': 'pointer'}}></div></div>
-      </div>
-
-      <div className="settings-section">
-        <div className="settings-title">Intégration Commune</div>
-        <div style={{'padding': '.4rem 0 .8rem'}}>
-          <div className="wp-code">&lt;script src="https://cdn.municipall.fr/widget.js" data-commune="villejuif"&gt;&lt;/script&gt;</div>
-          <button className="btn btn-ghost" style={{'width': '100%', 'marginTop': '.5rem', 'fontSize': '.78rem'}} onClick={handleCopyCode}>📋 Copier le code d'intégration</button>
-        </div>
-      </div>
-
-      <div className="settings-section">
-        <div className="settings-title">Application</div>
-        <div className="setting-row"><div className="sr-left"><div className="sr-icon">🌙</div><div className="sr-label">Mode sombre</div></div><div className={'toggle' + (darkMode ? ' on' : '')} onClick={() => handleToggle('dark')} style={{'cursor': 'pointer'}}></div></div>
-        <div className="setting-row" style={{'cursor': 'pointer'}} onClick={(e) => {e.preventDefault(); openModal('lang');}}><div className="sr-left"><div className="sr-icon">🗣️</div><div className="sr-label">Langue</div></div><div className="sr-right"><span style={{'cursor': 'pointer'}}>{language === 'fr' ? 'Français' : language === 'en' ? 'English' : 'العربية'}</span><span className="sr-chevron" style={{'cursor': 'pointer'}}>›</span></div></div>
-        <div className="setting-row" style={{'color': 'var(--danger)', 'cursor': 'pointer'}} onClick={handleLogout}><div className="sr-left"><div className="sr-icon" style={{'borderColor': 'rgba(255,107,107,.2)'}}>🚪</div><div className="sr-label" style={{'color': 'var(--danger)'}}>Se déconnecter</div></div></div>
-      </div>
-      <div style={{'textAlign': 'center', 'padding': '.8rem', 'fontSize': '.68rem', 'color': 'var(--dim)'}}>Municip'All v2.2.0 · Données RGPD · Politique de confidentialité</div>
-
-      {/* MODALS */}
-      {activeModal === 'identity' && (
-        <div className="modal-overlay open" onClick={closeModal}>
-          <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header"><div className="modal-title">✏️ Informations personnelles</div><div className="modal-close" onClick={closeModal}>✕</div></div>
-            <div className="form-row">
-              <div className="form-group"><label className="form-label">Prénom</label><input className="form-input" value={userInfo.prenom} onChange={(e) => setUserInfo({...userInfo, prenom: e.target.value})} placeholder="Prénom" /></div>
-              <div className="form-group"><label className="form-label">Nom</label><input className="form-input" value={userInfo.nom} onChange={(e) => setUserInfo({...userInfo, nom: e.target.value})} placeholder="Nom" /></div>
-            </div>
-            <div className="form-group"><label className="form-label">Email</label><input className="form-input" type="email" value={userInfo.email} onChange={(e) => setUserInfo({...userInfo, email: e.target.value})} placeholder="email@example.fr" /></div>
-            <div className="form-group"><label className="form-label">Téléphone</label><input className="form-input" type="tel" value={userInfo.tel} onChange={(e) => setUserInfo({...userInfo, tel: e.target.value})} placeholder="06 XX XX XX XX" /></div>
-            <div className="form-group"><label className="form-label">Date de naissance</label><input className="form-input" type="date" value={userInfo.dob} onChange={(e) => setUserInfo({...userInfo, dob: e.target.value})} /></div>
-            <div className="save-bar"><button className="btn btn-ghost" style={{'flex': '1'}} onClick={closeModal}>Annuler</button><button className="btn btn-accent" style={{'flex': '2'}} onClick={updateProfile}>💾 Enregistrer</button></div>
-          </div>
-        </div>
-      )}
-
-      {activeModal === 'address' && (
-        <div className="modal-overlay open" onClick={closeModal}>
-          <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header"><div className="modal-title">📍 Mon adresse</div><div className="modal-close" onClick={closeModal}>✕</div></div>
-            <div className="form-group"><label className="form-label">Adresse</label><input className="form-input" value={address.rue} onChange={(e) => setAddress({...address, rue: e.target.value})} placeholder="Numéro et rue" /></div>
-            <div className="form-row">
-              <div className="form-group"><label className="form-label">Code postal</label><input className="form-input" value={address.cp} onChange={(e) => setAddress({...address, cp: e.target.value})} placeholder="94800" /></div>
-              <div className="form-group"><label className="form-label">Ville</label><input className="form-input" value={address.ville} onChange={(e) => setAddress({...address, ville: e.target.value})} placeholder="Villejuif" /></div>
-            </div>
-            <div className="form-group"><label className="form-label">Quartier</label>
-              <select className="form-input" value={address.quartier} onChange={(e) => setAddress({...address, quartier: e.target.value})} style={{'cursor': 'pointer'}}>
-                <option value="paul-hochart">Paul Hochart</option>
-                <option value="centre-ville">Centre-Ville</option>
-                <option value="rouget-de-lisle">Rouget de Lisle</option>
-                <option value="quartiers-sud">Quartiers Sud</option>
-                <option value="stade">Stade</option>
-              </select>
-            </div>
-            <div className="form-group"><label className="form-label">Complément d'adresse</label><input className="form-input" value={address.comp} onChange={(e) => setAddress({...address, comp: e.target.value})} placeholder="Bât, étage, code…" /></div>
-            <div className="save-bar"><button className="btn btn-ghost" style={{'flex': '1'}} onClick={closeModal}>Annuler</button><button className="btn btn-accent" style={{'flex': '2'}} onClick={updateProfile}>💾 Enregistrer</button></div>
-          </div>
-        </div>
-      )}
-
-      {activeModal === 'password' && (
-        <div className="modal-overlay open" onClick={closeModal}>
-          <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header"><div className="modal-title">🔑 Changer le mot de passe</div><div className="modal-close" onClick={closeModal}>✕</div></div>
-            <div className="form-group"><label className="form-label">Mot de passe actuel</label><input className="form-input" type="password" value={pwData.old} onChange={(e) => setPwData({...pwData, old: e.target.value})} placeholder="••••••••" /></div>
-            <div className="form-group"><label className="form-label">Nouveau mot de passe</label><input className="form-input" type="password" value={pwData.new} onChange={(e) => setPwData({...pwData, new: e.target.value})} placeholder="••••••••" /></div>
-            <div className="form-group"><label className="form-label">Confirmer</label><input className="form-input" type="password" value={pwData.confirm} onChange={(e) => setPwData({...pwData, confirm: e.target.value})} placeholder="••••••••" /></div>
-            <div className="save-bar"><button className="btn btn-ghost" style={{'flex': '1'}} onClick={closeModal}>Annuler</button><button className="btn btn-accent" style={{'flex': '2'}} onClick={updatePassword}>💾 Enregistrer</button></div>
-          </div>
-        </div>
-      )}
-
-      {activeModal === 'avatar' && (
-        <div className="modal-overlay open" onClick={closeModal}>
-          <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header"><div className="modal-title">🖼️ Photo de profil</div><div className="modal-close" onClick={closeModal}>✕</div></div>
-            <div style={{'display': 'grid', 'gridTemplateColumns': 'repeat(5,1fr)', 'gap': '.6rem', 'marginBottom': '1rem'}}>
-              <div onClick={() => {setAvatar('MB'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'linear-gradient(135deg,var(--blue),var(--accent))', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontFamily': 'var(--fd)', 'fontWeight': '800', 'fontSize': '.85rem', 'cursor': 'pointer', 'border': '2px solid var(--border-a)'}}>MB</div>
-              <div onClick={() => {setAvatar('😊'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>😊</div>
-              <div onClick={() => {setAvatar('🦁'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🦁</div>
-              <div onClick={() => {setAvatar('🌸'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🌸</div>
-              <div onClick={() => {setAvatar('🎯'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🎯</div>
-              <div onClick={() => {setAvatar('⚡'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>⚡</div>
-              <div onClick={() => {setAvatar('🎨'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🎨</div>
-              <div onClick={() => {setAvatar('🏄'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🏄</div>
-              <div onClick={() => {setAvatar('🌍'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🌍</div>
-              <div onClick={() => {setAvatar('🎸'); closeModal();}} style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🎸</div>
-            </div>
-            <div className="save-bar"><button className="btn btn-ghost" style={{'flex': '1'}} onClick={closeModal}>Annuler</button></div>
-          </div>
-        </div>
-      )}
-
-      {activeModal === 'lang' && (
-        <div className="modal-overlay open" onClick={closeModal}>
-          <div className="modal-sheet" onClick={(e) => e.stopPropagation()}>
-            <div className="modal-header"><div className="modal-title">🗣️ Langue</div><div className="modal-close" onClick={closeModal}>✕</div></div>
-            <div style={{'display': 'flex', 'flexDirection': 'column', 'gap': '.3rem'}}>
-              <div onClick={() => {setLanguage('fr'); closeModal();}} style={{'padding': '.75rem 1rem', 'borderRadius': 'var(--rm)', 'background': language === 'fr' ? 'rgba(78,205,196,.1)' : 'var(--surface)', 'border': language === 'fr' ? '1px solid var(--border-a)' : '1px solid var(--border)', 'cursor': 'pointer', 'display': 'flex', 'justifyContent': 'space-between', 'alignItems': 'center', 'fontSize': '.88rem', 'fontFamily': 'var(--fd)', 'fontWeight': language === 'fr' ? '600' : '500', 'color': language === 'fr' ? 'var(--accent)' : 'inherit'}}>🇫🇷 Français {language === 'fr' && <span>✓</span>}</div>
-              <div onClick={() => {setLanguage('en'); closeModal();}} style={{'padding': '.75rem 1rem', 'borderRadius': 'var(--rm)', 'background': language === 'en' ? 'rgba(78,205,196,.1)' : 'var(--surface)', 'border': language === 'en' ? '1px solid var(--border-a)' : '1px solid var(--border)', 'cursor': 'pointer', 'fontSize': '.88rem', 'fontFamily': 'var(--fd)', 'fontWeight': language === 'en' ? '600' : '500', 'color': language === 'en' ? 'var(--accent)' : 'inherit'}}>🇬🇧 English {language === 'en' && <span>✓</span>}</div>
-              <div onClick={() => {setLanguage('ar'); closeModal();}} style={{'padding': '.75rem 1rem', 'borderRadius': 'var(--rm)', 'background': language === 'ar' ? 'rgba(78,205,196,.1)' : 'var(--surface)', 'border': language === 'ar' ? '1px solid var(--border-a)' : '1px solid var(--border)', 'cursor': 'pointer', 'fontSize': '.88rem', 'fontFamily': 'var(--fd)', 'fontWeight': language === 'ar' ? '600' : '500', 'color': language === 'ar' ? 'var(--accent)' : 'inherit'}}>🇲🇦 العربية {language === 'ar' && <span>✓</span>}</div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
-  );
-};
-
-export const AssosView: React.FC = () => {
-  const [, setFilter] = useState<string>('');
-
-  const associations = [
-    { name: 'FC Villejuif United', category: 'sport', members: 145, icon: '⚽' },
-    { name: 'Villejuif Jazz Society', category: 'culture', members: 87, icon: '🎵' },
-    { name: 'Les Amis de la Nature', category: 'environnement', members: 234, icon: '🌿' },
-    { name: 'Villejuif Social', category: 'social', members: 156, icon: '🤝' },
-    { name: 'Jeunes Talents', category: 'jeunesse', members: 203, icon: '👦' },
-    { name: 'Cœur de Villejuif', category: 'sante', members: 98, icon: '❤️' },
-    { name: 'Arts & Création', category: 'culture', members: 112, icon: '🎭' },
-    { name: 'Club de Badminton', category: 'sport', members: 67, icon: '🏸' },
-    { name: 'Villejuif Verte', category: 'environnement', members: 189, icon: '♻️' },
-    { name: 'Aide Alimentaire', category: 'social', members: 245, icon: '🍲' },
-    { name: 'École de Musique', category: 'jeunesse', members: 178, icon: '🎹' },
-    { name: 'Prévention Santé', category: 'sante', members: 64, icon: '🏥' },
+  /* password rules */
+  const rules = [
+    { label: '8 caractères minimum',      ok: newPw.length >= 8 },
+    { label: 'Une majuscule',             ok: /[A-Z]/.test(newPw) },
+    { label: 'Un chiffre',               ok: /\d/.test(newPw) },
+    { label: 'Confirmation identique',   ok: confPw.length > 0 && newPw === confPw },
   ];
+  const pwStrength  = rules.filter(r => r.ok).length;
+  const strengthColor = ['transparent','#C62828','#E07B20','#E07B20','#186D10'][pwStrength];
+  const strengthLabel = ['','Faible','Moyen','Bon','Fort'][pwStrength];
 
-  const handleAssoFilter = (e: React.MouseEvent<HTMLSpanElement>) => {
-    const chips = document.querySelectorAll('.asso-filter-row .chip');
-    chips.forEach(chip => (chip as HTMLElement).classList.remove('on'));
-    (e.currentTarget as HTMLElement).classList.add('on');
-    
-    const text = e.currentTarget.textContent || '';
-    const category = text === 'Toutes' ? '' : text.toLowerCase().replace(/^[^a-z]*/, '');
-    setFilter(category);
-
-    const cards = document.querySelectorAll('.asso-card');
-    let visible = 0;
-    cards.forEach(card => {
-      if (!category) {
-        (card as HTMLElement).style.display = 'block';
-        visible++;
-      } else {
-        const assoCategory = card.getAttribute('data-category') || '';
-        if (assoCategory.includes(category)) {
-          (card as HTMLElement).style.display = 'block';
-          visible++;
-        } else {
-          (card as HTMLElement).style.display = 'none';
-        }
-      }
+  const handleSaveInfos = () => {
+    if (!prenom.trim() || !nom.trim() || !email.trim()) return;
+    updateUser({
+      prenom: prenom.trim(), nom: nom.trim(),
+      email: email.trim(), telephone: tel.trim(), dateNaissance: dob,
+      avatar: (prenom.trim()[0] ?? '') + (nom.trim()[0] ?? ''),
     });
-    
-    const count = document.getElementById('assoCount');
-    if (count) count.textContent = visible.toString();
+    showToast('Informations mises à jour !');
   };
 
-  return (
-    <div className="view active" id="view-assos">
+  const handleSaveAdresse = () => {
+    if (!rue.trim() || !cp.trim()) return;
+    updateUser({ rue: rue.trim(), codePostal: cp.trim(), complementAdresse: compl.trim(), ville, quartier: quartier as Quartier });
+    showToast('Adresse mise à jour !');
+  };
 
-      <div className="search-wrap"><div className="search"><span className="si">🔍</span><input type="text" placeholder="Rechercher une association…" /><span className="si">🎯</span></div></div>
-      <div className="asso-filter-row" id="assoChips">
-        <span className="chip on" onClick={handleAssoFilter}>Toutes</span>
-        <span className="chip" onClick={handleAssoFilter}>🏆 Sport</span>
-        <span className="chip" onClick={handleAssoFilter}>🎭 Culture</span>
-        <span className="chip" onClick={handleAssoFilter}>🤝 Social</span>
-        <span className="chip" onClick={handleAssoFilter}>🌿 Environnement</span>
-        <span className="chip" onClick={handleAssoFilter}>👦 Jeunesse</span>
-        <span className="chip" onClick={handleAssoFilter}>❤️ Santé</span>
-      </div>
-      <div style={{'padding': '0 1rem .5rem', 'display': 'flex', 'justifyContent': 'space-between', 'alignItems': 'center'}}>
-        <div style={{'fontFamily': 'var(--fd)', 'fontWeight': '700', 'fontSize': '.82rem'}}><span id="assoCount">{associations.length}</span> associations</div>
-        <span className="live">À jour</span>
-      </div>
-      <div className="asso-grid" id="assoGrid" style={{'display': 'grid', 'gridTemplateColumns': 'repeat(auto-fill, minmax(150px, 1fr))', 'gap': '.8rem', 'padding': '0 1rem 1rem'}}>
-        {associations.map((asso, idx) => (
-          <div key={idx} className="asso-card" data-category={asso.category} style={{'padding': '.8rem', 'borderRadius': 'var(--rm)', 'background': 'var(--surface)', 'border': '1px solid var(--border)', 'cursor': 'pointer', 'transition': '.2s', 'textAlign': 'center'}}>
-            <div style={{'fontSize': '2rem', 'marginBottom': '.4rem'}}>{asso.icon}</div>
-            <div style={{'fontFamily': 'var(--fd)', 'fontWeight': '600', 'fontSize': '.8rem', 'marginBottom': '.3rem'}}>{asso.name}</div>
-            <div style={{'fontSize': '.7rem', 'color': 'var(--muted)', 'marginBottom': '.3rem'}}>{asso.members} membres</div>
-            <button style={{'width': '100%', 'padding': '.4rem', 'borderRadius': '.3rem', 'background': 'var(--accent)', 'color': 'white', 'border': 'none', 'cursor': 'pointer', 'fontSize': '.7rem', 'fontWeight': '600'}}>Voir</button>
+  const handleChangePw = () => {
+    setPwError('');
+    if (!curPw)                        { setPwError('Entrez votre mot de passe actuel.'); return; }
+    if (curPw !== 'demo1234')          { setPwError('Mot de passe actuel incorrect.'); return; }
+    if (!rules.slice(0,3).every(r=>r.ok)) { setPwError('Le nouveau mot de passe ne respecte pas les critères.'); return; }
+    if (newPw !== confPw)              { setPwError('Les mots de passe ne correspondent pas.'); return; }
+    setCurPw(''); setNewPw(''); setConfPw('');
+    showToast('Mot de passe mis à jour !');
+  };
+
+  const resetInfos   = () => { setPrenom(user?.prenom ?? ''); setNom(user?.nom ?? ''); setEmail(user?.email ?? ''); setTel(user?.telephone ?? ''); setDob(user?.dateNaissance ?? ''); };
+  const resetAdresse = () => { setRue(user?.rue ?? ''); setCp(user?.codePostal ?? ''); setCompl(user?.complementAdresse ?? ''); setVille(user?.ville ?? 'Kremlin-Bicêtre'); setQuartier(user?.quartier ?? ''); };
+
+  const COMMUNES: Commune[] = ['Bouffémont','Kremlin-Bicêtre','Creil','Saint-Maur-les-Fossés'];
+
+  return (
+    <div className="ma-root">
+      <TopNav active="home" />
+
+      {/* ── Hero ── */}
+      <section className="ma-hero">
+        <div className="ma-hero-blob ma-hero-b1" style={{ background: 'rgba(59,85,143,.1)' }} />
+        <div className="ma-hero-blob ma-hero-b2" style={{ background: 'rgba(83,74,183,.06)' }} />
+        <div className="ma-hero-blob ma-hero-b3" style={{ background: 'rgba(157,110,70,.05)' }} />
+        <div className="ma-hero-ghost">Profil</div>
+        <div className="ma-hero-left">
+          <p className="ma-eyebrow">Espace personnel · Compte citoyen</p>
+          <h1 className="ma-h1">Mon <em>profil</em>.</h1>
+          <p className="ma-sub">Modifiez vos informations, gérez votre adresse et sécurisez votre compte.</p>
+        </div>
+        <div className="ma-hero-right">
+          <div className="ma-hero-stats">
+            <div className="ma-stat-block">
+              <div className="ma-stat-num">{signalements.length}</div>
+              <div className="ma-stat-label">Signalements</div>
+            </div>
+            <div className="ma-stat-block">
+              <div className="ma-stat-num" style={{ color: '#3B558F' }}>{enCours}</div>
+              <div className="ma-stat-label">En cours</div>
+            </div>
+            <div className="ma-stat-block">
+              <div className="ma-stat-num" style={{ color: '#186D10' }}>{resolus}</div>
+              <div className="ma-stat-label">Résolus</div>
+            </div>
           </div>
-        ))}
+        </div>
+      </section>
+
+      <div className="ma-content">
+        <div className="ma-two-col">
+
+          {/* ── Left: settings card ── */}
+          <div>
+            <div className="ma-sec-head">
+              <div>
+                <p className="ma-sec-label">Paramètres</p>
+                <h2 className="ma-sec-title">Mon <em>compte</em>.</h2>
+              </div>
+            </div>
+
+            <div className="ma-info-card" style={{ overflow: 'hidden' }}>
+
+              {/* Avatar centered */}
+              <div className="pr-avatar-wrap">
+                <div className="pr-avatar">{initials.toUpperCase()}</div>
+                <div className="pr-avatar-name">{user?.prenom} {user?.nom}</div>
+                <div className="pr-avatar-meta">
+                  <span className="pr-avatar-email">{user?.email}</span>
+                  <span className="pr-verified">✓ Vérifié</span>
+                </div>
+              </div>
+
+              {/* Underline tabs */}
+              <div className="pr-tabs">
+                {([
+                  { key: 'infos',    icon: '👤', label: 'Identité'  },
+                  { key: 'adresse',  icon: '📍', label: 'Adresse'   },
+                  { key: 'securite', icon: '🔒', label: 'Sécurité'  },
+                ] as Array<{ key: PrTab; icon: string; label: string }>).map(t => (
+                  <button key={t.key} className={`pr-tab${tab === t.key ? ' on' : ''}`} onClick={() => setTab(t.key)}>
+                    <span className="pr-tab-icon">{t.icon}</span>{t.label}
+                  </button>
+                ))}
+              </div>
+
+              {/* ── Identité ── */}
+              {tab === 'infos' && (
+                <div className="pr-form-wrap">
+                  <p className="pr-section-label">Informations personnelles</p>
+                  <div className="pr-form-row">
+                    <div className="ma-field">
+                      <label className="ma-field-label">Prénom *</label>
+                      <input className="ma-input" value={prenom} onChange={e => setPrenom(e.target.value)} placeholder="Votre prénom" />
+                    </div>
+                    <div className="ma-field">
+                      <label className="ma-field-label">Nom *</label>
+                      <input className="ma-input" value={nom} onChange={e => setNom(e.target.value)} placeholder="Votre nom" />
+                    </div>
+                  </div>
+                  <div className="ma-field">
+                    <label className="ma-field-label">Adresse e-mail *</label>
+                    <input className="ma-input" type="email" value={email} onChange={e => setEmail(e.target.value)} placeholder="email@exemple.fr" />
+                  </div>
+                  <div className="pr-form-row">
+                    <div className="ma-field">
+                      <label className="ma-field-label">Téléphone</label>
+                      <input className="ma-input" type="tel" value={tel} onChange={e => setTel(e.target.value)} placeholder="06 XX XX XX XX" />
+                    </div>
+                    <div className="ma-field">
+                      <label className="ma-field-label">Date de naissance</label>
+                      <input className="ma-input" type="date" value={dob} onChange={e => setDob(e.target.value)} />
+                    </div>
+                  </div>
+                  <div className="pr-btn-row">
+                    <button className="pr-save-btn" onClick={handleSaveInfos} disabled={!prenom.trim() || !nom.trim() || !email.trim()}>
+                      Enregistrer →
+                    </button>
+                    <button className="pr-cancel-btn" onClick={resetInfos}>Annuler</button>
+                  </div>
+                </div>
+              )}
+
+              {/* ── Adresse ── */}
+              {tab === 'adresse' && (
+                <div className="pr-form-wrap">
+                  <p className="pr-section-label">Localisation</p>
+                  <div className="pr-form-row">
+                    <div className="ma-field">
+                      <label className="ma-field-label">Commune *</label>
+                      <select className="ma-select" value={ville} onChange={e => { setVille(e.target.value as Commune); setQuartier(''); }}>
+                        {COMMUNES.map(c => <option key={c} value={c}>{c}</option>)}
+                      </select>
+                    </div>
+                    <div className="ma-field">
+                      <label className="ma-field-label">Quartier</label>
+                      <select className="ma-select" value={quartier} onChange={e => setQuartier(e.target.value)}>
+                        <option value="">Choisir…</option>
+                        {quartiers.map((q: string) => <option key={q} value={q}>{q}</option>)}
+                      </select>
+                    </div>
+                  </div>
+                  <div className="ma-field">
+                    <label className="ma-field-label">Rue *</label>
+                    <input className="ma-input" value={rue} onChange={e => setRue(e.target.value)} placeholder="12 Rue Victor Hugo" />
+                  </div>
+                  <div className="pr-form-row">
+                    <div className="ma-field">
+                      <label className="ma-field-label">Code postal *</label>
+                      <input className="ma-input" value={cp} onChange={e => setCp(e.target.value)} placeholder="94270" maxLength={5} />
+                    </div>
+                    <div className="ma-field">
+                      <label className="ma-field-label">Complément</label>
+                      <input className="ma-input" value={compl} onChange={e => setCompl(e.target.value)} placeholder="Bât., étage…" />
+                    </div>
+                  </div>
+                  <div className="pr-btn-row">
+                    <button className="pr-save-btn" onClick={handleSaveAdresse} disabled={!rue.trim() || !cp.trim()}>
+                      Enregistrer →
+                    </button>
+                    <button className="pr-cancel-btn" onClick={resetAdresse}>Annuler</button>
+                  </div>
+                </div>
+              )}
+
+              {/* ── Sécurité ── */}
+              {tab === 'securite' && (
+                <div className="pr-form-wrap">
+                  <p className="pr-section-label">Changer le mot de passe</p>
+                  {pwError && <div className="ma-alert danger" style={{ marginBottom: '1rem' }}>{pwError}</div>}
+
+                  <div className="ma-field">
+                    <label className="ma-field-label">Mot de passe actuel *</label>
+                    <div className="pr-input-wrap">
+                      <input className="ma-input" type={showCur ? 'text' : 'password'} value={curPw} onChange={e => setCurPw(e.target.value)} placeholder="••••••••" />
+                      <button type="button" className="pr-eye" onClick={() => setShowCur(p => !p)}>
+                        {showCur ? '🙈' : '👁'}
+                      </button>
+                    </div>
+                  </div>
+
+                  <div className="ma-field">
+                    <label className="ma-field-label">Nouveau mot de passe *</label>
+                    <div className="pr-input-wrap">
+                      <input className="ma-input" type={showNew ? 'text' : 'password'} value={newPw} onChange={e => setNewPw(e.target.value)} placeholder="••••••••" />
+                      <button type="button" className="pr-eye" onClick={() => setShowNew(p => !p)}>
+                        {showNew ? '🙈' : '👁'}
+                      </button>
+                    </div>
+                    {newPw.length > 0 && (
+                      <>
+                        <div className="pr-pw-track">
+                          <div className="pr-pw-fill" style={{ width: `${pwStrength * 25}%`, background: strengthColor }} />
+                        </div>
+                        <div className="pr-pw-meta">
+                          <span className="pr-pw-hint" style={{ color: strengthColor }}>{strengthLabel}</span>
+                          <span style={{ fontSize: '.68rem', color: 'rgba(15,15,14,.28)' }}>{pwStrength}/4 critères</span>
+                        </div>
+                      </>
+                    )}
+                  </div>
+
+                  <div className="ma-field">
+                    <label className="ma-field-label">Confirmer *</label>
+                    <input className="ma-input" type="password" value={confPw} onChange={e => setConfPw(e.target.value)} placeholder="••••••••" />
+                  </div>
+
+                  {newPw.length > 0 && (
+                    <div className="pr-pw-rules">
+                      {rules.map(r => (
+                        <div key={r.label} className={`pr-pw-rule${r.ok ? ' on' : ''}`}>
+                          <span className="dot" />{r.label}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+
+                  <div className="pr-btn-row">
+                    <button className="pr-save-btn" onClick={handleChangePw} disabled={!curPw || !newPw || !confPw}>
+                      Mettre à jour →
+                    </button>
+                    <button className="pr-cancel-btn" onClick={() => { setCurPw(''); setNewPw(''); setConfPw(''); setPwError(''); }}>
+                      Annuler
+                    </button>
+                  </div>
+                </div>
+              )}
+
+            </div>
+          </div>
+
+          {/* ── Right: premium sidebar ── */}
+          <div style={{ paddingTop: '3.25rem' }}>
+
+            <div className="pr-sidebar-card">
+              {/* Gradient top */}
+              <div className="pr-sidebar-top">
+                <div className="pr-sidebar-avatar">{initials.toUpperCase()}</div>
+                <div className="pr-sidebar-name">{user?.prenom} {user?.nom}</div>
+                <div className="pr-sidebar-city">📍 {user?.ville}{user?.quartier ? ` · ${user.quartier}` : ''}</div>
+                <div className="pr-sidebar-badge">★ Citoyen actif</div>
+              </div>
+
+              {/* Stats 2x2 grid */}
+              <div className="pr-stats-grid">
+                <div className="pr-stat">
+                  <div className="pr-stat-accent" style={{ background: '#3B558F' }} />
+                  <div className="pr-stat-icon">📋</div>
+                  <div className="pr-stat-num">{signalements.length}<em>+</em></div>
+                  <div className="pr-stat-label">Total signalements</div>
+                </div>
+                <div className="pr-stat">
+                  <div className="pr-stat-accent" style={{ background: '#E07B20' }} />
+                  <div className="pr-stat-icon">⏳</div>
+                  <div className="pr-stat-num" style={{ color: '#E07B20' }}>{enCours}</div>
+                  <div className="pr-stat-label">En cours</div>
+                </div>
+                <div className="pr-stat">
+                  <div className="pr-stat-accent" style={{ background: '#186D10' }} />
+                  <div className="pr-stat-icon">✅</div>
+                  <div className="pr-stat-num" style={{ color: '#186D10' }}>{resolus}</div>
+                  <div className="pr-stat-label">Résolus</div>
+                </div>
+                <div className="pr-stat">
+                  <div className="pr-stat-accent" style={{ background: '#9370DB' }} />
+                  <div className="pr-stat-icon">📅</div>
+                  <div className="pr-stat-num" style={{ color: '#9370DB' }}>3</div>
+                  <div className="pr-stat-label">Évènements</div>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="pr-sidebar-footer">
+                <p className="pr-contrib-text">
+                  Membre actif depuis 2025. Vos signalements contribuent à améliorer le cadre de vie de toute la commune. Merci pour votre engagement !
+                </p>
+                <div className="ma-badge resolu" style={{ display: 'inline-flex', alignItems: 'center', gap: '.35rem', marginBottom: '.9rem' }}>
+                  ✓ Profil vérifié · Membre 2025
+                </div>
+                <button className="pr-logout" onClick={logout}>
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/>
+                  </svg>
+                  Se déconnecter
+                </button>
+              </div>
+            </div>
+
+          </div>
+
+        </div>
       </div>
     </div>
   );
 };
 
-// Modals and Bot - return as JSX fragment
-export const ModalsAndBot: React.FC = () => {
+/* ═══════════════════════════════════════════
+   COLLECTE VIEW  (Déchets & Toilettes)
+═══════════════════════════════════════════ */
+const colCss = `
+.col-schedule { display: flex; flex-direction: column; gap: .65rem; }
+.col-day-row {
+  display: flex; align-items: center; gap: 1rem; padding: .9rem 1.1rem;
+  background: rgba(15,15,14,.025); border: 1px solid rgba(15,15,14,.06);
+  border-radius: 12px; animation: ma-up .6s cubic-bezier(.22,1,.36,1) both;
+}
+.col-day-pill {
+  width: 56px; flex-shrink: 0; text-align: center;
+  font-size: .72rem; font-weight: 700; letter-spacing: .07em;
+  text-transform: uppercase; padding: .4rem .4rem;
+  border-radius: 8px;
+}
+.col-day-info { flex: 1; }
+.col-day-type { font-weight: 600; font-size: .9rem; color: #0F0F0E; }
+.col-day-time { font-size: .75rem; color: rgba(15,15,14,.38); margin-top: .15rem; }
+.col-day-icon { font-size: 1.3rem; }
+
+.col-toilet-grid { display: flex; flex-direction: column; gap: .7rem; }
+.col-toilet-row {
+  display: flex; align-items: center; gap: 1rem; padding: .85rem 1.1rem;
+  border-radius: 12px;
+}
+.col-toilet-icon { font-size: 1.3rem; }
+.col-toilet-name { font-weight: 600; font-size: .88rem; color: #0F0F0E; }
+.col-toilet-addr { font-size: .75rem; color: rgba(15,15,14,.38); margin-top: .1rem; }
+.col-toilet-status { margin-left: auto; }
+`;
+
+const COLLECTE_SCHEDULE = [
+  { jour: 'Lun', type: 'Ordures ménagères', heure: 'Avant 7h — Collecte matinale', icon: '🗑️', bg: 'rgba(198,40,40,.1)', color: '#C62828' },
+  { jour: 'Mer', type: 'Tri sélectif',       heure: 'Avant 7h — Bacs jaunes uniquement', icon: '♻️', bg: 'rgba(24,109,16,.1)', color: '#186D10' },
+  { jour: 'Ven', type: 'Ordures ménagères',  heure: 'Avant 7h — Collecte hebdomadaire', icon: '🗑️', bg: 'rgba(198,40,40,.1)', color: '#C62828' },
+  { jour: 'Sam', type: 'Encombrants',        heure: 'Sur réservation — Service Propreté', icon: '📦', bg: 'rgba(157,110,70,.1)', color: '#9D6E46' },
+  { jour: 'Sam', type: 'Verre & Carton',     heure: 'Collecte en déchetterie 9h–12h',   icon: '🧴', bg: 'rgba(59,85,143,.1)', color: '#3B558F' },
+];
+
+const TOILETTES = [
+  { nom: 'Place du Marché',           adresse: 'Place centrale',              ouvert: true  },
+  { nom: 'Parc Central — Entrée Est', adresse: 'Allée des Platanes',          ouvert: true  },
+  { nom: 'Gare routière',             adresse: 'Av. du Général Leclerc',      ouvert: true  },
+  { nom: 'Stade Municipal',           adresse: 'Rue des Sports',              ouvert: false },
+  { nom: 'Médiathèque',               adresse: '14 Rue de la Bibliothèque',   ouvert: true  },
+];
+
+export const CollecteView: React.FC = () => {
+  useEffect(() => injectCss('municipall-col-css', colCss), []);
+  const { showView } = useApp();
+
   return (
-    <>
-      {/* ══════════ MODALS ══════════ */}
+    <div className="ma-root">
+      <TopNav active="home" />
 
-      {/* Identity modal */}
-<div className="modal-overlay" id="modal-identity" >
-  <div className="modal-sheet">
-    <div className="modal-header"><div className="modal-title">✏️ Informations personnelles</div><div className="modal-close" >✕</div></div>
-    <div className="form-row">
-      <div className="form-group"><label className="form-label">Prénom</label><input className="form-input" id="inp-prenom" value="Marie" placeholder="Prénom" /></div>
-      <div className="form-group"><label className="form-label">Nom</label><input className="form-input" id="inp-nom" value="Beaumont" placeholder="Nom" /></div>
+      <section className="ma-hero">
+        <div className="ma-hero-blob ma-hero-b1" style={{ background: 'rgba(24,109,16,.09)' }} />
+        <div className="ma-hero-blob ma-hero-b2" style={{ background: 'rgba(59,85,143,.06)' }} />
+        <div className="ma-hero-blob ma-hero-b3" style={{ background: 'rgba(157,110,70,.05)' }} />
+        <div className="ma-hero-ghost">Déchets</div>
+
+        <div className="ma-hero-left">
+          <p className="ma-eyebrow">Services · Propreté urbaine</p>
+          <h1 className="ma-h1"><em>Collecte</em> & toilettes.</h1>
+          <p className="ma-sub">Calendrier des collectes de déchets et localisation des toilettes publiques les plus proches.</p>
+        </div>
+
+        <div className="ma-hero-right">
+          <div className="ma-hero-stats">
+            <div className="ma-stat-block">
+              <div className="ma-stat-num">{COLLECTE_SCHEDULE.length}</div>
+              <div className="ma-stat-label">Collectes/sem.</div>
+            </div>
+            <div className="ma-stat-block">
+              <div className="ma-stat-num" style={{ color: '#186D10' }}>{TOILETTES.filter(t => t.ouvert).length}</div>
+              <div className="ma-stat-label">Toilettes ouvertes</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="ma-content">
+        <div className="ma-two-col">
+          <div>
+            <div className="ma-sec-head">
+              <div>
+                <p className="ma-sec-label">Planning</p>
+                <h2 className="ma-sec-title">Calendrier <em>collecte</em>.</h2>
+              </div>
+              <button className="ma-btn-ghost" onClick={() => showView('home')}>← Retour</button>
+            </div>
+
+            <div className="col-schedule">
+              {COLLECTE_SCHEDULE.map((c, i) => (
+                <div key={i} className="col-day-row ma-card" style={{ animationDelay: `${i * .08}s` }}>
+                  <div className="col-day-pill" style={{ background: c.bg, color: c.color }}>{c.jour}</div>
+                  <span className="col-day-icon">{c.icon}</span>
+                  <div className="col-day-info">
+                    <div className="col-day-type">{c.type}</div>
+                    <div className="col-day-time">{c.heure}</div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="ma-sec-head" style={{ marginTop: '3.25rem' }}>
+              <div>
+                <p className="ma-sec-label">Localisation</p>
+                <h2 className="ma-sec-title">Toilettes <em>publiques</em>.</h2>
+              </div>
+            </div>
+
+            <div className="col-toilet-grid">
+              {TOILETTES.map((t, i) => (
+                <div key={i} className="ma-card col-toilet-row" style={{ animationDelay: `${i * .07}s` }}>
+                  <span className="col-toilet-icon">🚻</span>
+                  <div>
+                    <div className="col-toilet-name">{t.nom}</div>
+                    <div className="col-toilet-addr">{t.adresse}</div>
+                  </div>
+                  <div className="col-toilet-status">
+                    <span className={`ma-badge ${t.ouvert ? 'resolu' : 'attente'}`}>
+                      {t.ouvert ? 'Ouvert' : 'Fermé'}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-    <div className="form-group"><label className="form-label">Email</label><input className="form-input" id="inp-email" type="email" value="marie.beaumont@email.fr" placeholder="email@example.fr" /></div>
-    <div className="form-group"><label className="form-label">Téléphone</label><input className="form-input" id="inp-tel" type="tel" value="06 12 34 56 78" placeholder="06 XX XX XX XX" /></div>
-    <div className="form-group"><label className="form-label">Date de naissance</label><input className="form-input" id="inp-dob" type="date" value="1985-06-14" /></div>
-    <div className="save-bar"><button className="btn btn-ghost" style={{'flex': '1'}} >Annuler</button><button className="btn btn-accent" style={{'flex': '2'}} >💾 Enregistrer</button></div>
-  </div>
-</div>
-
-{/* Address modal */}
-<div className="modal-overlay" id="modal-address" >
-  <div className="modal-sheet">
-    <div className="modal-header"><div className="modal-title">📍 Mon adresse</div><div className="modal-close" >✕</div></div>
-    <div className="form-group"><label className="form-label">Adresse</label><input className="form-input" id="inp-rue" value="12 Rue Pasteur" placeholder="Numéro et rue" /></div>
-    <div className="form-row">
-      <div className="form-group"><label className="form-label">Code postal</label><input className="form-input" id="inp-cp" value="94800" placeholder="94800" /></div>
-      <div className="form-group"><label className="form-label">Ville</label><input className="form-input" id="inp-ville" value="Villejuif" placeholder="Villejuif" /></div>
-    </div>
-    <div className="form-group"><label className="form-label">Quartier</label>
-      <select className="form-input" id="inp-quartier" style={{'cursor': 'pointer'}}>
-        <option value="paul-hochart" selected>Paul Hochart</option>
-        <option value="centre-ville">Centre-Ville</option>
-        <option value="rouget-de-lisle">Rouget de Lisle</option>
-        <option value="quartiers-sud">Quartiers Sud</option>
-        <option value="stade">Stade</option>
-      </select>
-    </div>
-    <div className="form-group"><label className="form-label">Complément d'adresse</label><input className="form-input" id="inp-comp" placeholder="Bât, étage, code…" /></div>
-    <div className="save-bar"><button className="btn btn-ghost" style={{'flex': '1'}} >Annuler</button><button className="btn btn-accent" style={{'flex': '2'}} >💾 Enregistrer</button></div>
-  </div>
-</div>
-
-{/* Password modal */}
-<div className="modal-overlay" id="modal-password" >
-  <div className="modal-sheet">
-    <div className="modal-header"><div className="modal-title">🔑 Changer le mot de passe</div><div className="modal-close" >✕</div></div>
-    <div className="form-group"><label className="form-label">Mot de passe actuel</label><input className="form-input" type="password" id="inp-pw-old" placeholder="••••••••" /></div>
-    <div className="form-group"><label className="form-label">Nuovo mot de passe</label><input className="form-input" type="password" id="inp-pw-new" placeholder="••••••••" /></div>
-    <div id="pw-strength-bar" style={{'height': '3px', 'borderRadius': '3px', 'background': 'var(--border)', 'marginBottom': '.8rem', 'overflow': 'hidden'}}><div id="pw-strength-fill" style={{'height': '100%', 'width': '0%', 'borderRadius': '3px', 'transition': '.3s'}}></div></div>
-    <div style={{'fontSize': '.7rem', 'color': 'var(--muted)', 'marginBottom': '.8rem'}} id="pw-strength-label"></div>
-    <div className="form-group"><label className="form-label">Confirmer</label><input className="form-input" type="password" id="inp-pw-confirm" placeholder="••••••••" /></div>
-    <div className="save-bar"><button className="btn btn-ghost" style={{'flex': '1'}} >Annuler</button><button className="btn btn-accent" style={{'flex': '2'}} >💾 Enregistrer</button></div>
-  </div>
-</div>
-
-{/* Avatar modal */}
-<div className="modal-overlay" id="modal-avatar" >
-  <div className="modal-sheet">
-    <div className="modal-header"><div className="modal-title">🖼️ Photo de profil</div><div className="modal-close" >✕</div></div>
-    <div style={{'display': 'grid', 'gridTemplateColumns': 'repeat(5,1fr)', 'gap': '.6rem', 'marginBottom': '1rem'}}>
-      <div  data-init="MB" style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'linear-gradient(135deg,var(--blue),var(--accent))', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontFamily': 'var(--fd)', 'fontWeight': '800', 'fontSize': '.85rem', 'cursor': 'pointer', 'border': '2px solid var(--border-a)'}}>MB</div>
-      <div  style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>😊</div>
-      <div  style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🦁</div>
-      <div  style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🌸</div>
-      <div  style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🎯</div>
-      <div  style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>⚡</div>
-      <div  style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🎨</div>
-      <div  style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🏄</div>
-      <div  style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🌍</div>
-      <div  style={{'width': '48px', 'height': '48px', 'borderRadius': '50%', 'background': 'var(--surface)', 'border': '2px solid var(--border)', 'display': 'flex', 'alignItems': 'center', 'justifyContent': 'center', 'fontSize': '1.6rem', 'cursor': 'pointer'}}>🎸</div>
-    </div>
-    <div className="save-bar"><button className="btn btn-ghost" style={{'flex': '1'}} >Annuler</button><button className="btn btn-accent" style={{'flex': '2'}} >💾 Enregistrer</button></div>
-  </div>
-</div>
-
-{/* Lang modal */}
-<div className="modal-overlay" id="modal-lang" >
-  <div className="modal-sheet">
-    <div className="modal-header"><div className="modal-title">🗣️ Langue</div><div className="modal-close" >✕</div></div>
-    <div style={{'display': 'flex', 'flexDirection': 'column', 'gap': '.3rem'}}>
-      <div  style={{'padding': '.75rem 1rem', 'borderRadius': 'var(--rm)', 'background': 'rgba(78,205,196,.1)', 'border': '1px solid var(--border-a)', 'cursor': 'pointer', 'display': 'flex', 'justifyContent': 'space-between', 'alignItems': 'center', 'fontSize': '.88rem', 'fontFamily': 'var(--fd)', 'fontWeight': '600', 'color': 'var(--accent)'}}>🇫🇷 Français <span>✓</span></div>
-      <div  style={{'padding': '.75rem 1rem', 'borderRadius': 'var(--rm)', 'background': 'var(--surface)', 'border': '1px solid var(--border)', 'cursor': 'pointer', 'fontSize': '.88rem', 'fontFamily': 'var(--fd)', 'fontWeight': '500'}}>🇬🇧 English</div>
-      <div  style={{'padding': '.75rem 1rem', 'borderRadius': 'var(--rm)', 'background': 'var(--surface)', 'border': '1px solid var(--border)', 'cursor': 'pointer', 'fontSize': '.88rem', 'fontFamily': 'var(--fd)', 'fontWeight': '500'}}>🇲🇦 العربية</div>
-      <div  style={{'padding': '.75rem 1rem', 'borderRadius': 'var(--rm)', 'background': 'var(--surface)', 'border': '1px solid var(--border)', 'cursor': 'pointer', 'fontSize': '.88rem', 'fontFamily': 'var(--fd)', 'fontWeight': '500'}}>🇪🇸 Español</div>
-      <div  style={{'padding': '.75rem 1rem', 'borderRadius': 'var(--rm)', 'background': 'var(--surface)', 'border': '1px solid var(--border)', 'cursor': 'pointer', 'fontSize': '.88rem', 'fontFamily': 'var(--fd)', 'fontWeight': '500'}}>🇵🇹 Português</div>
-    </div>
-  </div>
-</div>
-
-{/* ══════════ MUNIBOT ══════════ */}
-<div className="bot-overlay" id="munibot">
-  <div className="bot-header">
-    <div className="bot-ava">🤖</div>
-    <div><div className="bot-name">Muni-Bot</div><div className="bot-desc">Assistant IA · Disponible 24h/24</div></div>
-    <button className="bot-close" >✕</button>
-  </div>
-  <div className="bot-messages" id="botMessages">
-    <div className="msg bot"><div className="msg-bubble">Bonjour 👋 Je suis <strong>Muni-Bot</strong>. Comment puis-je vous aider ?</div><div className="msg-time">Maintenant</div></div>
-  </div>
-  <div className="quick-replies">
-    <button className="qr-btn" >🛣️ Signaler</button>
-    <button className="qr-btn" >🏛️ Horaires</button>
-    <button className="qr-btn" >🚲 Aide vélo</button>
-    <button className="qr-btn" >📋 Mes demandes</button>
-  </div>
-  <div className="bot-input-row">
-    <input className="bot-input" id="botInput" placeholder="Votre message…" />
-    <button className="bot-send" >➤</button>
-  </div>
-</div>
-    </>
   );
 };
 
+/* ═══════════════════════════════════════════
+   TRAVAUX VIEW
+═══════════════════════════════════════════ */
+const tvCss = `
+.tv-card { padding: 1.3rem 1.5rem; animation: ma-up .6s cubic-bezier(.22,1,.36,1) both; }
+.tv-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 1rem; margin-bottom: .6rem; }
+.tv-title { font-weight: 700; font-size: 1rem; color: #0F0F0E; line-height: 1.3; }
+.tv-type { font-size: .72rem; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; padding: .28rem .75rem; border-radius: 1rem; }
+.tv-addr { font-size: .8rem; color: rgba(15,15,14,.4); display: flex; align-items: center; gap: .4rem; margin-bottom: .7rem; }
+.tv-progress { height: 4px; background: rgba(15,15,14,.08); border-radius: 2px; overflow: hidden; margin-bottom: .5rem; }
+.tv-progress-fill { height: 100%; border-radius: 2px; transition: width 1.2s cubic-bezier(.25,.46,.45,.94); }
+.tv-foot { display: flex; gap: .8rem; align-items: center; flex-wrap: wrap; }
+.tv-date { font-size: .72rem; color: rgba(15,15,14,.3); }
+.tv-impact { font-size: .72rem; color: rgba(15,15,14,.45); display: flex; align-items: center; gap: .35rem; }
+`;
+
+const TRAVAUX = [
+  { titre: 'Réfection de la chaussée', addr: 'Rue Victor Hugo (n°1–45)', type: 'Voirie', typeBg: 'rgba(59,85,143,.1)', typeColor: '#3B558F', statut: 'en-cours', prog: 60, debut: '15 mai', fin: '20 juin', impact: 'Circulation alternée' },
+  { titre: 'Rénovation trottoirs', addr: 'Avenue de la République', type: 'Voirie', typeBg: 'rgba(59,85,143,.1)', typeColor: '#3B558F', statut: 'planifie', prog: 0, debut: '1 juillet', fin: '30 août', impact: 'Piétons déviés' },
+  { titre: 'Mise aux normes réseaux', addr: 'Quartier Paul Hochart', type: 'Réseau', typeBg: 'rgba(224,123,32,.1)', typeColor: '#E07B20', statut: 'en-cours', prog: 35, debut: '3 mai', fin: '15 juillet', impact: 'Coupures ponctuelles' },
+  { titre: 'Réaménagement square', addr: 'Parc des Marronniers', type: 'Espaces verts', typeBg: 'rgba(24,109,16,.1)', typeColor: '#186D10', statut: 'en-cours', prog: 80, debut: '1 avril', fin: '30 juin', impact: 'Accès restreint' },
+  { titre: 'Ravalement façade mairie', addr: 'Hôtel de Ville', type: 'Bâtiment', typeBg: 'rgba(157,110,70,.1)', typeColor: '#9D6E46', statut: 'planifie', prog: 0, debut: '15 août', fin: '15 oct', impact: 'Aucun impact' },
+  { titre: 'Extension réseau fibre', addr: 'Quartier Nord — 12 rues', type: 'Numérique', typeBg: 'rgba(83,74,183,.1)', typeColor: '#534AB7', statut: 'en-cours', prog: 50, debut: '1 mars', fin: '31 août', impact: 'Fouilles ponctuelles' },
+];
+
+export const TravauxView: React.FC = () => {
+  useEffect(() => injectCss('municipall-tv-css', tvCss), []);
+  const { showView } = useApp();
+
+  const enCours  = TRAVAUX.filter(t => t.statut === 'en-cours').length;
+  const planifie = TRAVAUX.filter(t => t.statut === 'planifie').length;
+
+  return (
+    <div className="ma-root">
+      <TopNav active="home" />
+
+      <section className="ma-hero">
+        <div className="ma-hero-blob ma-hero-b1" style={{ background: 'rgba(224,123,32,.09)' }} />
+        <div className="ma-hero-blob ma-hero-b2" style={{ background: 'rgba(157,110,70,.07)' }} />
+        <div className="ma-hero-blob ma-hero-b3" style={{ background: 'rgba(59,85,143,.05)' }} />
+        <div className="ma-hero-ghost">Travaux</div>
+
+        <div className="ma-hero-left">
+          <p className="ma-eyebrow">Infrastructure · Chantiers</p>
+          <h1 className="ma-h1">Travaux <em>en cours</em>.</h1>
+          <p className="ma-sub">Restez informé des chantiers en cours et planifiés dans votre commune. Accès, délais et impacts sur la circulation.</p>
+        </div>
+
+        <div className="ma-hero-right">
+          <div className="ma-hero-stats">
+            <div className="ma-stat-block">
+              <div className="ma-stat-num">{TRAVAUX.length}</div>
+              <div className="ma-stat-label">Total chantiers</div>
+            </div>
+            <div className="ma-stat-block">
+              <div className="ma-stat-num" style={{ color: '#E07B20' }}>{enCours}</div>
+              <div className="ma-stat-label">En cours</div>
+            </div>
+            <div className="ma-stat-block">
+              <div className="ma-stat-num" style={{ color: '#3B558F' }}>{planifie}</div>
+              <div className="ma-stat-label">Planifiés</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="ma-content">
+        <div className="ma-sec-head">
+          <div>
+            <p className="ma-sec-label">Chantiers actifs</p>
+            <h2 className="ma-sec-title">État <em>des travaux</em>.</h2>
+          </div>
+          <button className="ma-btn-ghost" onClick={() => showView('home')}>← Retour</button>
+        </div>
+
+        <div className="ma-two-col">
+          {TRAVAUX.map((t, i) => (
+            <div key={i} className="ma-card tv-card" style={{ animationDelay: `${i * .08}s` }}>
+              <div className="tv-header">
+                <div className="tv-title">{t.titre}</div>
+                <span className="tv-type" style={{ background: t.typeBg, color: t.typeColor }}>{t.type}</span>
+              </div>
+              <div className="tv-addr">📍 {t.addr}</div>
+              {t.prog > 0 && (
+                <div className="tv-progress">
+                  <div className="tv-progress-fill" style={{ width: `${t.prog}%`, background: t.typeColor }} />
+                </div>
+              )}
+              <div className="tv-foot">
+                <span className={`ma-badge ${t.statut === 'en-cours' ? 'en-cours' : 'info'}`}>
+                  {t.statut === 'en-cours' ? 'En cours' : 'Planifié'}
+                </span>
+                <span className="tv-date">{t.debut} → {t.fin}</span>
+                {t.prog > 0 && <span className="tv-date">{t.prog}%</span>}
+                <span className="tv-impact">⚠️ {t.impact}</span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════
+   TRANSPORTS VIEW
+═══════════════════════════════════════════ */
+const trCss = `
+.tr-card { padding: 1.2rem 1.4rem; animation: ma-up .6s cubic-bezier(.22,1,.36,1) both; }
+.tr-header { display: flex; align-items: center; gap: .9rem; margin-bottom: .65rem; }
+.tr-line-badge {
+  width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-weight: 800; font-size: .85rem; font-family: 'Inter', sans-serif;
+}
+.tr-line-name { font-weight: 700; font-size: .95rem; color: #0F0F0E; }
+.tr-line-type { font-size: .72rem; color: rgba(15,15,14,.35); margin-top: .1rem; }
+.tr-status-row { display: flex; align-items: center; gap: .7rem; flex-wrap: wrap; }
+.tr-freq { font-size: .76rem; color: rgba(15,15,14,.4); }
+.tr-alert {
+  margin-top: .65rem; padding: .6rem .9rem;
+  border-radius: 8px; font-size: .76rem; line-height: 1.55;
+  display: flex; align-items: flex-start; gap: .5rem;
+}
+.tr-alert-icon { flex-shrink: 0; font-size: .95rem; }
+`;
+
+const LIGNES = [
+  { num: '131', nom: 'Kremlin-Bicêtre ↔ Paris 13e', type: 'Bus', bg: '#E83E3E', color: '#fff', statut: 'perturbe', freq: 'Toutes les 8 min', alerte: 'Déviation Rue Victor Hugo jusqu\'à 18h30 — arrêts Pasteur et République non desservis.' },
+  { num: 'B', nom: 'RER B — Boissy ↔ Mitry', type: 'RER', bg: '#005FA9', color: '#fff', statut: 'normal', freq: 'Toutes les 4–10 min' },
+  { num: '7', nom: 'Métro 7 — Villejuif ↔ La Courneuve', type: 'Métro', bg: '#F08080', color: '#fff', statut: 'normal', freq: 'Toutes les 3 min' },
+  { num: '104', nom: 'Creil ↔ Chantilly Gare', type: 'Bus', bg: '#E07B20', color: '#fff', statut: 'perturbe', freq: 'Toutes les 20 min', alerte: 'Service réduit jusqu\'à 31 mai — grève partielle des conducteurs.' },
+  { num: 'D', nom: 'RER D — Orry ↔ Melun', type: 'RER', bg: '#005FA9', color: '#fff', statut: 'planifie', freq: 'Toutes les 15 min', alerte: 'Travaux noctirnes 2–6 juillet — interceptions 0h–5h.' },
+  { num: 'V1', nom: 'VéloService — Réseau ville', type: 'Vélo', bg: '#186D10', color: '#fff', statut: 'normal', freq: '24h/24 — 35 stations' },
+];
+
+export const TransportsView: React.FC = () => {
+  useEffect(() => injectCss('municipall-tr-css', trCss), []);
+  const { showView } = useApp();
+
+  const perturbees = LIGNES.filter(l => l.statut === 'perturbe').length;
+
+  return (
+    <div className="ma-root">
+      <TopNav active="home" />
+
+      <section className="ma-hero">
+        <div className="ma-hero-blob ma-hero-b1" style={{ background: 'rgba(0,95,169,.09)' }} />
+        <div className="ma-hero-blob ma-hero-b2" style={{ background: 'rgba(59,85,143,.06)' }} />
+        <div className="ma-hero-blob ma-hero-b3" style={{ background: 'rgba(232,62,62,.05)' }} />
+        <div className="ma-hero-ghost">Lignes</div>
+
+        <div className="ma-hero-left">
+          <p className="ma-eyebrow">Mobilité · Réseau local</p>
+          <h1 className="ma-h1"><em>Transports</em> en commun.</h1>
+          <p className="ma-sub">État du réseau, perturbations et fréquences de passage pour les lignes desservant votre commune.</p>
+        </div>
+
+        <div className="ma-hero-right">
+          <div className="ma-hero-stats">
+            <div className="ma-stat-block">
+              <div className="ma-stat-num">{LIGNES.length}</div>
+              <div className="ma-stat-label">Lignes</div>
+            </div>
+            <div className="ma-stat-block">
+              <div className="ma-stat-num" style={{ color: '#C62828' }}>{perturbees}</div>
+              <div className="ma-stat-label">Perturbées</div>
+            </div>
+            <div className="ma-stat-block">
+              <div className="ma-stat-num" style={{ color: '#186D10' }}>{LIGNES.length - perturbees}</div>
+              <div className="ma-stat-label">Normales</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="ma-content">
+        <div className="ma-sec-head">
+          <div>
+            <p className="ma-sec-label">État du réseau</p>
+            <h2 className="ma-sec-title">Lignes & <em>perturbations</em>.</h2>
+          </div>
+          <button className="ma-btn-ghost" onClick={() => showView('home')}>← Retour</button>
+        </div>
+
+        <div className="ma-two-col">
+          {LIGNES.map((l, i) => (
+            <div key={i} className="ma-card tr-card" style={{ animationDelay: `${i * .08}s` }}>
+              <div className="tr-header">
+                <div className="tr-line-badge" style={{ background: l.bg, color: l.color }}>{l.num}</div>
+                <div>
+                  <div className="tr-line-name">{l.nom}</div>
+                  <div className="tr-line-type">{l.type}</div>
+                </div>
+              </div>
+              <div className="tr-status-row">
+                <span className={`ma-badge ${l.statut}`}>
+                  {l.statut === 'perturbe' ? 'Perturbé' : l.statut === 'planifie' ? 'Travaux planifiés' : 'Normal'}
+                </span>
+                {l.freq && <span className="tr-freq">🕐 {l.freq}</span>}
+              </div>
+              {l.alerte && (
+                <div className="tr-alert" style={{ background: l.statut === 'planifie' ? 'rgba(59,85,143,.07)' : 'rgba(198,40,40,.07)', border: `1px solid ${l.statut === 'planifie' ? 'rgba(59,85,143,.15)' : 'rgba(198,40,40,.15)'}` }}>
+                  <span className="tr-alert-icon">{l.statut === 'planifie' ? '🔧' : '⚠️'}</span>
+                  <span style={{ color: l.statut === 'planifie' ? '#3B558F' : '#C62828' }}>{l.alerte}</span>
+                </div>
+              )}
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+/* ═══════════════════════════════════════════
+   SOCIAL VIEW  (Associations)
+═══════════════════════════════════════════ */
+const socCss = `
+.soc-card { padding: 1.2rem 1.4rem; animation: ma-up .6s cubic-bezier(.22,1,.36,1) both; }
+.soc-header { display: flex; align-items: flex-start; gap: .9rem; margin-bottom: .55rem; }
+.soc-icon {
+  width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 1.15rem;
+}
+.soc-name { font-weight: 700; font-size: .96rem; color: #0F0F0E; line-height: 1.25; }
+.soc-cat { font-size: .68rem; font-weight: 600; letter-spacing: .07em; text-transform: uppercase; margin-top: .18rem; }
+.soc-desc { font-size: .78rem; color: rgba(15,15,14,.45); line-height: 1.6; margin-bottom: .65rem; }
+.soc-foot { display: flex; gap: .7rem; align-items: center; flex-wrap: wrap; }
+.soc-meta { font-size: .72rem; color: rgba(15,15,14,.32); display: flex; align-items: center; gap: .3rem; }
+`;
+
+const CAT_FILTERS = [
+  { key: 'tous',         label: 'Tous' },
+  { key: 'sport',        label: '⚽ Sport' },
+  { key: 'culture',      label: '🎭 Culture' },
+  { key: 'social',       label: '🤝 Social' },
+  { key: 'environnement',label: '🌿 Environnement' },
+  { key: 'jeunesse',     label: '🔬 Jeunesse' },
+  { key: 'sante',        label: '🏥 Santé' },
+];
+
+const CAT_COLOR: Record<string, string> = {
+  sport:        '#52D68A',
+  culture:      '#9370DB',
+  social:       '#FFB347',
+  environnement:'#52D68A',
+  jeunesse:     '#4ECDC4',
+  sante:        '#FF6B6B',
+};
+
+export const SocialView: React.FC = () => {
+  useEffect(() => injectCss('municipall-soc-css', socCss), []);
+  const [activeFilter, setFilter] = useState('tous');
+  const { showView } = useApp();
+
+  const filtered = activeFilter === 'tous'
+    ? ASSOS
+    : ASSOS.filter(a => a.cat === activeFilter);
+
+  return (
+    <div className="ma-root">
+      <TopNav active="home" />
+
+      <section className="ma-hero">
+        <div className="ma-hero-blob ma-hero-b1" style={{ background: 'rgba(82,214,138,.1)' }} />
+        <div className="ma-hero-blob ma-hero-b2" style={{ background: 'rgba(147,112,219,.07)' }} />
+        <div className="ma-hero-blob ma-hero-b3" style={{ background: 'rgba(255,179,71,.05)' }} />
+        <div className="ma-hero-ghost">Associations</div>
+
+        <div className="ma-hero-left">
+          <p className="ma-eyebrow">Vie locale · Associations</p>
+          <h1 className="ma-h1">La vie <em>sociale</em>.</h1>
+          <p className="ma-sub">Clubs sportifs, associations culturelles, entraide et bénévolat — rejoignez la communauté locale.</p>
+        </div>
+
+        <div className="ma-hero-right">
+          <div className="ma-hero-stats">
+            <div className="ma-stat-block">
+              <div className="ma-stat-num">{ASSOS.length}<em>+</em></div>
+              <div className="ma-stat-label">Associations</div>
+            </div>
+            <div className="ma-stat-block">
+              <div className="ma-stat-num" style={{ color: '#52D68A' }}>{ASSOS.reduce((acc, a) => acc + (a.membres ?? 0), 0)}</div>
+              <div className="ma-stat-label">Membres</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div className="ma-content">
+        <div className="ma-sec-head">
+          <div>
+            <p className="ma-sec-label">Annuaire</p>
+            <h2 className="ma-sec-title">Toutes les <em>associations</em>.</h2>
+          </div>
+          <button className="ma-btn-ghost" onClick={() => showView('home')}>← Retour</button>
+        </div>
+
+        <div className="ma-chips" style={{ marginBottom: '1.75rem' }}>
+          {CAT_FILTERS.map(f => (
+            <button key={f.key} className={`ma-chip${activeFilter === f.key ? ' on' : ''}`} onClick={() => setFilter(f.key)}>
+              {f.label}
+            </button>
+          ))}
+        </div>
+
+        <div className="ma-three-col">
+          {filtered.map((a, i) => {
+            const c = CAT_COLOR[a.cat] ?? '#888';
+            return (
+              <div key={a.id} className="ma-card soc-card" style={{ animationDelay: `${i * .06}s` }}>
+                <div className="soc-header">
+                  <div className="soc-icon" style={{ background: `${c}22` }}>
+                    {a.icon}
+                  </div>
+                  <div>
+                    <div className="soc-name">{a.nom}</div>
+                    <div className="soc-cat" style={{ color: c }}>{a.cat}</div>
+                  </div>
+                </div>
+                <div className="soc-desc">{a.desc}</div>
+                <div className="soc-foot">
+                  {a.membres && <span className="soc-meta">👥 {a.membres} membres</span>}
+                  {a.lieu    && <span className="soc-meta">📍 {a.lieu}</span>}
+                  {a.horaires && <span className="soc-meta">🕐 {a.horaires}</span>}
+                </div>
+                {a.tel && (
+                  <div style={{ marginTop: '.6rem', fontSize: '.76rem', color: 'rgba(15,15,14,.35)' }}>
+                    📞 {a.tel}
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+};

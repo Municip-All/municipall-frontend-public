@@ -78,7 +78,8 @@ const PlaceholderView: React.FC<{ view: ViewName }> = ({ view }) => {
 };
 
 const MainContent: React.FC = () => {
-  const { isAuthenticated, currentView } = useApp();
+  const { isAuthenticated, isAuthLoading, currentView } = useApp();
+  if (isAuthLoading) return <LoadingView />;
   if (!isAuthenticated) return <AuthScreen />;
 
   switch (currentView) {

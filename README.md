@@ -2,7 +2,7 @@
 
 Application web **React** de démonstration pour l’expérience citoyenne Municipall : accueil, signalements, carte (Leaflet), transports, contact, profil, etc.
 
-> **Note** — Ce dépôt est un **prototype UI** avec données mockées en mémoire. L’application mobile de production est **municipall-app-public** (Expo / React Native). Le backoffice mairie est **municipall-web-backoffice-public**.
+> **Note** — Prototype web connecté à **municipall-backend-public** (API dev par défaut). L’app mobile de production est **municipall-app-public**. Le backoffice mairie est **municipall-web-backoffice-public**.
 
 ## Stack
 
@@ -30,16 +30,25 @@ npm start
 
 L’app est disponible sur [http://localhost:3000](http://localhost:3000).
 
-### Compte démo (auth locale)
+### API backend
 
-L’authentification est simulée côté client (`src/test/Appcontext.tsx`) :
+Par défaut, l’app pointe vers **l’API dev** (y compris les builds prod) :
+
+| Variable | Défaut |
+|----------|--------|
+| `REACT_APP_API_URL` | `https://dev.api.municipall.dev/api/v1/` |
+| `REACT_APP_DEFAULT_TENANT_ID` | `le-kremlin-bicetre` |
+
+Copier `.env.example` vers `.env` pour personnaliser.
+
+### Compte démo
 
 | Champ | Valeur |
 |-------|--------|
-| Email | `marie.beaumont@email.fr` |
-| Mot de passe | `demo1234` |
+| Email | `@demo.municipall.dev` |
+| Mot de passe | `Demo2026!` |
 
-Aucun appel API backend n’est requis pour naviguer dans le prototype.
+Connexion via `POST /auth/login` — JWT stocké en `localStorage`.
 
 ## Scripts npm
 
@@ -136,12 +145,22 @@ Le `Dockerfile` copie le dossier CRA `build/` et le sert via nginx.
 | `municipall-web-backoffice-public` | Backoffice mairie |
 | `municipall-webadmin-public` | Administration plateforme |
 
-## Évolutions prévues
+## Données branchées sur l’API
 
-- Brancher les écrans sur l’API `municipall-backend-public` (auth JWT, signalements, config ville)
-- Remplacer les données mockées par des appels `REACT_APP_*`
-- Aligner le pipeline Docker/CI sur le output CRA (`build/`) si nécessaire
-- Consolider les écrans hors du dossier `test/` une fois l’intégration API faite
+| Écran | Source |
+|-------|--------|
+| Auth | `auth/login`, `auth/signup`, `auth/me` |
+| Accueil | météo, événements, alertes transports |
+| Signalements | `reports/mine` |
+| Événements | `events` |
+| Contact | `city-config` + `contact-tickets` |
+| Collecte | `wasteConfig` (city-config) + toilettes Open Data Paris |
+| Travaux | `construction-works` |
+| Transports | `municipalities/:id/transports/disruptions` |
+| Social | `associations` (city-config) |
+| Carte | toilettes Open Data Paris |
+
+Restent en local : notifications, chatbot MuniBot, onboarding.
 
 ## Licence
 

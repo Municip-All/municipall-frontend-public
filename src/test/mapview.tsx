@@ -128,13 +128,6 @@ interface MapPoint {
   hours?: string;
 }
 
-const COMMUNE_CENTER: Record<string, [number, number]> = {
-  'Kremlin-Bicêtre':       [48.8141, 2.3611],
-  'Bouffémont':            [49.0814, 2.3556],
-  'Creil':                 [49.2596, 2.4839],
-  'Saint-Maur-les-Fossés': [48.7994, 2.4914],
-};
-
 const MAP_POINTS: Record<string, MapPoint[]> = {
   'Kremlin-Bicêtre': [
     { type: 'toilet', name: 'Place du Marché',            address: 'Place centrale',                    lat: 48.8141, lng: 2.3620, open: true,  hours: '7h – 22h' },
@@ -215,10 +208,10 @@ interface MapModalProps {
 }
 
 export const MapModal: React.FC<MapModalProps> = ({ onClose }) => {
-  const { user } = useApp();
-  const commune = user?.ville ?? 'Kremlin-Bicêtre';
-  const center  = COMMUNE_CENTER[commune] ?? [48.8141, 2.3611];
-  const points  = MAP_POINTS[commune] ?? [];
+  const { user, mapCenter, mapPoints, cityConfig } = useApp();
+  const commune = user?.ville ?? cityConfig?.officialName ?? cityConfig?.name ?? 'Kremlin-Bicêtre';
+  const center  = mapCenter;
+  const points  = mapPoints.length ? mapPoints : (MAP_POINTS[commune] ?? []);
 
   const [active, setActive] = useState<Set<PointType>>(new Set<PointType>(['toilet', 'tri', 'dechet']));
 

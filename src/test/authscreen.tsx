@@ -466,11 +466,16 @@ export const AuthScreen: React.FC = () => {
   };
 
   // ── LOGIN ──
-  const handleLogin = (e: React.FormEvent) => {
+  const [submitting, setSubmitting] = useState(false);
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!loginEmail || !loginPw) { setLoginError('Remplissez tous les champs.'); return; }
-    const ok = login(loginEmail, loginPw);
-    if (!ok) setLoginError('Email ou mot de passe incorrect.\nDémo : marie.beaumont@email.fr / demo1234');
+    setSubmitting(true);
+    setLoginError('');
+    const ok = await login(loginEmail, loginPw);
+    setSubmitting(false);
+    if (!ok) setLoginError('Email ou mot de passe incorrect.\nDémo : @demo.municipall.dev / Demo2026!');
   };
 
   // ── REGISTER ──
@@ -503,7 +508,7 @@ export const AuthScreen: React.FC = () => {
     updateReg('password', pw);
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!reg.prenom || !reg.nom || !reg.email || !reg.telephone || !reg.dateNaissance) {
       setRegError('Remplissez toutes les informations personnelles.'); return;
@@ -529,7 +534,14 @@ export const AuthScreen: React.FC = () => {
       complementAdresse: reg.complementAdresse.trim() || undefined,
       avatar: `${reg.prenom[0]}${reg.nom[0]}`.toUpperCase(),
     };
-    register(newUser, reg.password);
+    setSubmitting(true);
+    setRegError('');
+    const ok = await register(newUser, reg.password);
+    setSubmitting(false);
+    if (!ok) {
+      setRegError('Inscription impossible. Vérifiez vos informations ou réessayez plus tard.');
+      return;
+    }
     showToast('Compte créé avec succès !');
   };
 
@@ -702,7 +714,7 @@ export const AuthScreen: React.FC = () => {
                 />
               </div>
 
-              <button type="submit" className="btn-auth">
+              <button type="submit" className="btn-auth" disabled={submitting}>
                 Se connecter
                 <span className="btn-arrow">→</span>
               </button>
@@ -853,7 +865,7 @@ export const AuthScreen: React.FC = () => {
                 uniquement utilisées pour vos services municipaux.
               </div>
 
-              <button type="submit" className="btn-auth">
+              <button type="submit" className="btn-auth" disabled={submitting}>
                 Créer mon compte
                 <span className="btn-arrow">→</span>
               </button>

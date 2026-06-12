@@ -88,25 +88,28 @@ const css = `
 .hv-nav-logo {
   font-family: 'Playfair Display', serif; font-weight: 800;
   font-size: 1.2rem; color: #0F0F0E; letter-spacing: -.3px; text-decoration: none;
+  background: none; border: none; padding: 0; cursor: pointer;
 }
 .hv-nav-logo span { color: #3B558F; }
 .hv-nav-links {
   display: flex; gap: 2.25rem; list-style: none; margin: 0; padding: 0;
 }
-.hv-nav-links a {
+.hv-nav-links button {
   font-size: .84rem; font-weight: 500;
   color: rgba(15,15,14,.4); text-decoration: none;
   transition: color .2s; letter-spacing: .01em; position: relative;
+  background: none; border: none; padding: 0; cursor: pointer;
+  font-family: inherit;
 }
-.hv-nav-links a::after {
+.hv-nav-links button::after {
   content: ''; position: absolute; bottom: -2px; left: 0; right: 0;
   height: 1.5px; background: #0F0F0E; transform: scaleX(0);
   transform-origin: left; transition: transform .25s cubic-bezier(.22,1,.36,1);
 }
-.hv-nav-links a:hover,
-.hv-nav-links a.active { color: #0F0F0E; }
-.hv-nav-links a.active::after,
-.hv-nav-links a:hover::after { transform: scaleX(1); }
+.hv-nav-links button:hover,
+.hv-nav-links button.active { color: #0F0F0E; }
+.hv-nav-links button.active::after,
+.hv-nav-links button:hover::after { transform: scaleX(1); }
 .hv-nav-right { display: flex; align-items: center; gap: 1rem; }
 .hv-nav-notif {
   width: 36px; height: 36px; border-radius: 50%;
@@ -764,7 +767,7 @@ function resetTilt(e: React.MouseEvent<HTMLDivElement>) {
 
 /* ── Component ─────────────────────────────────── */
 export const HomeView: React.FC = () => {
-  const { user, signalements, showView, toggleNotif, toggleBot, botOpen } = useApp();
+  const { user, signalements, showView, toggleNotif, toggleBot, botOpen, weather: apiWeather, homeEventPreviews, alerts: apiAlerts, cityConfig } = useApp();
   const [showMap, setShowMap] = useState(false);
 
   useEffect(() => {
@@ -778,27 +781,28 @@ export const HomeView: React.FC = () => {
   const now       = new Date();
   const dayName   = now.toLocaleDateString('fr-FR', { weekday: 'long' });
   const dateStr   = now.toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' });
-  const ville     = user?.ville ?? 'Kremlin-Bicêtre';
-  const weather   = WEATHER_DATA[ville] ?? WEATHER_DATA['Kremlin-Bicêtre'];
+  const ville     = user?.ville ?? cityConfig?.officialName ?? cityConfig?.name ?? 'Kremlin-Bicêtre';
+  const weather   = apiWeather ?? WEATHER_DATA[ville] ?? WEATHER_DATA['Kremlin-Bicêtre'];
   const hour      = now.getHours();
   const greeting  = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
   const activeSigs = signalements.filter(s => s.statut !== 'resolu');
   const initials  = user ? (user.prenom[0] ?? '') + (user.nom[0] ?? '') : 'M';
 
   /* Doubled alerts for seamless loop */
-  const allAlerts = [...ALERTS, ...ALERTS];
+  const tickerAlerts = apiAlerts.length ? apiAlerts : ALERTS;
+  const allAlerts = [...tickerAlerts, ...tickerAlerts];
 
   return (
     <div className="hv">
 
       {/* ── NAV ── */}
       <nav className="hv-nav">
-        <a href="#" className="hv-nav-logo">Municip<span>'All</span></a>
+        <button type="button" className="hv-nav-logo">Municip<span>'All</span></button>
         <ul className="hv-nav-links">
-          <li><a href="#" className="active">Accueil</a></li>
-          <li><a href="#" onClick={e => { e.preventDefault(); showView('sig'); }}>Signalements</a></li>
-          <li><a href="#" onClick={e => { e.preventDefault(); showView('evenement'); }}>Évènements</a></li>
-          <li><a href="#" onClick={e => { e.preventDefault(); showView('contact'); }}>Contact</a></li>
+          <li><button type="button" className="active">Accueil</button></li>
+          <li><button type="button" onClick={() => showView('sig')}>Signalements</button></li>
+          <li><button type="button" onClick={() => showView('evenement')}>Évènements</button></li>
+          <li><button type="button" onClick={() => showView('contact')}>Contact</button></li>
         </ul>
         <div className="hv-nav-right">
           <div className={`hv-nav-chat${botOpen ? ' on' : ''}`} onClick={toggleBot} title="Assistant MuniBot">
@@ -937,7 +941,7 @@ export const HomeView: React.FC = () => {
         </div>
 
         <div className="hv-events-row">
-          {DEMO_EVENTS.map((ev, i) => (
+          {(homeEventPreviews.length ? homeEventPreviews : DEMO_EVENTS).map((ev, i) => (
             <div
               key={ev.id}
               className="hv-event-card"

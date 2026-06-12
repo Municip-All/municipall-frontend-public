@@ -452,11 +452,11 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
             <span className="pv-footer-tagline"> · Démocratie de proximité</span>
           </div>
           <ul className="pv-footer-links">
-            <li><a href="#">Solutions</a></li>
-            <li><a href="#">À propos</a></li>
-            <li><a href="#">Carrières</a></li>
-            <li><a href="#">Contact</a></li>
-            <li><a href="#">RGPD</a></li>
+            <li><span>Solutions</span></li>
+            <li><span>À propos</span></li>
+            <li><span>Carrières</span></li>
+            <li><span>Contact</span></li>
+            <li><span>RGPD</span></li>
           </ul>
           <p className="pv-footer-legal">© 2026 Municip'All. Tous droits réservés.</p>
         </footer>

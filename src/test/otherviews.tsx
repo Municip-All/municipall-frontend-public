@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useApp } from './Appcontext';
 import { TopNav } from './layout';
-import { EVENEMENTS, ASSOS, QUARTIERS_BY_COMMUNE } from '../data';
+import { QUARTIERS_BY_COMMUNE } from '../data';
+import { contactService } from '../services/contactService';
+import { parseOpeningHours } from '../lib/mappers';
 import { Commune, Quartier } from '../types';
 
 /* ═══════════════════════════════════════════
@@ -54,7 +56,7 @@ const TAG_STYLE: Record<string, { bg: string; color: string }> = {
 
 export const EvenementView: React.FC = () => {
   useEffect(() => injectCss('municipall-ev-css', evCss), []);
-  const { showView } = useApp();
+  const { showView, events } = useApp();
 
   return (
     <div className="ma-root">
@@ -75,7 +77,7 @@ export const EvenementView: React.FC = () => {
         <div className="ma-hero-right">
           <div className="ma-hero-stats">
             <div className="ma-stat-block">
-              <div className="ma-stat-num">{EVENEMENTS.length}<em>+</em></div>
+              <div className="ma-stat-num">{events.length}<em>+</em></div>
               <div className="ma-stat-label">À venir</div>
             </div>
             <div className="ma-stat-block">
@@ -100,7 +102,7 @@ export const EvenementView: React.FC = () => {
         </div>
 
         <div className="ev-grid">
-          {EVENEMENTS.map((ev, i) => {
+          {events.map((ev, i) => {
             const ts = TAG_STYLE[ev.tag] ?? { bg: 'rgba(15,15,14,.07)', color: '#555' };
             return (
               <div key={ev.id} className="ev-row ma-card" style={{ animationDelay: `${i * .09}s` }}>
@@ -163,15 +165,37 @@ export const ContactView: React.FC = () => {
   const [sujet, setSujet] = useState('');
   const [msg, setMsg]   = useState('');
   const [sent, setSent] = useState(false);
-  const { showToast } = useApp();
+  const [sending, setSending] = useState(false);
+  const { showToast, cityConfig, isAuthenticated } = useApp();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const address = cityConfig?.publicProfile?.address || '—';
+  const phone = cityConfig?.contact?.phone || '—';
+  const contactEmail = cityConfig?.contact?.email || '—';
+  const hoursRows = parseOpeningHours(cityConfig?.publicProfile?.openingHours);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!nom || !email || !msg) return;
-    setSent(true);
-    showToast('Message envoyé à la mairie !');
-    setNom(''); setEmail(''); setSujet(''); setMsg('');
-    setTimeout(() => setSent(false), 5000);
+    if (!isAuthenticated) {
+      showToast('Connectez-vous pour envoyer un message à la mairie.');
+      return;
+    }
+    setSending(true);
+    try {
+      await contactService.createTicket({
+        subject: sujet || `Message de ${nom}`,
+        body: `${msg}\n\n— ${nom} (${email})`,
+        ticketType: 'question',
+      });
+      setSent(true);
+      showToast('Message envoyé à la mairie !');
+      setNom(''); setEmail(''); setSujet(''); setMsg('');
+      setTimeout(() => setSent(false), 5000);
+    } catch {
+      showToast('Envoi impossible. Réessayez plus tard.');
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -228,15 +252,15 @@ export const ContactView: React.FC = () => {
                 <div className="ct-info-grid">
                   <div className="ct-info-row">
                     <div className="ct-info-icon" style={{ background: 'rgba(59,85,143,.1)' }}>📍</div>
-                    <div><div className="ct-info-label">Adresse</div><div className="ct-info-val">1 Place du Général de Gaulle</div></div>
+                    <div><div className="ct-info-label">Adresse</div><div className="ct-info-val">{address}</div></div>
                   </div>
                   <div className="ct-info-row">
                     <div className="ct-info-icon" style={{ background: 'rgba(24,109,16,.1)' }}>📞</div>
-                    <div><div className="ct-info-label">Téléphone</div><div className="ct-info-val">01 49 58 60 00</div></div>
+                    <div><div className="ct-info-label">Téléphone</div><div className="ct-info-val">{phone}</div></div>
                   </div>
                   <div className="ct-info-row">
                     <div className="ct-info-icon" style={{ background: 'rgba(224,123,32,.1)' }}>✉️</div>
-                    <div><div className="ct-info-label">E-mail</div><div className="ct-info-val">contact@mairie.fr</div></div>
+                    <div><div className="ct-info-label">E-mail</div><div className="ct-info-val">{contactEmail}</div></div>
                   </div>
                 </div>
               </div>
@@ -249,14 +273,7 @@ export const ContactView: React.FC = () => {
               </div>
               <div className="ma-info-body">
                 <div className="ct-hours-grid">
-                  {[
-                    { j:'Lundi', h:'8h30 – 17h00' },
-                    { j:'Mardi', h:'8h30 – 17h00' },
-                    { j:'Mercredi', h:'8h30 – 19h30' },
-                    { j:'Jeudi', h:'8h30 – 17h00' },
-                    { j:'Vendredi', h:'8h30 – 16h30' },
-                    { j:'Samedi', h:'Fermé' },
-                  ].map(r => (
+                  {hoursRows.map(r => (
                     <div key={r.j} className="ct-hours-row">
                       <span className="ct-hours-day">{r.j}</span>
                       <span>{r.h}</span>
@@ -303,7 +320,7 @@ export const ContactView: React.FC = () => {
                     <label className="ma-field-label">Message *</label>
                     <textarea className="ma-textarea" style={{ height: '100px' }} placeholder="Votre message…" value={msg} onChange={e => setMsg(e.target.value)} />
                   </div>
-                  <button type="submit" className="ct-submit" disabled={!nom || !email || !msg}>
+                  <button type="submit" className="ct-submit" disabled={sending || !nom || !email || !msg}>
                     Envoyer →
                   </button>
                 </form>
@@ -883,25 +900,9 @@ const colCss = `
 .col-toilet-status { margin-left: auto; }
 `;
 
-const COLLECTE_SCHEDULE = [
-  { jour: 'Lun', type: 'Ordures ménagères', heure: 'Avant 7h — Collecte matinale', icon: '🗑️', bg: 'rgba(198,40,40,.1)', color: '#C62828' },
-  { jour: 'Mer', type: 'Tri sélectif',       heure: 'Avant 7h — Bacs jaunes uniquement', icon: '♻️', bg: 'rgba(24,109,16,.1)', color: '#186D10' },
-  { jour: 'Ven', type: 'Ordures ménagères',  heure: 'Avant 7h — Collecte hebdomadaire', icon: '🗑️', bg: 'rgba(198,40,40,.1)', color: '#C62828' },
-  { jour: 'Sam', type: 'Encombrants',        heure: 'Sur réservation — Service Propreté', icon: '📦', bg: 'rgba(157,110,70,.1)', color: '#9D6E46' },
-  { jour: 'Sam', type: 'Verre & Carton',     heure: 'Collecte en déchetterie 9h–12h',   icon: '🧴', bg: 'rgba(59,85,143,.1)', color: '#3B558F' },
-];
-
-const TOILETTES = [
-  { nom: 'Place du Marché',           adresse: 'Place centrale',              ouvert: true  },
-  { nom: 'Parc Central — Entrée Est', adresse: 'Allée des Platanes',          ouvert: true  },
-  { nom: 'Gare routière',             adresse: 'Av. du Général Leclerc',      ouvert: true  },
-  { nom: 'Stade Municipal',           adresse: 'Rue des Sports',              ouvert: false },
-  { nom: 'Médiathèque',               adresse: '14 Rue de la Bibliothèque',   ouvert: true  },
-];
-
 export const CollecteView: React.FC = () => {
   useEffect(() => injectCss('municipall-col-css', colCss), []);
-  const { showView } = useApp();
+  const { showView, collecteSchedule, toilets } = useApp();
 
   return (
     <div className="ma-root">
@@ -922,11 +923,11 @@ export const CollecteView: React.FC = () => {
         <div className="ma-hero-right">
           <div className="ma-hero-stats">
             <div className="ma-stat-block">
-              <div className="ma-stat-num">{COLLECTE_SCHEDULE.length}</div>
+              <div className="ma-stat-num">{collecteSchedule.length}</div>
               <div className="ma-stat-label">Collectes/sem.</div>
             </div>
             <div className="ma-stat-block">
-              <div className="ma-stat-num" style={{ color: '#186D10' }}>{TOILETTES.filter(t => t.ouvert).length}</div>
+              <div className="ma-stat-num" style={{ color: '#186D10' }}>{toilets.filter(t => t.ouvert).length}</div>
               <div className="ma-stat-label">Toilettes ouvertes</div>
             </div>
           </div>
@@ -945,7 +946,7 @@ export const CollecteView: React.FC = () => {
             </div>
 
             <div className="col-schedule">
-              {COLLECTE_SCHEDULE.map((c, i) => (
+              {collecteSchedule.map((c, i) => (
                 <div key={i} className="col-day-row ma-card" style={{ animationDelay: `${i * .08}s` }}>
                   <div className="col-day-pill" style={{ background: c.bg, color: c.color }}>{c.jour}</div>
                   <span className="col-day-icon">{c.icon}</span>
@@ -967,7 +968,7 @@ export const CollecteView: React.FC = () => {
             </div>
 
             <div className="col-toilet-grid">
-              {TOILETTES.map((t, i) => (
+              {toilets.map((t, i) => (
                 <div key={i} className="ma-card col-toilet-row" style={{ animationDelay: `${i * .07}s` }}>
                   <span className="col-toilet-icon">🚻</span>
                   <div>
@@ -1005,21 +1006,12 @@ const tvCss = `
 .tv-impact { font-size: .72rem; color: rgba(15,15,14,.45); display: flex; align-items: center; gap: .35rem; }
 `;
 
-const TRAVAUX = [
-  { titre: 'Réfection de la chaussée', addr: 'Rue Victor Hugo (n°1–45)', type: 'Voirie', typeBg: 'rgba(59,85,143,.1)', typeColor: '#3B558F', statut: 'en-cours', prog: 60, debut: '15 mai', fin: '20 juin', impact: 'Circulation alternée' },
-  { titre: 'Rénovation trottoirs', addr: 'Avenue de la République', type: 'Voirie', typeBg: 'rgba(59,85,143,.1)', typeColor: '#3B558F', statut: 'planifie', prog: 0, debut: '1 juillet', fin: '30 août', impact: 'Piétons déviés' },
-  { titre: 'Mise aux normes réseaux', addr: 'Quartier Paul Hochart', type: 'Réseau', typeBg: 'rgba(224,123,32,.1)', typeColor: '#E07B20', statut: 'en-cours', prog: 35, debut: '3 mai', fin: '15 juillet', impact: 'Coupures ponctuelles' },
-  { titre: 'Réaménagement square', addr: 'Parc des Marronniers', type: 'Espaces verts', typeBg: 'rgba(24,109,16,.1)', typeColor: '#186D10', statut: 'en-cours', prog: 80, debut: '1 avril', fin: '30 juin', impact: 'Accès restreint' },
-  { titre: 'Ravalement façade mairie', addr: 'Hôtel de Ville', type: 'Bâtiment', typeBg: 'rgba(157,110,70,.1)', typeColor: '#9D6E46', statut: 'planifie', prog: 0, debut: '15 août', fin: '15 oct', impact: 'Aucun impact' },
-  { titre: 'Extension réseau fibre', addr: 'Quartier Nord — 12 rues', type: 'Numérique', typeBg: 'rgba(83,74,183,.1)', typeColor: '#534AB7', statut: 'en-cours', prog: 50, debut: '1 mars', fin: '31 août', impact: 'Fouilles ponctuelles' },
-];
-
 export const TravauxView: React.FC = () => {
   useEffect(() => injectCss('municipall-tv-css', tvCss), []);
-  const { showView } = useApp();
+  const { showView, travaux } = useApp();
 
-  const enCours  = TRAVAUX.filter(t => t.statut === 'en-cours').length;
-  const planifie = TRAVAUX.filter(t => t.statut === 'planifie').length;
+  const enCours  = travaux.filter(t => t.statut === 'en-cours').length;
+  const planifie = travaux.filter(t => t.statut === 'planifie').length;
 
   return (
     <div className="ma-root">
@@ -1040,7 +1032,7 @@ export const TravauxView: React.FC = () => {
         <div className="ma-hero-right">
           <div className="ma-hero-stats">
             <div className="ma-stat-block">
-              <div className="ma-stat-num">{TRAVAUX.length}</div>
+              <div className="ma-stat-num">{travaux.length}</div>
               <div className="ma-stat-label">Total chantiers</div>
             </div>
             <div className="ma-stat-block">
@@ -1065,7 +1057,7 @@ export const TravauxView: React.FC = () => {
         </div>
 
         <div className="ma-two-col">
-          {TRAVAUX.map((t, i) => (
+          {travaux.map((t, i) => (
             <div key={i} className="ma-card tv-card" style={{ animationDelay: `${i * .08}s` }}>
               <div className="tv-header">
                 <div className="tv-title">{t.titre}</div>
@@ -1116,20 +1108,11 @@ const trCss = `
 .tr-alert-icon { flex-shrink: 0; font-size: .95rem; }
 `;
 
-const LIGNES = [
-  { num: '131', nom: 'Kremlin-Bicêtre ↔ Paris 13e', type: 'Bus', bg: '#E83E3E', color: '#fff', statut: 'perturbe', freq: 'Toutes les 8 min', alerte: 'Déviation Rue Victor Hugo jusqu\'à 18h30 — arrêts Pasteur et République non desservis.' },
-  { num: 'B', nom: 'RER B — Boissy ↔ Mitry', type: 'RER', bg: '#005FA9', color: '#fff', statut: 'normal', freq: 'Toutes les 4–10 min' },
-  { num: '7', nom: 'Métro 7 — Villejuif ↔ La Courneuve', type: 'Métro', bg: '#F08080', color: '#fff', statut: 'normal', freq: 'Toutes les 3 min' },
-  { num: '104', nom: 'Creil ↔ Chantilly Gare', type: 'Bus', bg: '#E07B20', color: '#fff', statut: 'perturbe', freq: 'Toutes les 20 min', alerte: 'Service réduit jusqu\'à 31 mai — grève partielle des conducteurs.' },
-  { num: 'D', nom: 'RER D — Orry ↔ Melun', type: 'RER', bg: '#005FA9', color: '#fff', statut: 'planifie', freq: 'Toutes les 15 min', alerte: 'Travaux noctirnes 2–6 juillet — interceptions 0h–5h.' },
-  { num: 'V1', nom: 'VéloService — Réseau ville', type: 'Vélo', bg: '#186D10', color: '#fff', statut: 'normal', freq: '24h/24 — 35 stations' },
-];
-
 export const TransportsView: React.FC = () => {
   useEffect(() => injectCss('municipall-tr-css', trCss), []);
-  const { showView } = useApp();
+  const { showView, transportLines } = useApp();
 
-  const perturbees = LIGNES.filter(l => l.statut === 'perturbe').length;
+  const perturbees = transportLines.filter(l => l.statut === 'perturbe').length;
 
   return (
     <div className="ma-root">
@@ -1150,7 +1133,7 @@ export const TransportsView: React.FC = () => {
         <div className="ma-hero-right">
           <div className="ma-hero-stats">
             <div className="ma-stat-block">
-              <div className="ma-stat-num">{LIGNES.length}</div>
+              <div className="ma-stat-num">{transportLines.length}</div>
               <div className="ma-stat-label">Lignes</div>
             </div>
             <div className="ma-stat-block">
@@ -1158,7 +1141,7 @@ export const TransportsView: React.FC = () => {
               <div className="ma-stat-label">Perturbées</div>
             </div>
             <div className="ma-stat-block">
-              <div className="ma-stat-num" style={{ color: '#186D10' }}>{LIGNES.length - perturbees}</div>
+              <div className="ma-stat-num" style={{ color: '#186D10' }}>{transportLines.length - perturbees}</div>
               <div className="ma-stat-label">Normales</div>
             </div>
           </div>
@@ -1175,7 +1158,7 @@ export const TransportsView: React.FC = () => {
         </div>
 
         <div className="ma-two-col">
-          {LIGNES.map((l, i) => (
+          {transportLines.map((l, i) => (
             <div key={i} className="ma-card tr-card" style={{ animationDelay: `${i * .08}s` }}>
               <div className="tr-header">
                 <div className="tr-line-badge" style={{ background: l.bg, color: l.color }}>{l.num}</div>
@@ -1243,11 +1226,11 @@ const CAT_COLOR: Record<string, string> = {
 export const SocialView: React.FC = () => {
   useEffect(() => injectCss('municipall-soc-css', socCss), []);
   const [activeFilter, setFilter] = useState('tous');
-  const { showView } = useApp();
+  const { showView, associations } = useApp();
 
   const filtered = activeFilter === 'tous'
-    ? ASSOS
-    : ASSOS.filter(a => a.cat === activeFilter);
+    ? associations
+    : associations.filter(a => a.cat === activeFilter);
 
   return (
     <div className="ma-root">
@@ -1268,11 +1251,11 @@ export const SocialView: React.FC = () => {
         <div className="ma-hero-right">
           <div className="ma-hero-stats">
             <div className="ma-stat-block">
-              <div className="ma-stat-num">{ASSOS.length}<em>+</em></div>
+              <div className="ma-stat-num">{associations.length}<em>+</em></div>
               <div className="ma-stat-label">Associations</div>
             </div>
             <div className="ma-stat-block">
-              <div className="ma-stat-num" style={{ color: '#52D68A' }}>{ASSOS.reduce((acc, a) => acc + (a.membres ?? 0), 0)}</div>
+              <div className="ma-stat-num" style={{ color: '#52D68A' }}>{associations.length}</div>
               <div className="ma-stat-label">Membres</div>
             </div>
           </div>

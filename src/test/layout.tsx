@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useApp } from './Appcontext';
 import { ViewName, NotifItem } from '../types';
 import { NOTIFICATIONS } from '../data';
+import DOMPurify from 'dompurify';
 
 export const sharedCss = `
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Playfair+Display:ital,wght@0,700;0,800;1,700&display=swap');
@@ -471,7 +472,7 @@ export const NotifDrawer: React.FC = () => {
 
   const unreadCount = items.filter(n => !n.read).length;
 
-  const markItem = (id: number) => {
+  const markItem = (id: number | string) => {
     setItems(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
   };
   const markAll = () => setItems(prev => prev.map(n => ({ ...n, read: true })));
@@ -508,7 +509,7 @@ export const NotifDrawer: React.FC = () => {
                 <div className="nd-item-body">
                   <div
                     className="nd-item-text"
-                    dangerouslySetInnerHTML={{ __html: n.text }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(n.text) }}
                   />
                   <div className="nd-item-time">{n.time}</div>
                 </div>

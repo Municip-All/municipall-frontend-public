@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useApp } from './Appcontext';
 import { BOT_RESPONSES } from '../data';
+import DOMPurify from 'dompurify';
 
 /* ── CSS ───────────────────────────────────────── */
 const css = `
@@ -290,7 +291,7 @@ export const MuniBot: React.FC = () => {
                 <div>
                   <div
                     className="bot-bubble"
-                    dangerouslySetInnerHTML={{ __html: m.text }}
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(m.text) }}
                   />
                   <span className="bot-bubble-time">{m.time}</span>
                 </div>

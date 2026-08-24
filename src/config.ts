@@ -1,10 +1,18 @@
-/** API dev par défaut — y compris builds prod / branche main */
-export const DEV_API_ORIGIN = 'https://dev.api.municipall.dev';
-export const DEV_API_BASE_URL = `${DEV_API_ORIGIN}/api/v1/`;
+const DEV_API_ORIGIN = 'https://dev.api.municipall.dev';
+const DEV_API_BASE_URL = `${DEV_API_ORIGIN}/api/v1/`;
 
-/** Normalise toute URL vers …/api/v1/ (évite les 401 si /api/v1 manque) */
+const PROD_API_ORIGIN = 'https://api.municipall.dev';
+const PROD_API_BASE_URL = `${PROD_API_ORIGIN}/api/v1/`;
+
+function getDefaultApiBaseUrl(): string {
+  if (process.env.NODE_ENV === 'production' && !process.env.REACT_APP_API_URL) {
+    return PROD_API_BASE_URL;
+  }
+  return DEV_API_BASE_URL;
+}
+
 export function normalizeApiBaseUrl(raw?: string): string {
-  const fallback = DEV_API_BASE_URL;
+  const fallback = getDefaultApiBaseUrl();
   if (!raw?.trim()) return fallback;
 
   let url = raw.trim().replace(/\/+$/, '');

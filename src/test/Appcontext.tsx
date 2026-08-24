@@ -146,9 +146,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setTenantId(cityId);
 
         const [eventsData, worksData, toiletsData] = await Promise.all([
-          eventService.getEvents().catch(() => []),
-          constructionWorksService.getWorks().catch(() => []),
-          fetchPublicToilets(30).catch(() => []),
+          eventService.getEvents().catch((e) => { console.error('Events fetch failed', e); showToast('Événements indisponibles'); return []; }),
+          constructionWorksService.getWorks().catch((e) => { console.error('Works fetch failed', e); showToast('Travaux indisponibles'); return []; }),
+          fetchPublicToilets(30).catch((e) => { console.error('Toilets fetch failed', e); showToast('Toilettes publiques indisponibles'); return []; }),
         ]);
 
         const mappedEvents = eventsData.map(mapEventToEvenement);
@@ -195,7 +195,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setIsDataLoading(false);
       }
     },
-    []
+    [showToast]
   );
 
   const loadUserReports = useCallback(async () => {

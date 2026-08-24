@@ -12,6 +12,7 @@ export type Quartier =
   | 'Stade';
 
 export interface User {
+  id?: string;
   prenom: string;
   nom: string;
   email: string;
@@ -22,7 +23,7 @@ export interface User {
   ville: Commune;
   quartier: Quartier;
   complementAdresse?: string;
-  avatar: string; // initials or emoji
+  avatar: string;
 }
 
 export type ViewName = 'home' | 'sig' | 'evenement' | 'contact' | 'profil' | 'collecte' | 'travaux' | 'transports' | 'social';
@@ -41,11 +42,14 @@ export type SignalementCategory =
 
 export interface Signalement {
   id: string;
+  titre?: string;
   categorie: SignalementCategory;
+  category?: SignalementCategory;
   description: string;
   adresse: string;
-  statut: SignalementStatus;
+  statut: SignalementStatus | 'rejete';
   dateCreation: string;
+  date?: string;
   urgent: boolean;
   progression?: number;
   agentNote?: string;
@@ -56,7 +60,7 @@ export interface Signalement {
 export type AssoCategory = 'sport' | 'culture' | 'social' | 'environnement' | 'jeunesse' | 'sante';
 
 export interface Association {
-  id: number;
+  id: number | string;
   nom: string;
   cat: AssoCategory;
   icon: string;
@@ -74,7 +78,7 @@ export interface Association {
 export type AgendaTag = 'culture' | 'sport' | 'social' | 'marche' | 'info';
 
 export interface Evenement {
-  id: number;
+  id: number | string;
   titre: string;
   tag: AgendaTag;
   jour: number;
@@ -86,7 +90,7 @@ export interface Evenement {
 }
 
 export interface NotifItem {
-  id: number;
+  id: number | string;
   read: boolean;
   icon: string;
   text: string;

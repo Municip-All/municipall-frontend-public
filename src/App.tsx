@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import './test/App.css';
-import { AppProvider, useApp } from './test/Appcontext';
-import { AuthScreen } from './test/authscreen';
-import { HomeView } from './test/homeview';
-import { LoadingView } from './test/LoadingView';
-import { PresentationView } from './test/PresentationView';
-import { SignalementView } from './test/signalementview';
-import { EvenementView, ContactView, ProfilView, CollecteView, TravauxView, TransportsView, SocialView } from './test/otherviews';
-import { NotifDrawer, MuniBot } from './test/layout';
+import './views/App.css';
+import { AppProvider, useApp } from './views/Appcontext';
+import { AuthScreen } from './views/authscreen';
+import { HomeView } from './views/homeview';
+import { LoadingView } from './views/LoadingView';
+import { PresentationView } from './views/PresentationView';
+import { SignalementView } from './views/signalementview';
+import { EvenementView, ContactView, ProfilView, CollecteView, TravauxView, TransportsView, SocialView } from './views/otherviews';
+import { NotifDrawer, MuniBot } from './views/layout';
 import { ViewName } from './types';
 
 const VIEW_LABELS: Record<ViewName, string> = {

@@ -1,7 +1,5 @@
 import axios from 'axios';
-
-const PARIS_API =
-  'https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/sanisettesparis/records';
+import { Config } from '../config';
 
 export interface PublicToilet {
   id: string;
@@ -11,7 +9,7 @@ export interface PublicToilet {
 }
 
 export async function fetchPublicToilets(limit = 40): Promise<PublicToilet[]> {
-  const { data } = await axios.get<{ results: Record<string, unknown>[] }>(PARIS_API, {
+  const { data } = await axios.get<{ results: Record<string, unknown>[] }>(Config.PARIS_OPENDATA_API, {
     params: { limit },
   });
 

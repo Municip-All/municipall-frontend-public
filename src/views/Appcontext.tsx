@@ -146,9 +146,9 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setTenantId(cityId);
 
         const [eventsData, worksData, toiletsData] = await Promise.all([
-          eventService.getEvents().catch((e) => { console.error('Events fetch failed', e); showToast('Événements indisponibles'); return []; }),
-          constructionWorksService.getWorks().catch((e) => { console.error('Works fetch failed', e); showToast('Travaux indisponibles'); return []; }),
-          fetchPublicToilets(30).catch((e) => { console.error('Toilets fetch failed', e); showToast('Toilettes publiques indisponibles'); return []; }),
+          eventService.getEvents().catch(() => { showToast('Événements indisponibles'); return []; }),
+          constructionWorksService.getWorks().catch(() => { showToast('Travaux indisponibles'); return []; }),
+          fetchPublicToilets(30).catch(() => { showToast('Toilettes publiques indisponibles'); return []; }),
         ]);
 
         const mappedEvents = eventsData.map(mapEventToEvenement);
@@ -168,8 +168,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           try {
             const t = await transportService.getDisruptions(cityId, coords[0], coords[1]);
             lines = (t.lines ?? []).map(mapTransportLine);
-          } catch (e) {
-            console.warn('Transport fetch failed', e);
+          } catch {
           }
         }
         setTransportLines(lines);
@@ -189,8 +188,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         } else {
           setWeather(null);
         }
-      } catch (error) {
-        console.error('loadPublicData failed', error);
+      } catch {
       } finally {
         setIsDataLoading(false);
       }
@@ -202,8 +200,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
     try {
       const reports = await reportService.getReports();
       setSignalements(reports.map(mapReportToSignalement));
-    } catch (error) {
-      console.error('loadUserReports failed', error);
+    } catch {
       setSignalements([]);
     }
   }, []);
@@ -252,8 +249,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
             authService.logout();
           }
         }
-      } catch (error) {
-        console.error('App init failed', error);
+      } catch {
       } finally {
         setIsAuthLoading(false);
       }

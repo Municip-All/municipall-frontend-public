@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useApp } from './Appcontext';
-import { User, Commune } from '../types';
+import { User, Commune, Quartier } from '../types';
 import { COMMUNES, QUARTIERS_BY_COMMUNE, CP_BY_COMMUNE } from '../data';
 
 /* ─────────────────────────────────────────────────────────────────
@@ -530,7 +530,7 @@ export const AuthScreen: React.FC = () => {
       email: reg.email.trim(), telephone: reg.telephone.trim(),
       dateNaissance: reg.dateNaissance, rue: reg.rue.trim(),
       codePostal: reg.codePostal.trim(), ville: reg.ville as Commune,
-      quartier: reg.quartier as any,
+      quartier: reg.quartier as Quartier,
       complementAdresse: reg.complementAdresse.trim() || undefined,
       avatar: `${reg.prenom[0]}${reg.nom[0]}`.toUpperCase(),
     };

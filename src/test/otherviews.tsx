@@ -3,6 +3,7 @@ import { useApp } from './Appcontext';
 import { TopNav } from './layout';
 import { QUARTIERS_BY_COMMUNE } from '../data';
 import { contactService } from '../services/contactService';
+import { authService } from '../services/authService';
 import { parseOpeningHours } from '../lib/mappers';
 import { Commune, Quartier } from '../types';
 
@@ -573,14 +574,18 @@ export const ProfilView: React.FC = () => {
     showToast('Adresse mise à jour !');
   };
 
-  const handleChangePw = () => {
+  const handleChangePw = async () => {
     setPwError('');
-    if (!curPw)                        { setPwError('Entrez votre mot de passe actuel.'); return; }
-    if (curPw !== 'demo1234')          { setPwError('Mot de passe actuel incorrect.'); return; }
+    if (!curPw)                          { setPwError('Entrez votre mot de passe actuel.'); return; }
     if (!rules.slice(0,3).every(r=>r.ok)) { setPwError('Le nouveau mot de passe ne respecte pas les critères.'); return; }
-    if (newPw !== confPw)              { setPwError('Les mots de passe ne correspondent pas.'); return; }
-    setCurPw(''); setNewPw(''); setConfPw('');
-    showToast('Mot de passe mis à jour !');
+    if (newPw !== confPw)                { setPwError('Les mots de passe ne correspondent pas.'); return; }
+    try {
+      await authService.changePassword(curPw, newPw);
+      setCurPw(''); setNewPw(''); setConfPw('');
+      showToast('Mot de passe mis à jour !');
+    } catch {
+      setPwError('Mot de passe actuel incorrect.');
+    }
   };
 
   const resetInfos   = () => { setPrenom(user?.prenom ?? ''); setNom(user?.nom ?? ''); setEmail(user?.email ?? ''); setTel(user?.telephone ?? ''); setDob(user?.dateNaissance ?? ''); };

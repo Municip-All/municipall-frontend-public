@@ -33,10 +33,4 @@ export const CAT_COLOR: Record<string, string> = {
   sante:        'var(--color-danger)',
 };
 
-export const MODE_COLORS: Record<string, { bg: string; color: string }> = {
-  metro: { bg: '#F08080', color: '#fff' },
-  rer: { bg: '#005FA9', color: '#fff' },
-  train: { bg: '#005FA9', color: '#fff' },
-  tram: { bg: '#7B58B0', color: '#fff' },
-  bus: { bg: '#E83E3E', color: '#fff' },
-};
+

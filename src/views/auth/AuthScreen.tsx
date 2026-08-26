@@ -166,8 +166,8 @@ export const AuthScreen: React.FC = () => {
           )}
 
           <div className="auth__tabs">
-            <div className={`auth__tab${tab === 'login' ? ' auth__tab--on' : ''}`} onClick={() => switchTab('login')}>Connexion</div>
-            <div className={`auth__tab${tab === 'register' ? ' auth__tab--on' : ''}`} onClick={() => switchTab('register')}>Créer un compte</div>
+            <div className={`auth__tab${tab === 'login' ? ' auth__tab--on' : ''}`} onClick={() => switchTab('login')} role="tab" aria-selected={tab === 'login'}>Connexion</div>
+            <div className={`auth__tab${tab === 'register' ? ' auth__tab--on' : ''}`} onClick={() => switchTab('register')} role="tab" aria-selected={tab === 'register'}>Créer un compte</div>
           </div>
 
           {tab === 'login' && (
@@ -186,7 +186,7 @@ export const AuthScreen: React.FC = () => {
               </div>
               <Button type="submit" variant="primary" fullWidth loading={submitting}>Se connecter</Button>
               <div className="auth__switch">
-                Pas encore de compte ? <span onClick={() => switchTab('register')}>Créer un compte</span>
+                Pas encore de compte ? <span onClick={() => switchTab('register')} role="button" tabIndex={0}>Créer un compte</span>
               </div>
             </form>
           )}
@@ -244,7 +244,7 @@ export const AuthScreen: React.FC = () => {
               </div>
               <Button type="submit" variant="primary" fullWidth loading={submitting}>Créer mon compte</Button>
               <div className="auth__switch">
-                Déjà un compte ? <span onClick={() => switchTab('login')}>Se connecter</span>
+                Déjà un compte ? <span onClick={() => switchTab('login')} role="button" tabIndex={0}>Se connecter</span>
               </div>
             </form>
           )}

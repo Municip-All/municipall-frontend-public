@@ -53,7 +53,7 @@ export const HomeView: React.FC = () => {
   return (
     <div className="home">
       <nav className="home__nav">
-        <button type="button" className="home__nav-logo" onClick={() => showView('home')}>Municip<span>'All</span></button>
+        <button type="button" className="home__nav-logo" onClick={() => showView('home')} aria-label="Accueil">Municip<span>'All</span></button>
         <ul className="home__nav-links">
           <li><button type="button" className="home__nav-link home__nav-link--active">Accueil</button></li>
           <li><button type="button" className="home__nav-link" onClick={() => showView('sig')}>Signalements</button></li>
@@ -122,7 +122,7 @@ export const HomeView: React.FC = () => {
         </div>
         <div className="home__services-grid">
           {SERVICES.map((s, i) => (
-            <div key={s.key} className="home__service-card" style={{ '--accent-color': s.accentColor, '--accent-text': s.color, animationDelay: `${.7 + i * .14}s` } as React.CSSProperties} onClick={() => showView(s.key)}>
+            <div key={s.key} className="home__service-card" style={{ '--accent-color': s.accentColor, '--accent-text': s.color, animationDelay: `${.7 + i * .14}s` } as React.CSSProperties} onClick={() => showView(s.key)} role="button" tabIndex={0} aria-label={s.title}>
               <div className="home__service-icon" style={{ background: s.bg, color: s.color }}>{s.icon}</div>
               <h3 className="home__service-title">{s.title}</h3>
               <p className="home__service-desc">{s.desc}</p>
@@ -133,11 +133,11 @@ export const HomeView: React.FC = () => {
 
         <div className="home__section-head" style={{ marginTop: '3.5rem' }}>
           <div><p className="home__section-label">À venir</p><h2 className="home__section-title">Prochains <em>évènements</em>.</h2></div>
-          <span className="home__section-link" onClick={() => showView('evenement')}>Tout l'agenda →</span>
+          <span className="home__section-link" onClick={() => showView('evenement')} role="button" tabIndex={0} aria-label="Tout l'agenda">Tout l'agenda →</span>
         </div>
         <div className="home__events-row">
           {(homeEventPreviews.length ? homeEventPreviews : DEMO_EVENTS).map((ev) => (
-            <div key={ev.id} className="home__event-card" onClick={() => showView('evenement')}>
+            <div key={ev.id} className="home__event-card" onClick={() => showView('evenement')} role="button" tabIndex={0} aria-label={ev.titre}>
               <div className="home__event-date-tag">📅 {ev.date}</div>
               <div className="home__event-title">{ev.emoji} {ev.titre}</div>
               <div className="home__event-meta">📍 {ev.lieu}</div>
@@ -147,7 +147,7 @@ export const HomeView: React.FC = () => {
 
         <div className="home__lower">
           <div>
-            <div className="home__section-head"><div><p className="home__section-label">Suivi citoyen</p><h2 className="home__section-title">Mes signalements <em>actifs</em>.</h2></div><span className="home__section-link" onClick={() => showView('sig')}>Tout voir →</span></div>
+            <div className="home__section-head"><div><p className="home__section-label">Suivi citoyen</p><h2 className="home__section-title">Mes signalements <em>actifs</em>.</h2></div><span className="home__section-link" onClick={() => showView('sig')} role="button" tabIndex={0} aria-label="Tout voir">Tout voir →</span></div>
             <div className="home__sig-list">
               {activeSigs.length === 0 ? (
                 <p className="home__empty">Aucun signalement actif pour le moment.</p>
@@ -156,7 +156,7 @@ export const HomeView: React.FC = () => {
                   const cat = CAT_STYLE[sig.categorie as string] ?? { bg: 'var(--color-primary-bg)', color: 'var(--color-primary-light)', icon: '📍' };
                   const statusColor = STATUS_COLOR[sig.statut] ?? 'var(--color-primary-light)';
                   return (
-                    <div key={sig.id} className="home__sig-card" style={{ '--sig-color': statusColor } as React.CSSProperties} onClick={() => showView('sig')}>
+                    <div key={sig.id} className="home__sig-card" style={{ '--sig-color': statusColor } as React.CSSProperties} onClick={() => showView('sig')} role="button" tabIndex={0} aria-label={sig.description}>
                       <div className="home__sig-cat" style={{ background: cat.bg }}>{cat.icon}</div>
                       <div className="home__sig-body">
                         <div className="home__sig-title">{sig.description}</div>

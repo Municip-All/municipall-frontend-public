@@ -128,7 +128,7 @@ export const MuniBot: React.FC = () => {
                 Assistant municipal · En ligne
               </div>
             </div>
-            <button className="bot-close-btn" onClick={toggleBot}>✕</button>
+            <button className="bot-close-btn" onClick={toggleBot} aria-label="Fermer">✕</button>
           </div>
 
           <div className="bot-messages" ref={listRef}>

@@ -192,6 +192,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           setWeather(null);
         }
       } catch {
+        showToast('Erreur lors du chargement des données');
       } finally {
         setIsDataLoading(false);
       }
@@ -253,6 +254,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
           }
         }
       } catch {
+        showToast('Erreur lors de l\'initialisation');
       } finally {
         setIsAuthLoading(false);
       }

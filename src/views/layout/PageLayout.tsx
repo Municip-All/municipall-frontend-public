@@ -18,7 +18,7 @@ export const TopNav: React.FC<{ active?: ViewName }> = ({ active = 'home' }) => 
 
   return (
     <nav className="pl-nav">
-      <span className="pl-nav-logo" onClick={() => showView('home')}>Municip<span>'All</span></span>
+      <span className="pl-nav-logo" onClick={() => showView('home')} role="button" aria-label="Accueil" tabIndex={0}>Municip<span>'All</span></span>
       <ul className="pl-nav-links">
         {LINKS.map(l => (
           <li key={l.view}>
@@ -34,7 +34,7 @@ export const TopNav: React.FC<{ active?: ViewName }> = ({ active = 'home' }) => 
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="17" height="17"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg>
           <span className="pl-nav-dot" />
         </button>
-        <button type="button" className="pl-nav-avatar" onClick={() => showView('profil')}>{initials.toUpperCase()}</button>
+        <button type="button" className="pl-nav-avatar" onClick={() => showView('profil')} aria-label="Profil">{initials.toUpperCase()}</button>
       </div>
     </nav>
   );

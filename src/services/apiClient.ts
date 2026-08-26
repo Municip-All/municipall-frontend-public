@@ -70,6 +70,7 @@ apiClient.interceptors.response.use(
       isRedirecting = true;
       setStoredToken(null);
       window.location.href = '/';
+      setTimeout(() => { isRedirecting = false; }, 1000);
     }
     return Promise.reject(error);
   }

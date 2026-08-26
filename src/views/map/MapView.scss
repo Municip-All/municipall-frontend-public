@@ -1,0 +1,31 @@
+@use '../../styles/design-system' as *;
+
+.mm-overlay { position: fixed; inset: 0; z-index: 200; display: flex; flex-direction: column; animation: fade-in .22s cubic-bezier(.22,1,.36,1); font-family: var(--font-body); }
+.mm-topbar { height: 66px; flex-shrink: 0; background: rgba(250,250,248,.97); border-bottom: 1px solid var(--color-border); display: flex; align-items: center; gap: 1.25rem; padding: 0 1.75rem; box-shadow: var(--shadow-md); z-index: 201; @media (prefers-color-scheme: dark) { background: rgba(18,18,18,.97); } }
+.mm-back { width: 36px; height: 36px; border-radius: 50%; background: var(--color-surface); border: 1px solid var(--color-border); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: .9rem; flex-shrink: 0; transition: background var(--transition-fast); color: var(--color-ink); &:hover { background: var(--color-neutral-200); } }
+.mm-title { font-family: var(--font-display); font-weight: var(--font-extrabold); font-size: 1.15rem; letter-spacing: -.4px; color: var(--color-ink); flex: 1; em { font-style: italic; color: var(--color-primary-light); } }
+.mm-filters { display: flex; gap: .5rem; }
+.mm-filter { display: flex; align-items: center; gap: .4rem; padding: .42rem 1rem; border-radius: var(--radius-full); border: 1.5px solid var(--color-border); background: transparent; font-family: var(--font-body); font-size: .8rem; font-weight: var(--font-medium); cursor: pointer; transition: all var(--transition-fast); color: var(--color-neutral-500); white-space: nowrap; &:hover { border-color: var(--color-neutral-600); color: var(--color-ink); } &.on.toilet { background: #186D10; border-color: #186D10; color: var(--color-neutral-50); } &.on.tri { background: #3B558F; border-color: #3B558F; color: var(--color-neutral-50); } &.on.dechet { background: #E07B20; border-color: #E07B20; color: var(--color-neutral-50); } }
+.mm-count { font-size: .68rem; font-weight: var(--font-bold); padding: .1rem .45rem; border-radius: 1rem; background: rgba(255,255,255,.25); }
+.mm-filter:not(.on) .mm-count { background: var(--color-neutral-200); color: var(--color-neutral-400); }
+.mm-map-wrap { flex: 1; position: relative; & .leaflet-container { width: 100%; height: 100%; } }
+
+.leaflet-popup-content-wrapper { border-radius: 12px !important; border: 1px solid var(--color-border) !important; box-shadow: var(--shadow-lg) !important; padding: 0 !important; overflow: hidden; }
+.leaflet-popup-content { margin: 0 !important; }
+.leaflet-popup-tip { background: var(--color-bg) !important; }
+.leaflet-popup-close-button { top: 8px !important; right: 8px !important; color: var(--color-neutral-400) !important; font-size: 1rem !important; }
+
+.mm-popup { background: var(--color-bg); padding: .95rem 1.15rem; min-width: 200px; }
+.mm-popup-type { font-size: .62rem; font-weight: var(--font-bold); letter-spacing: .1em; text-transform: uppercase; margin-bottom: .3rem; }
+.mm-popup-name { font-weight: var(--font-bold); font-size: .94rem; color: var(--color-ink); margin-bottom: .18rem; }
+.mm-popup-addr { font-size: .77rem; color: var(--color-neutral-500); margin-bottom: .55rem; }
+.mm-popup-foot { display: flex; align-items: center; gap: .5rem; flex-wrap: wrap; }
+.mm-popup-badge { font-size: .62rem; font-weight: var(--font-semibold); letter-spacing: .06em; text-transform: uppercase; padding: .22rem .65rem; border-radius: var(--radius-full); }
+.mm-popup-hours { font-size: .72rem; color: var(--color-neutral-400); }
+
+.mm-legend { position: absolute; bottom: 1.5rem; left: 1.5rem; z-index: 1000; background: rgba(250,250,248,.96); backdrop-filter: blur(12px); border: 1px solid var(--color-border); border-radius: 12px; padding: .85rem 1.1rem; display: flex; flex-direction: column; gap: .5rem; box-shadow: var(--shadow-md); pointer-events: none; @media (prefers-color-scheme: dark) { background: rgba(18,18,18,.96); } }
+.mm-legend-label { font-size: .6rem; font-weight: var(--font-bold); letter-spacing: .12em; text-transform: uppercase; color: var(--color-neutral-400); margin-bottom: .1rem; }
+.mm-legend-row { display: flex; align-items: center; gap: .6rem; font-size: .78rem; color: var(--color-neutral-500); }
+.mm-legend-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; border: 2px solid var(--color-neutral-50); box-shadow: 0 1px 4px rgba(0,0,0,.18); }
+
+.leaflet-bottom.leaflet-right { bottom: 1.5rem; right: 1.5rem; }

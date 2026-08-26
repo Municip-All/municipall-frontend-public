@@ -4,6 +4,7 @@ import React, {
   useState,
   useCallback,
   useEffect,
+  useRef,
   ReactNode,
 } from 'react';
 import { User, ViewName, AuthView, Signalement, Evenement, Association } from '../types';
@@ -125,6 +126,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [alerts, setAlerts] = useState<AlertTicker[]>([]);
 
   const [toast, setToast] = useState('');
+  const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [botOpen, setBotOpen] = useState(false);
   const [pendingBotMsg, setPendingBotMsg] = useState('');
   const [notifOpen, setNotifOpen] = useState(false);
@@ -133,7 +135,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const showToast = useCallback((msg: string) => {
     setToast(msg);
-    setTimeout(() => setToast(''), 2600);
+    if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    toastTimerRef.current = setTimeout(() => setToast(''), 2600);
   }, []);
 
   const loadPublicData = useCallback(
@@ -341,6 +344,12 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
 
   const toggleNotif = useCallback(() => setNotifOpen((p) => !p), []);
   const closeNotif = useCallback(() => setNotifOpen(false), []);
+
+  useEffect(() => {
+    return () => {
+      if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
+    };
+  }, []);
 
   return (
     <AppContext.Provider

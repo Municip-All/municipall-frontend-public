@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useApp } from './Appcontext';
+import { useApp } from '../../context/AppContext';
 import './PresentationView.scss';
 
 interface PresentationViewProps {

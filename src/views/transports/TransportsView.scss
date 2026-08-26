@@ -1,0 +1,11 @@
+@use '../../styles/design-system' as *;
+
+.tr-card { padding: 1.2rem 1.4rem; animation: fade-up .6s cubic-bezier(.22,1,.36,1) both; }
+.tr-header { display: flex; align-items: center; gap: .9rem; margin-bottom: .65rem; }
+.tr-line-badge { width: 38px; height: 38px; border-radius: 8px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-weight: var(--font-extrabold); font-size: .85rem; font-family: var(--font-body); }
+.tr-line-name { font-weight: var(--font-bold); font-size: .95rem; color: var(--color-ink); }
+.tr-line-type { font-size: .72rem; color: var(--color-neutral-400); margin-top: .1rem; }
+.tr-status-row { display: flex; align-items: center; gap: .7rem; flex-wrap: wrap; }
+.tr-freq { font-size: .76rem; color: var(--color-neutral-500); }
+.tr-alert { margin-top: .65rem; padding: .6rem .9rem; border-radius: 8px; font-size: .76rem; line-height: 1.55; display: flex; align-items: flex-start; gap: .5rem; }
+.tr-alert-icon { flex-shrink: 0; font-size: .95rem; }

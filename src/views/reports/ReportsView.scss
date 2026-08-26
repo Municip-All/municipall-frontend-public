@@ -1,0 +1,27 @@
+@use '../../styles/design-system' as *;
+
+.sv-list { display: flex; flex-direction: column; gap: .9rem; }
+.sv-card { padding: 1.3rem 1.5rem; display: flex; gap: 1.1rem; align-items: flex-start; cursor: default; animation: fade-up .55s cubic-bezier(.22,1,.36,1) both; border-left: 3px solid var(--sv-color, var(--color-border)); }
+.sv-cat-icon { width: 44px; height: 44px; border-radius: 11px; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; flex-shrink: 0; }
+.sv-card-body { flex: 1; min-width: 0; }
+.sv-card-id { font-size: .65rem; color: var(--color-neutral-400); margin-bottom: .2rem; font-variant-numeric: tabular-nums; letter-spacing: .04em; font-weight: var(--font-medium); }
+.sv-card-title { font-weight: var(--font-semibold); font-size: .95rem; color: var(--color-ink); margin-bottom: .22rem; }
+.sv-card-addr { font-size: .78rem; color: var(--color-neutral-500); margin-bottom: .55rem; display: flex; align-items: center; gap: .3rem; }
+.sv-card-foot { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.sv-card-date { font-size: .7rem; color: var(--color-neutral-400); }
+.sv-progress { flex: 1; min-width: 50px; height: 2px; background: var(--color-border); border-radius: 1px; overflow: hidden; }
+.sv-progress-fill { height: 100%; background: var(--sv-color, var(--color-primary-light)); border-radius: 1px; transition: width 1.1s cubic-bezier(.25,.46,.45,.94); }
+.sv-service { font-size: .72rem; color: var(--color-neutral-500); margin-top: .35rem; display: flex; align-items: center; gap: .4rem; &::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--color-neutral-300); flex-shrink: 0; } }
+.sv-agent-note { margin-top: .7rem; padding: .65rem .95rem; background: var(--color-success-bg); border: 1px solid var(--color-success-border); border-radius: 8px; font-size: .76rem; color: var(--color-neutral-500); line-height: 1.55; strong { color: var(--color-success); } }
+
+.sv-mobile-banner { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.4rem; border-radius: 12px; background: linear-gradient(135deg, var(--color-primary-bg), rgba(83,74,183,.06)); border: 1px solid var(--color-primary-border); margin-bottom: 2rem; animation: fade-up .6s cubic-bezier(.22,1,.36,1) .25s both; }
+.sv-mobile-banner-icon { width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-light)); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
+.sv-mobile-banner-body { flex: 1; min-width: 0; }
+.sv-mobile-banner-title { font-weight: var(--font-semibold); font-size: .88rem; color: var(--color-ink); margin-bottom: .18rem; }
+.sv-mobile-banner-sub { font-size: .76rem; color: var(--color-neutral-500); line-height: 1.5; }
+.sv-mobile-badge { display: inline-flex; align-items: center; gap: .35rem; padding: .3rem .8rem; border-radius: var(--radius-full); flex-shrink: 0; background: var(--color-ink); color: var(--color-neutral-50); font-size: .7rem; font-weight: var(--font-semibold); letter-spacing: .04em; white-space: nowrap; }
+
+.sv-empty { padding: 3rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: .9rem; }
+.sv-empty-icon { font-size: 2.4rem; opacity: .35; }
+.sv-empty-title { font-family: var(--font-display); font-weight: var(--font-extrabold); font-size: 1.2rem; letter-spacing: -.4px; color: var(--color-ink); }
+.sv-empty-sub { font-size: .84rem; color: var(--color-neutral-500); line-height: 1.6; max-width: 320px; }

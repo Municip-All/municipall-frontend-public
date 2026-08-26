@@ -1,0 +1,10 @@
+@use '../../styles/design-system' as *;
+
+.soc-card { padding: 1.2rem 1.4rem; animation: fade-up .6s cubic-bezier(.22,1,.36,1) both; }
+.soc-header { display: flex; align-items: flex-start; gap: .9rem; margin-bottom: .55rem; }
+.soc-icon { width: 44px; height: 44px; border-radius: 10px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 1.15rem; }
+.soc-name { font-weight: var(--font-bold); font-size: .96rem; color: var(--color-ink); line-height: 1.25; }
+.soc-cat { font-size: .68rem; font-weight: var(--font-semibold); letter-spacing: .07em; text-transform: uppercase; margin-top: .18rem; }
+.soc-desc { font-size: .78rem; color: var(--color-neutral-500); line-height: 1.6; margin-bottom: .65rem; }
+.soc-foot { display: flex; gap: .7rem; align-items: center; flex-wrap: wrap; }
+.soc-meta { font-size: .72rem; color: var(--color-neutral-400); display: flex; align-items: center; gap: .3rem; }

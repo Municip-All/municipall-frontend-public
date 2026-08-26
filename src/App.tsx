@@ -1,98 +1,54 @@
 import React, { useState, useEffect } from 'react';
-import './views/App.css';
-import { AppProvider, useApp } from './views/Appcontext';
-import { AuthScreen } from './views/authscreen';
-import { HomeView } from './views/homeview';
-import { LoadingView } from './views/LoadingView';
-import { PresentationView } from './views/PresentationView';
-import { SignalementView } from './views/signalementview';
-import { EvenementView, ContactView, ProfilView, CollecteView, TravauxView, TransportsView, SocialView } from './views/otherviews';
-import { NotifDrawer, MuniBot } from './views/layout';
+import { AppProvider, useApp } from './context/AppContext';
+import { AuthScreen } from './views/auth/AuthScreen';
+import { HomeView } from './views/home/HomeView';
+import { LoadingView } from './views/loading/LoadingView';
+import { PresentationView } from './views/presentation/PresentationView';
+import { ReportsView } from './views/reports/ReportsView';
+import { EventsView } from './views/events/EventsView';
+import { ContactView } from './views/contact/ContactView';
+import { ProfileView } from './views/profile/ProfileView';
+import { CollecteView } from './views/collecte/CollecteView';
+import { TravauxView } from './views/travaux/TravauxView';
+import { TransportsView } from './views/transports/TransportsView';
+import { SocialView } from './views/social/SocialView';
+import { NotifDrawer, MuniBot } from './views/layout/PageLayout';
 import { ViewName } from './types';
 
 const VIEW_LABELS: Record<ViewName, string> = {
-  home:       'Accueil',
-  sig:        'Signalements',
-  evenement:  'Évènements',
-  contact:    'Contact',
-  profil:     'Mon Profil',
-  collecte:   'Déchets & Toilettes',
-  travaux:    'Travaux',
+  home: 'Accueil',
+  sig: 'Signalements',
+  evenement: 'Évènements',
+  contact: 'Contact',
+  profil: 'Mon Profil',
+  collecte: 'Déchets & Toilettes',
+  travaux: 'Travaux',
   transports: 'Transports',
-  social:     'Social',
-};
-
-const placeholderCss = `
-  .placeholder-view {
-    position: fixed; inset: 0;
-    background: #FAFAF8;
-    font-family: 'Inter', sans-serif;
-    display: flex; flex-direction: column;
-    align-items: center; justify-content: center;
-    gap: 1.5rem;
-  }
-  .placeholder-eyebrow {
-    font-size: .7rem; font-weight: 600; letter-spacing: .14em;
-    text-transform: uppercase; color: rgba(15,15,14,.3);
-  }
-  .placeholder-title {
-    font-family: 'Playfair Display', serif; font-weight: 800;
-    font-size: 2.8rem; letter-spacing: -1.5px; color: #0F0F0E;
-    text-align: center;
-  }
-  .placeholder-title em { font-style: italic; color: #3B558F; }
-  .placeholder-sub {
-    font-size: .9rem; color: rgba(15,15,14,.4); text-align: center;
-  }
-  .placeholder-back {
-    margin-top: .5rem;
-    padding: .8rem 1.8rem; background: #0F0F0E;
-    border: none; border-radius: 2rem;
-    font-family: 'Inter', sans-serif; font-size: .88rem; font-weight: 500;
-    color: #FAFAF8; cursor: pointer; letter-spacing: .02em;
-    transition: background .2s, transform .2s;
-  }
-  .placeholder-back:hover { background: #1A3A8F; transform: translateY(-2px); }
-`;
-
-const PlaceholderView: React.FC<{ view: ViewName }> = ({ view }) => {
-  const { showView } = useApp();
-  useEffect(() => {
-    const id = 'placeholder-css';
-    if (!document.getElementById(id)) {
-      const s = document.createElement('style');
-      s.id = id; s.textContent = placeholderCss;
-      document.head.appendChild(s);
-    }
-  }, []);
-  return (
-    <div className="placeholder-view">
-      <p className="placeholder-eyebrow">Page en construction</p>
-      <h1 className="placeholder-title"><em>{VIEW_LABELS[view]}</em></h1>
-      <p className="placeholder-sub">Cette page sera bientôt disponible.</p>
-      <button className="placeholder-back" onClick={() => showView('home')}>
-        ← Retour à l'accueil
-      </button>
-    </div>
-  );
+  social: 'Social',
 };
 
 const MainContent: React.FC = () => {
-  const { isAuthenticated, isAuthLoading, currentView } = useApp();
+  const { isAuthenticated, isAuthLoading, currentView, showView } = useApp();
   if (isAuthLoading) return <LoadingView />;
   if (!isAuthenticated) return <AuthScreen />;
 
   switch (currentView) {
-    case 'home':       return <HomeView />;
-    case 'sig':        return <SignalementView />;
-    case 'evenement':  return <EvenementView />;
-    case 'contact':    return <ContactView />;
-    case 'profil':     return <ProfilView />;
-    case 'collecte':   return <CollecteView />;
-    case 'travaux':    return <TravauxView />;
+    case 'home': return <HomeView />;
+    case 'sig': return <ReportsView />;
+    case 'evenement': return <EventsView />;
+    case 'contact': return <ContactView />;
+    case 'profil': return <ProfileView />;
+    case 'collecte': return <CollecteView />;
+    case 'travaux': return <TravauxView />;
     case 'transports': return <TransportsView />;
-    case 'social':     return <SocialView />;
-    default:           return <PlaceholderView view={currentView as ViewName} />;
+    case 'social': return <SocialView />;
+    default: return (
+      <div style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1.5rem', background: 'var(--color-bg)', fontFamily: 'var(--font-body)' }}>
+        <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '2.8rem', letterSpacing: '-1.5px', color: 'var(--color-ink)' }}><em>{VIEW_LABELS[currentView as ViewName]}</em></h1>
+        <p style={{ fontSize: '.9rem', color: 'var(--color-neutral-500)' }}>Cette page sera bientôt disponible.</p>
+        <button style={{ marginTop: '.5rem', padding: '.8rem 1.8rem', background: 'var(--color-ink)', border: 'none', borderRadius: '2rem', fontFamily: 'var(--font-body)', fontSize: '.88rem', fontWeight: 500, color: 'var(--color-neutral-50)', cursor: 'pointer' }} onClick={() => showView('home')}>← Retour à l'accueil</button>
+      </div>
+    );
   }
 };
 
@@ -108,11 +64,11 @@ const App: React.FC = () => {
 
   return (
     <AppProvider>
-      {stage === 'loading'      && <LoadingView />}
+      {stage === 'loading' && <LoadingView />}
       {stage === 'presentation' && <PresentationView onComplete={handlePresentationComplete} />}
-      {stage === 'app'          && <MainContent />}
-      {stage === 'app'          && <NotifDrawer />}
-      {stage === 'app'          && <MuniBot />}
+      {stage === 'app' && <MainContent />}
+      {stage === 'app' && <NotifDrawer />}
+      {stage === 'app' && <MuniBot />}
     </AppProvider>
   );
 };

@@ -334,12 +334,7 @@ export const TopNav: React.FC<{ active?: ViewName }> = ({ active = 'home' }) => 
   );
 };
 
-export const BottomNav: React.FC      = () => null;
-export const DesktopSidebar: React.FC = () => null;
-export const Toast: React.FC          = () => null;
 export { MuniBot } from './chatbot';
-export const AppEdgeRules: React.FC   = () => null;
-export const FloatingMapBtn: React.FC = () => null;
 
 /* ── NotifDrawer ───────────────────────────────────── */
 

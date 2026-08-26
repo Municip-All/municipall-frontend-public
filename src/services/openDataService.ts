@@ -11,6 +11,7 @@ export interface PublicToilet {
 export async function fetchPublicToilets(limit = 40): Promise<PublicToilet[]> {
   const { data } = await axios.get<{ results: Record<string, unknown>[] }>(Config.PARIS_OPENDATA_API, {
     params: { limit },
+    timeout: 10000,
   });
 
   const markers: PublicToilet[] = [];

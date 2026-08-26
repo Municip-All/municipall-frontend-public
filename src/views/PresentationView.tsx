@@ -128,13 +128,18 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
     tick();
     const grow = () => { ring.style.width = '56px'; ring.style.height = '56px'; };
     const shrink = () => { ring.style.width = '36px'; ring.style.height = '36px'; };
-    document.querySelectorAll('a, button').forEach(el => {
+    const interactiveEls = document.querySelectorAll('a, button');
+    interactiveEls.forEach(el => {
       el.addEventListener('mouseenter', grow);
       el.addEventListener('mouseleave', shrink);
     });
     return () => {
       document.removeEventListener('mousemove', onMove);
       cancelAnimationFrame(raf);
+      interactiveEls.forEach(el => {
+        el.removeEventListener('mouseenter', grow);
+        el.removeEventListener('mouseleave', shrink);
+      });
     };
   }, []);
 

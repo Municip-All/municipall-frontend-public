@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useApp } from '../../context/AppContext';
@@ -128,13 +128,14 @@ export const MapModal: React.FC<MapModalProps> = ({ onClose }) => {
         </div>
       </div>
       <div className="mm-map-wrap">
-        <MapContainer center={center} zoom={15} style={{ width: '100%', height: '100%' }} zoomControl={true}>
+        <MapContainer center={center} zoom={15} style={{ width: '100%', height: '100%' }} zoomControl={false}>
           <TileLayer
             url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
             subdomains="abcd"
             maxZoom={20}
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
           />
+          <ZoomControl position="bottomright" />
           {visible.map((pt, i) => {
             const col = pointColor(pt.type);
             return (

@@ -3,19 +3,10 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useApp } from '../../context/AppContext';
+import { mergeMapPoints, type MapPoint } from '../../lib/mappers';
 import './MapView.scss';
 
-type PointType = 'toilet' | 'tri' | 'dechet';
-
-interface MapPoint {
-  type: PointType;
-  name: string;
-  address: string;
-  lat: number;
-  lng: number;
-  open?: boolean;
-  hours?: string;
-}
+type PointType = MapPoint['type'];
 
 const MAP_POINTS: Record<string, MapPoint[]> = {
   'Kremlin-Bicêtre': [
@@ -30,6 +21,9 @@ const MAP_POINTS: Record<string, MapPoint[]> = {
     { type: 'tri', name: 'Point tri — Av. Clemenceau', address: '45 Avenue Clemenceau', lat: 48.8132, lng: 2.3605 },
     { type: 'tri', name: 'Conteneurs — Quartier Sud', address: 'Rue Paul Vaillant-Couturier', lat: 48.8118, lng: 2.3598 },
     { type: 'dechet', name: 'Déchetterie Municipale', address: 'Zone industrielle, Rue des Ateliers', lat: 48.8108, lng: 2.3578, open: true, hours: 'Mar–Sam 9h–18h' },
+    { type: 'eau', name: 'Fontaine — Place du Marché', address: 'Place centrale', lat: 48.8139, lng: 2.3615, open: true },
+    { type: 'eau', name: 'Fontaine — Parc Central', address: 'Allée des Platanes', lat: 48.8158, lng: 2.3590, open: true },
+    { type: 'eau', name: 'Brumisateur — Parc Henri-Barbusse', address: 'Parc Henri-Barbusse', lat: 48.8120, lng: 2.3570, open: true, hours: '10h – 20h (été)' },
   ],
   'Bouffémont': [
     { type: 'toilet', name: 'Mairie — Toilettes publiques', address: 'Place de la Mairie', lat: 49.0814, lng: 2.3556, open: true, hours: '8h30 – 17h' },
@@ -70,6 +64,7 @@ function makeIcon(type: PointType, visible: boolean): L.DivIcon {
     toilet: { bg: '#4A6741', border: '#2E4029', emoji: '🚻' },
     tri: { bg: '#7A9B6D', border: '#4A6741', emoji: '♻️' },
     dechet: { bg: '#D9A441', border: '#8C6516', emoji: '🗑️' },
+    eau: { bg: '#7A8FA6', border: '#5A7291', emoji: '💧' },
   };
   const c = cfg[type];
   const html = visible
@@ -81,11 +76,13 @@ function makeIcon(type: PointType, visible: boolean): L.DivIcon {
 function pointColor(type: PointType) {
   if (type === 'toilet') return { bg: 'rgba(74,103,65,.12)', color: '#4A6741' };
   if (type === 'tri') return { bg: 'rgba(122,155,109,.14)', color: '#4A6741' };
+  if (type === 'eau') return { bg: 'rgba(122,143,166,.16)', color: '#5A7291' };
   return { bg: 'rgba(217,164,65,.14)', color: '#8C6516' };
 }
 function typeLabel(type: PointType) {
   if (type === 'toilet') return 'Toilette publique';
   if (type === 'tri') return 'Point de tri';
+  if (type === 'eau') return "Point d'eau";
   return 'Déchetterie';
 }
 
@@ -97,9 +94,9 @@ export const MapModal: React.FC<MapModalProps> = ({ onClose }) => {
   const { user, mapCenter, mapPoints, cityConfig } = useApp();
   const commune = user?.ville ?? cityConfig?.officialName ?? cityConfig?.name ?? 'Kremlin-Bicêtre';
   const center = mapCenter;
-  const points = mapPoints.length ? mapPoints : (MAP_POINTS[commune] ?? []);
+  const points = mergeMapPoints(mapPoints, MAP_POINTS[commune] ?? []);
 
-  const [active, setActive] = useState<Set<PointType>>(new Set<PointType>(['toilet', 'tri', 'dechet']));
+  const [active, setActive] = useState<Set<PointType>>(new Set<PointType>(['toilet', 'tri', 'dechet', 'eau']));
 
   const toggle = useCallback((t: PointType) => {
     setActive(prev => {
@@ -127,11 +124,17 @@ export const MapModal: React.FC<MapModalProps> = ({ onClose }) => {
           <button className={`mm-filter${active.has('toilet') ? ' on toilet' : ''}`} onClick={() => toggle('toilet')}>🚻 Toilettes <span className="mm-count">{count('toilet')}</span></button>
           <button className={`mm-filter${active.has('tri') ? ' on tri' : ''}`} onClick={() => toggle('tri')}>♻️ Points de tri <span className="mm-count">{count('tri')}</span></button>
           <button className={`mm-filter${active.has('dechet') ? ' on dechet' : ''}`} onClick={() => toggle('dechet')}>🗑️ Déchetteries <span className="mm-count">{count('dechet')}</span></button>
+          <button className={`mm-filter${active.has('eau') ? ' on eau' : ''}`} onClick={() => toggle('eau')}>💧 Points d'eau <span className="mm-count">{count('eau')}</span></button>
         </div>
       </div>
       <div className="mm-map-wrap">
         <MapContainer center={center} zoom={15} style={{ width: '100%', height: '100%' }} zoomControl={true}>
-          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' />
+          <TileLayer
+            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+            subdomains="abcd"
+            maxZoom={20}
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>'
+          />
           {visible.map((pt, i) => {
             const col = pointColor(pt.type);
             return (
@@ -142,7 +145,7 @@ export const MapModal: React.FC<MapModalProps> = ({ onClose }) => {
                     <div className="mm-popup-name">{pt.name}</div>
                     <div className="mm-popup-addr">{pt.address}</div>
                     <div className="mm-popup-foot">
-                      {pt.type === 'toilet' && (<span className="mm-popup-badge" style={pt.open ? { background: 'rgba(74,103,65,.14)', color: '#4A6741' } : { background: 'rgba(198,93,78,.14)', color: '#B04A3C' }}>{pt.open ? 'Ouvert' : 'Fermé'}</span>)}
+                      {(pt.type === 'toilet' || pt.type === 'eau') && (<span className="mm-popup-badge" style={pt.open ? { background: 'rgba(74,103,65,.14)', color: '#4A6741' } : { background: 'rgba(198,93,78,.14)', color: '#B04A3C' }}>{pt.open ? 'Ouvert' : 'Fermé'}</span>)}
                       {pt.hours && <span className="mm-popup-hours">🕐 {pt.hours}</span>}
                     </div>
                   </div>
@@ -156,6 +159,7 @@ export const MapModal: React.FC<MapModalProps> = ({ onClose }) => {
           <div className="mm-legend-row"><div className="mm-legend-dot" style={{ background: '#4A6741' }} />Toilettes publiques</div>
           <div className="mm-legend-row"><div className="mm-legend-dot" style={{ background: '#7A9B6D' }} />Points de tri</div>
           <div className="mm-legend-row"><div className="mm-legend-dot" style={{ background: '#D9A441' }} />Déchetteries</div>
+          <div className="mm-legend-row"><div className="mm-legend-dot" style={{ background: '#7A8FA6' }} />Points d'eau</div>
         </div>
       </div>
     </div>

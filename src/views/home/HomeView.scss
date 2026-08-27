@@ -43,10 +43,10 @@
   &__weather-day-temp { font-weight: var(--font-semibold); font-size: .7rem; color: var(--color-neutral-500); }
   &__weather-day-name { color: var(--color-neutral-400); font-size: .6rem; margin-top: .1rem; }
 
-  &__stats-strip { background: var(--color-neutral-800); padding: 0 3.5rem; display: flex; align-items: stretch; border-bottom: 1px solid rgba(255,255,255,.06); overflow: hidden; }
-  &__stat { flex: 1; padding: 1.6rem 0; text-align: center; border-right: 1px solid rgba(255,255,255,.07); animation: counter-glow 3.5s ease-in-out infinite; transition: background var(--transition-base); &:last-child { border-right: none; } &:hover { background: rgba(255,255,255,.03); } }
-  &__stat-num { font-family: var(--font-display); font-weight: var(--font-extrabold); font-size: 2rem; color: var(--color-neutral-50); letter-spacing: -1px; line-height: 1; }
-  &__stat-label { font-size: .68rem; font-weight: var(--font-medium); letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.35); margin-top: .35rem; }
+  &__stats-strip { background: linear-gradient(90deg, var(--color-primary-light) 0%, var(--color-primary) 55%, var(--color-matcha-700) 100%); padding: 0 3.5rem; display: flex; align-items: stretch; border-bottom: 1px solid rgba(46,64,41,.22); overflow: hidden; box-shadow: 0 10px 30px -18px rgba(46,64,41,.45); }
+  &__stat { flex: 1; padding: 1.6rem 0; text-align: center; border-right: 1px solid rgba(253,252,249,.18); animation: counter-glow 3.5s ease-in-out infinite; transition: background var(--transition-base); &:last-child { border-right: none; } &:hover { background: rgba(253,252,249,.08); } }
+  &__stat-num { font-family: var(--font-display); font-weight: var(--font-extrabold); font-size: 2rem; color: var(--color-cream-50); letter-spacing: -1px; line-height: 1; }
+  &__stat-label { font-size: .68rem; font-weight: var(--font-medium); letter-spacing: .1em; text-transform: uppercase; color: rgba(253,252,249,.72); margin-top: .35rem; }
 
   &__ticker { background: linear-gradient(90deg, var(--color-primary), var(--color-primary-light)); padding: .6rem 0; overflow: hidden; position: relative; &::before, &::after { content: ''; position: absolute; top: 0; bottom: 0; width: 60px; z-index: 1; pointer-events: none; } &::before { left: 0; background: linear-gradient(90deg, var(--color-primary), transparent); } &::after { right: 0; background: linear-gradient(270deg, var(--color-primary-light), transparent); } }
   &__ticker-track { display: flex; gap: 0; white-space: nowrap; animation: ticker-scroll 48s linear infinite; width: max-content; }

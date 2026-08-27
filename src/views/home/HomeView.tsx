@@ -97,8 +97,8 @@ export const HomeView: React.FC = () => {
 
       <div className="home__stats-strip">
         <div className="home__stat"><div className="home__stat-num">{signalements.length}</div><div className="home__stat-label">Signalements</div></div>
-        <div className="home__stat"><div className="home__stat-num" style={{ color: 'var(--color-primary-lighter)' }}>{activeSigs.length}</div><div className="home__stat-label">En cours</div></div>
-        <div className="home__stat"><div className="home__stat-num" style={{ color: 'var(--color-success-light)' }}>{signalements.filter(s => s.statut === 'resolu').length}</div><div className="home__stat-label">Résolus</div></div>
+        <div className="home__stat"><div className="home__stat-num">{activeSigs.length}</div><div className="home__stat-label">En cours</div></div>
+        <div className="home__stat"><div className="home__stat-num">{signalements.filter(s => s.statut === 'resolu').length}</div><div className="home__stat-label">Résolus</div></div>
       </div>
 
       <div className="home__ticker" role="marquee" aria-label="Alertes en direct">

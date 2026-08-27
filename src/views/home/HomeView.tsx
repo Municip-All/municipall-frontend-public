@@ -58,6 +58,8 @@ export const HomeView: React.FC = () => {
   const hour = now.getHours();
   const greeting = hour < 12 ? 'Bonjour' : hour < 18 ? 'Bon après-midi' : 'Bonsoir';
   const activeSigs = signalements.filter(s => s.statut !== 'resolu');
+  const resolvedCount = signalements.filter(s => s.statut === 'resolu').length;
+  const resolvedRate = signalements.length ? Math.round((resolvedCount / signalements.length) * 100) : 0;
   const initials = user ? (user.prenom[0] ?? '') + (user.nom[0] ?? '') : 'M';
   const tickerAlerts = apiAlerts.length ? apiAlerts : ALERTS;
   const allAlerts = [...tickerAlerts, ...tickerAlerts];
@@ -90,6 +92,11 @@ export const HomeView: React.FC = () => {
             <Button variant="primary" onClick={() => showView('sig')}>Signaler un problème</Button>
             <Button variant="secondary" onClick={() => setShowMap(true)}>Voir la carte</Button>
           </div>
+          <ul className="home__hero-trust">
+            <li>🔍 Suivi transparent</li>
+            <li>🔒 Données RGPD</li>
+            <li>🇫🇷 Hébergées en France</li>
+          </ul>
         </div>
         <div className="home__weather">
           <div className="home__weather-label">Météo · {ville}</div>
@@ -141,6 +148,27 @@ export const HomeView: React.FC = () => {
               <span className="home__service-arrow" style={{ color: s.color }}>Accéder →</span>
             </div>
           ))}
+        </div>
+
+        <div className="home__pulse">
+          <div className="home__pulse-ring">
+            <svg viewBox="0 0 120 120" role="img" aria-label={`Taux de résolution : ${resolvedRate} pour cent`}>
+              <circle className="home__pulse-ring-bg" cx="60" cy="60" r="52" />
+              <circle className="home__pulse-ring-val" cx="60" cy="60" r="52" strokeDasharray={`${(resolvedRate / 100) * 326.7} 326.7`} />
+            </svg>
+            <div className="home__pulse-pct">{resolvedRate}<span>%</span></div>
+          </div>
+          <div className="home__pulse-body">
+            <p className="home__section-label">Impact collectif</p>
+            <h2 className="home__section-title">La ville en <em>action</em>.</h2>
+            <p className="home__pulse-text">{resolvedCount > 0 ? `${resolvedCount} problème${resolvedCount > 1 ? 's' : ''} déjà résolu${resolvedCount > 1 ? 's' : ''} grâce aux signalements des citoyens.` : 'Chaque signalement compte — participez à une ville plus agréable au quotidien.'}</p>
+            <Button variant="secondary" onClick={() => showView('sig')}>Contribuer moi aussi</Button>
+          </div>
+          <div className="home__pulse-stats">
+            <div className="home__pulse-stat"><span className="home__pulse-stat-num">{signalements.length}</span><span className="home__pulse-stat-lbl">Signalements</span></div>
+            <div className="home__pulse-stat"><span className="home__pulse-stat-num">{activeSigs.length}</span><span className="home__pulse-stat-lbl">En cours</span></div>
+            <div className="home__pulse-stat"><span className="home__pulse-stat-num">{resolvedCount}</span><span className="home__pulse-stat-lbl">Résolus</span></div>
+          </div>
         </div>
 
         <div className="home__section-head" style={{ marginTop: '3.5rem' }}>

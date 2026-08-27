@@ -29,11 +29,11 @@ const WASTE_ICONS: Record<string, string> = {
 };
 
 const MODE_COLORS: Record<string, { bg: string; color: string }> = {
-  metro: { bg: '#F08080', color: '#fff' },
-  rer: { bg: '#005FA9', color: '#fff' },
-  train: { bg: '#005FA9', color: '#fff' },
-  tram: { bg: '#7B58B0', color: '#fff' },
-  bus: { bg: '#E83E3E', color: '#fff' },
+  metro: { bg: '#B04A3C', color: '#fff' },
+  rer: { bg: '#5A7291', color: '#fff' },
+  train: { bg: '#5A7291', color: '#fff' },
+  tram: { bg: '#4A6741', color: '#fff' },
+  bus: { bg: '#8C6516', color: '#fff' },
 };
 
 const ASSO_ICONS: Record<string, string> = {
@@ -116,7 +116,7 @@ export function mapAssociation(a: {
     nom: a.name,
     cat: (cat in ASSO_ICONS ? cat : 'social') as AssoCategory,
     icon: ASSO_ICONS[cat] ?? '🏛',
-    color: '#3B558F',
+    color: '#4A6741',
     desc: a.description || '',
     lieu: a.address || '',
     tel: a.contactPhone,
@@ -156,8 +156,8 @@ export function mapConstructionWork(w: ApiConstructionWork): TravauxItem {
     titre: w.title,
     addr: w.locationName,
     type: w.impactType || 'Travaux',
-    typeBg: 'rgba(59,85,143,.1)',
-    typeColor: '#3B558F',
+    typeBg: 'rgba(122,155,109,.14)',
+    typeColor: '#4A6741',
     statut: enCours ? 'en-cours' : 'planifie',
     prog: enCours ? workProgress(start, end) : 0,
     debut: start.toLocaleDateString('fr-FR', { day: 'numeric', month: 'short' }),
@@ -179,7 +179,7 @@ export type TransportLigne = {
 
 export function mapTransportLine(line: TransportLineDisruption): TransportLigne {
   const disrupted = line.status === 'disrupted';
-  const colors = MODE_COLORS[line.mode] ?? { bg: '#3B558F', color: '#fff' };
+  const colors = MODE_COLORS[line.mode] ?? { bg: '#4A6741', color: '#fff' };
   return {
     num: line.lineName.split(' ')[0] || line.lineId,
     nom: line.lineName,

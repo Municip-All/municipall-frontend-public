@@ -22,9 +22,9 @@ export const SocialView: React.FC = () => {
   return (
     <PageLayout active="home">
       <section className="pl-hero">
-        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(82,214,138,.1)' }} />
-        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(147,112,219,.07)' }} />
-        <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(255,179,71,.05)' }} />
+        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(122,155,109,.12)' }} />
+        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(122,143,166,.08)' }} />
+        <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(217,164,65,.05)' }} />
         <div className="pl-hero-ghost">Associations</div>
         <div className="pl-hero-left">
           <p className="pl-eyebrow">Vie locale · Associations</p>
@@ -34,7 +34,7 @@ export const SocialView: React.FC = () => {
         <div className="pl-hero-right">
           <div className="pl-hero-stats">
             <div className="pl-stat-block"><div className="pl-stat-num">{associations.length}<em>+</em></div><div className="pl-stat-label">Associations</div></div>
-            <div className="pl-stat-block"><div className="pl-stat-num" style={{ color: '#52D68A' }}>{associations.length}</div><div className="pl-stat-label">Membres</div></div>
+            <div className="pl-stat-block"><div className="pl-stat-num" style={{ color: 'var(--color-matcha-300)' }}>{associations.length}</div><div className="pl-stat-label">Membres</div></div>
           </div>
         </div>
       </section>

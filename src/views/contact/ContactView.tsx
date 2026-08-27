@@ -42,9 +42,9 @@ export const ContactView: React.FC = () => {
   return (
     <PageLayout active="contact">
       <section className="pl-hero">
-        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(59,85,143,.08)' }} />
-        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(24,109,16,.06)' }} />
-        <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(224,123,32,.04)' }} />
+        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(122,155,109,.1)' }} />
+        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(74,103,65,.07)' }} />
+        <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(217,164,65,.05)' }} />
         <div className="pl-hero-ghost">Mairie</div>
         <div className="pl-hero-left">
           <p className="pl-eyebrow">Administration · Contact</p>

@@ -12,9 +12,9 @@ export const TravauxView: React.FC = () => {
   return (
     <PageLayout active="home">
       <section className="pl-hero">
-        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(224,123,32,.09)' }} />
-        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(157,110,70,.07)' }} />
-        <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(59,85,143,.05)' }} />
+        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(217,164,65,.1)' }} />
+        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(138,106,59,.07)' }} />
+        <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(122,155,109,.06)' }} />
         <div className="pl-hero-ghost">Travaux</div>
         <div className="pl-hero-left">
           <p className="pl-eyebrow">Infrastructure · Chantiers</p>
@@ -24,7 +24,7 @@ export const TravauxView: React.FC = () => {
         <div className="pl-hero-right">
           <div className="pl-hero-stats">
             <div className="pl-stat-block"><div className="pl-stat-num">{travaux.length}</div><div className="pl-stat-label">Total chantiers</div></div>
-            <div className="pl-stat-block"><div className="pl-stat-num" style={{ color: '#E07B20' }}>{enCours}</div><div className="pl-stat-label">En cours</div></div>
+            <div className="pl-stat-block"><div className="pl-stat-num" style={{ color: 'var(--color-warning)' }}>{enCours}</div><div className="pl-stat-label">En cours</div></div>
             <div className="pl-stat-block"><div className="pl-stat-num" style={{ color: 'var(--color-primary-light)' }}>{planifie}</div><div className="pl-stat-label">Planifiés</div></div>
           </div>
         </div>

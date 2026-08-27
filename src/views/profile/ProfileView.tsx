@@ -43,7 +43,7 @@ export const ProfileView: React.FC = () => {
     { label: 'Confirmation identique', ok: confPw.length > 0 && newPw === confPw },
   ];
   const pwStrength = rules.filter(r => r.ok).length;
-  const strengthColor = ['transparent','var(--color-danger)','#E07B20','#E07B20','var(--color-success)'][pwStrength];
+  const strengthColor = ['transparent','var(--color-danger)','var(--color-warning)','var(--color-warning)','var(--color-success)'][pwStrength];
   const strengthLabel = ['','Faible','Moyen','Bon','Fort'][pwStrength];
 
   const handleSaveInfos = () => { if (!prenom.trim() || !nom.trim() || !email.trim()) return; updateUser({ prenom: prenom.trim(), nom: nom.trim(), email: email.trim(), telephone: tel.trim(), dateNaissance: dob, avatar: (prenom.trim()[0] ?? '') + (nom.trim()[0] ?? '') }); showToast('Informations mises à jour !'); };
@@ -61,9 +61,9 @@ export const ProfileView: React.FC = () => {
   return (
     <PageLayout active="home">
       <section className="pl-hero">
-        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(59,85,143,.1)' }} />
-        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(83,74,183,.06)' }} />
-        <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(157,110,70,.05)' }} />
+        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(122,155,109,.12)' }} />
+        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(122,143,166,.07)' }} />
+        <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(217,164,65,.05)' }} />
         <div className="pl-hero-ghost">Profil</div>
         <div className="pl-hero-left">
           <p className="pl-eyebrow">Espace personnel · Compte citoyen</p>
@@ -136,9 +136,9 @@ export const ProfileView: React.FC = () => {
               </div>
               <div className="pr-stats-grid">
                 <div className="pr-stat"><div className="pr-stat-accent" style={{ background: 'var(--color-primary-light)' }} /><div className="pr-stat-icon">📋</div><div className="pr-stat-num">{signalements.length}<em>+</em></div><div className="pr-stat-label">Total signalements</div></div>
-                <div className="pr-stat"><div className="pr-stat-accent" style={{ background: '#E07B20' }} /><div className="pr-stat-icon">⏳</div><div className="pr-stat-num" style={{ color: '#E07B20' }}>{enCours}</div><div className="pr-stat-label">En cours</div></div>
+                <div className="pr-stat"><div className="pr-stat-accent" style={{ background: 'var(--color-warning-light)' }} /><div className="pr-stat-icon">⏳</div><div className="pr-stat-num" style={{ color: 'var(--color-warning)' }}>{enCours}</div><div className="pr-stat-label">En cours</div></div>
                 <div className="pr-stat"><div className="pr-stat-accent" style={{ background: 'var(--color-success)' }} /><div className="pr-stat-icon">✅</div><div className="pr-stat-num" style={{ color: 'var(--color-success)' }}>{resolus}</div><div className="pr-stat-label">Résolus</div></div>
-                <div className="pr-stat"><div className="pr-stat-accent" style={{ background: '#9370DB' }} /><div className="pr-stat-icon">📅</div><div className="pr-stat-num" style={{ color: '#9370DB' }}>3</div><div className="pr-stat-label">Évènements</div></div>
+                <div className="pr-stat"><div className="pr-stat-accent" style={{ background: 'var(--color-matcha-300)' }} /><div className="pr-stat-icon">📅</div><div className="pr-stat-num" style={{ color: 'var(--color-purple)' }}>3</div><div className="pr-stat-label">Évènements</div></div>
               </div>
               <div className="pr-sidebar-footer">
                 <p className="pr-contrib-text">Membre actif depuis 2025. Vos signalements contribuent à améliorer le cadre de vie de toute la commune. Merci pour votre engagement !</p>

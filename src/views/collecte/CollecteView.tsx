@@ -10,9 +10,9 @@ export const CollecteView: React.FC = () => {
   return (
     <PageLayout active="home">
       <section className="pl-hero">
-        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(24,109,16,.09)' }} />
-        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(59,85,143,.06)' }} />
-        <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(157,110,70,.05)' }} />
+        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(74,103,65,.1)' }} />
+        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(122,155,109,.07)' }} />
+        <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(217,164,65,.05)' }} />
         <div className="pl-hero-ghost">Déchets</div>
         <div className="pl-hero-left">
           <p className="pl-eyebrow">Services · Propreté urbaine</p>

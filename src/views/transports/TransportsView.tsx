@@ -11,9 +11,9 @@ export const TransportsView: React.FC = () => {
   return (
     <PageLayout active="home">
       <section className="pl-hero">
-        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(0,95,169,.09)' }} />
-        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(59,85,143,.06)' }} />
-        <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(232,62,62,.05)' }} />
+        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(122,143,166,.1)' }} />
+        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(122,155,109,.07)' }} />
+        <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(198,93,78,.05)' }} />
         <div className="pl-hero-ghost">Lignes</div>
         <div className="pl-hero-left">
           <p className="pl-eyebrow">Mobilité · Réseau local</p>

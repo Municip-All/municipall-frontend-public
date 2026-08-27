@@ -177,13 +177,13 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
                 <filter id="pvb2"><feGaussianBlur stdDeviation="28" /></filter>
                 <filter id="pvb3"><feGaussianBlur stdDeviation="12" /></filter>
               </defs>
-              <ellipse cx="600" cy="340" rx="320" ry="260" fill="#C8D5F0" opacity="0.45" filter="url(#pvb2)" />
-              <ellipse cx="680" cy="500" rx="180" ry="140" fill="#E8C97A" opacity="0.22" filter="url(#pvb2)" />
-              <ellipse cx="450" cy="650" rx="200" ry="160" fill="#A8D4B8" opacity="0.3" filter="url(#pvb1)" />
-              <ellipse cx="580" cy="220" rx="140" ry="100" fill="#3B558F" opacity="0.1" filter="url(#pvb1)" />
-              <ellipse cx="700" cy="720" rx="120" ry="90" fill="#F4BACC" opacity="0.25" filter="url(#pvb2)" />
-              <path d="M480,280 Q540,200 620,310 Q700,420 580,480 Q460,540 440,440 Q420,340 480,280Z" fill="#E8EDF8" opacity="0.35" filter="url(#pvb3)" />
-              <path d="M560,480 Q640,420 700,510 Q760,600 680,660 Q600,720 550,650 Q500,580 560,480Z" fill="#D4E0F8" opacity="0.3" filter="url(#pvb3)" />
+              <ellipse cx="600" cy="340" rx="320" ry="260" fill="#DCE8D5" opacity="0.45" filter="url(#pvb2)" />
+              <ellipse cx="680" cy="500" rx="180" ry="140" fill="#EFD9A8" opacity="0.22" filter="url(#pvb2)" />
+              <ellipse cx="450" cy="650" rx="200" ry="160" fill="#C4DCBA" opacity="0.3" filter="url(#pvb1)" />
+              <ellipse cx="580" cy="220" rx="140" ry="100" fill="#7A9B6D" opacity="0.1" filter="url(#pvb1)" />
+              <ellipse cx="700" cy="720" rx="120" ry="90" fill="#EFD3CC" opacity="0.25" filter="url(#pvb2)" />
+              <path d="M480,280 Q540,200 620,310 Q700,420 580,480 Q460,540 440,440 Q420,340 480,280Z" fill="#E3EDDE" opacity="0.35" filter="url(#pvb3)" />
+              <path d="M560,480 Q640,420 700,510 Q760,600 680,660 Q600,720 550,650 Q500,580 560,480Z" fill="#D5E3CC" opacity="0.3" filter="url(#pvb3)" />
             </svg>
           </div>
 
@@ -262,11 +262,11 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
           <div className="pv-solutions-grid">
             <div className="pv-sol-card reveal">
               <svg className="pv-sol-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="48" height="48" rx="12" fill="#E8EDF8" />
-                <rect x="12" y="14" width="24" height="3" rx="1.5" fill="#3B558F" />
-                <rect x="12" y="20" width="18" height="3" rx="1.5" fill="#7B8FCC" />
-                <rect x="12" y="26" width="21" height="3" rx="1.5" fill="#7B8FCC" />
-                <circle cx="36" cy="32" r="6" fill="#3B558F" />
+                <rect width="48" height="48" rx="12" fill="#E3EDDE" />
+                <rect x="12" y="14" width="24" height="3" rx="1.5" fill="#4A6741" />
+                <rect x="12" y="20" width="18" height="3" rx="1.5" fill="#A8C69F" />
+                <rect x="12" y="26" width="21" height="3" rx="1.5" fill="#A8C69F" />
+                <circle cx="36" cy="32" r="6" fill="#4A6741" />
                 <rect x="34.5" y="29.5" width="3" height="5" rx="1" fill="white" />
               </svg>
               <p className="pv-sol-num">01</p>
@@ -275,9 +275,9 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
             </div>
             <div className="pv-sol-card reveal reveal-delay-1">
               <svg className="pv-sol-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="48" height="48" rx="12" fill="#EAF4ED" />
-                <circle cx="24" cy="24" r="10" stroke="#186D10" strokeWidth="2" fill="none" />
-                <path d="M19 24l4 4 7-7" stroke="#186D10" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+                <rect width="48" height="48" rx="12" fill="#E3EDDE" />
+                <circle cx="24" cy="24" r="10" stroke="#4A6741" strokeWidth="2" fill="none" />
+                <path d="M19 24l4 4 7-7" stroke="#4A6741" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
               <p className="pv-sol-num">02</p>
               <h3 className="pv-sol-title">Suivi en Temps Réel</h3>
@@ -285,10 +285,10 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
             </div>
             <div className="pv-sol-card reveal reveal-delay-2">
               <svg className="pv-sol-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="48" height="48" rx="12" fill="#FEF3E8" />
-                <path d="M14 28 Q24 14 34 28" stroke="#E07B20" strokeWidth="2" fill="none" strokeLinecap="round" />
-                <circle cx="24" cy="28" r="4" fill="#E07B20" />
-                <line x1="24" y1="32" x2="24" y2="36" stroke="#E07B20" strokeWidth="2" strokeLinecap="round" />
+                <rect width="48" height="48" rx="12" fill="#F7EEDB" />
+                <path d="M14 28 Q24 14 34 28" stroke="#D9A441" strokeWidth="2" fill="none" strokeLinecap="round" />
+                <circle cx="24" cy="28" r="4" fill="#D9A441" />
+                <line x1="24" y1="32" x2="24" y2="36" stroke="#D9A441" strokeWidth="2" strokeLinecap="round" />
               </svg>
               <p className="pv-sol-num">03</p>
               <h3 className="pv-sol-title">Infos Municipales Unifiées</h3>
@@ -296,11 +296,11 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
             </div>
             <div className="pv-sol-card reveal">
               <svg className="pv-sol-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="48" height="48" rx="12" fill="#EDE8FE" />
-                <circle cx="24" cy="20" r="7" fill="#534AB7" opacity="0.15" />
-                <circle cx="24" cy="20" r="4" fill="#534AB7" />
-                <path d="M16 35 Q24 28 32 35" stroke="#534AB7" strokeWidth="2" strokeLinecap="round" fill="none" />
-                <path d="M33 18 Q36 16 36 20 Q36 24 33 22" stroke="#534AB7" strokeWidth="1.5" strokeLinecap="round" fill="none" />
+                <rect width="48" height="48" rx="12" fill="#E3EDDE" />
+                <circle cx="24" cy="20" r="7" fill="#4A6741" opacity="0.15" />
+                <circle cx="24" cy="20" r="4" fill="#4A6741" />
+                <path d="M16 35 Q24 28 32 35" stroke="#4A6741" strokeWidth="2" strokeLinecap="round" fill="none" />
+                <path d="M33 18 Q36 16 36 20 Q36 24 33 22" stroke="#4A6741" strokeWidth="1.5" strokeLinecap="round" fill="none" />
               </svg>
               <p className="pv-sol-num">04</p>
               <h3 className="pv-sol-title">IA Intelligente</h3>
@@ -308,10 +308,10 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
             </div>
             <div className="pv-sol-card reveal reveal-delay-1">
               <svg className="pv-sol-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="48" height="48" rx="12" fill="#E8EDF8" />
-                <rect x="13" y="18" width="10" height="12" rx="3" fill="#3B558F" opacity="0.8" />
-                <rect x="25" y="18" width="10" height="12" rx="3" fill="#7B8FCC" />
-                <path d="M23 24 H25" stroke="#3B558F" strokeWidth="2" strokeLinecap="round" />
+                <rect width="48" height="48" rx="12" fill="#E3EDDE" />
+                <rect x="13" y="18" width="10" height="12" rx="3" fill="#4A6741" opacity="0.8" />
+                <rect x="25" y="18" width="10" height="12" rx="3" fill="#A8C69F" />
+                <path d="M23 24 H25" stroke="#4A6741" strokeWidth="2" strokeLinecap="round" />
               </svg>
               <p className="pv-sol-num">05</p>
               <h3 className="pv-sol-title">Intégration Flexible</h3>
@@ -319,11 +319,11 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
             </div>
             <div className="pv-sol-card reveal reveal-delay-2">
               <svg className="pv-sol-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="48" height="48" rx="12" fill="#F8E8E8" />
-                <rect x="12" y="12" width="24" height="18" rx="3" stroke="#C62828" strokeWidth="1.5" fill="none" />
-                <line x1="12" y1="18" x2="36" y2="18" stroke="#C62828" strokeWidth="1.5" />
-                <rect x="18" y="23" width="12" height="3" rx="1" fill="#C62828" opacity="0.5" />
-                <path d="M20 33 h8 v5 h-8z" fill="#C62828" opacity="0.15" />
+                <rect width="48" height="48" rx="12" fill="#F5E4E0" />
+                <rect x="12" y="12" width="24" height="18" rx="3" stroke="#B04A3C" strokeWidth="1.5" fill="none" />
+                <line x1="12" y1="18" x2="36" y2="18" stroke="#B04A3C" strokeWidth="1.5" />
+                <rect x="18" y="23" width="12" height="3" rx="1" fill="#B04A3C" opacity="0.5" />
+                <path d="M20 33 h8 v5 h-8z" fill="#B04A3C" opacity="0.15" />
               </svg>
               <p className="pv-sol-num">06</p>
               <h3 className="pv-sol-title">Back-office All-in-One</h3>
@@ -356,33 +356,33 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
                   <filter id="pvwc1"><feGaussianBlur stdDeviation="14" /></filter>
                   <filter id="pvwc2"><feGaussianBlur stdDeviation="8" /></filter>
                 </defs>
-                <circle cx="210" cy="210" r="160" fill="#C8D5F0" opacity="0.3" filter="url(#pvwc1)" />
-                <circle cx="170" cy="180" r="100" fill="#3B558F" opacity="0.08" filter="url(#pvwc1)" />
-                <circle cx="260" cy="240" r="90" fill="#E8C97A" opacity="0.2" filter="url(#pvwc1)" />
-                <circle cx="200" cy="270" r="70" fill="#A8D4B8" opacity="0.3" filter="url(#pvwc2)" />
-                <circle cx="240" cy="160" r="60" fill="#F4BACC" opacity="0.2" filter="url(#pvwc2)" />
-                <circle cx="210" cy="210" r="130" stroke="#1A3A8F" strokeWidth="0.5" fill="none" opacity="0.2" />
-                <circle cx="210" cy="210" r="90" stroke="#3B558F" strokeWidth="0.5" fill="none" opacity="0.15" strokeDasharray="4 8" />
-                <circle cx="210" cy="210" r="8" fill="#3B558F" opacity="0.8" />
-                <circle cx="210" cy="210" r="4" fill="#1A3A8F" />
-                <circle cx="210" cy="80" r="4" fill="#3B558F" opacity="0.5" />
-                <circle cx="330" cy="160" r="3" fill="#7B8FCC" opacity="0.6" />
-                <circle cx="330" cy="260" r="4" fill="#3B558F" opacity="0.4" />
-                <circle cx="210" cy="340" r="3" fill="#7B8FCC" opacity="0.5" />
-                <circle cx="90" cy="260" r="4" fill="#3B558F" opacity="0.4" />
-                <circle cx="90" cy="160" r="3" fill="#7B8FCC" opacity="0.6" />
-                <line x1="210" y1="210" x2="210" y2="80" stroke="#3B558F" strokeWidth="0.5" opacity="0.2" />
-                <line x1="210" y1="210" x2="330" y2="160" stroke="#3B558F" strokeWidth="0.5" opacity="0.2" />
-                <line x1="210" y1="210" x2="330" y2="260" stroke="#3B558F" strokeWidth="0.5" opacity="0.2" />
-                <line x1="210" y1="210" x2="210" y2="340" stroke="#3B558F" strokeWidth="0.5" opacity="0.2" />
-                <line x1="210" y1="210" x2="90" y2="260" stroke="#3B558F" strokeWidth="0.5" opacity="0.2" />
-                <line x1="210" y1="210" x2="90" y2="160" stroke="#3B558F" strokeWidth="0.5" opacity="0.2" />
-                <text x="210" y="68" textAnchor="middle" fontSize="9" fontFamily="Inter,sans-serif" fill="#1A3A8F" opacity="0.7" fontWeight="600" letterSpacing="1">COMMUNICATION</text>
-                <text x="346" y="158" fontSize="9" fontFamily="Inter,sans-serif" fill="#1A3A8F" opacity="0.7" fontWeight="600" letterSpacing="1">CONFIANCE</text>
-                <text x="338" y="272" fontSize="9" fontFamily="Inter,sans-serif" fill="#1A3A8F" opacity="0.7" fontWeight="600" letterSpacing="1">EXCELLENCE</text>
-                <text x="210" y="360" textAnchor="middle" fontSize="9" fontFamily="Inter,sans-serif" fill="#1A3A8F" opacity="0.7" fontWeight="600" letterSpacing="1">CLARTÉ</text>
-                <text x="16" y="272" fontSize="9" fontFamily="Inter,sans-serif" fill="#1A3A8F" opacity="0.7" fontWeight="600" letterSpacing="1">SÉCURITÉ</text>
-                <text x="20" y="158" fontSize="9" fontFamily="Inter,sans-serif" fill="#1A3A8F" opacity="0.7" fontWeight="600" letterSpacing="1">AMÉLIORATION</text>
+                <circle cx="210" cy="210" r="160" fill="#DCE8D5" opacity="0.3" filter="url(#pvwc1)" />
+                <circle cx="170" cy="180" r="100" fill="#7A9B6D" opacity="0.08" filter="url(#pvwc1)" />
+                <circle cx="260" cy="240" r="90" fill="#EFD9A8" opacity="0.2" filter="url(#pvwc1)" />
+                <circle cx="200" cy="270" r="70" fill="#C4DCBA" opacity="0.3" filter="url(#pvwc2)" />
+                <circle cx="240" cy="160" r="60" fill="#EFD3CC" opacity="0.2" filter="url(#pvwc2)" />
+                <circle cx="210" cy="210" r="130" stroke="#4A6741" strokeWidth="0.5" fill="none" opacity="0.2" />
+                <circle cx="210" cy="210" r="90" stroke="#7A9B6D" strokeWidth="0.5" fill="none" opacity="0.15" strokeDasharray="4 8" />
+                <circle cx="210" cy="210" r="8" fill="#7A9B6D" opacity="0.8" />
+                <circle cx="210" cy="210" r="4" fill="#4A6741" />
+                <circle cx="210" cy="80" r="4" fill="#7A9B6D" opacity="0.5" />
+                <circle cx="330" cy="160" r="3" fill="#A8C69F" opacity="0.6" />
+                <circle cx="330" cy="260" r="4" fill="#7A9B6D" opacity="0.4" />
+                <circle cx="210" cy="340" r="3" fill="#A8C69F" opacity="0.5" />
+                <circle cx="90" cy="260" r="4" fill="#7A9B6D" opacity="0.4" />
+                <circle cx="90" cy="160" r="3" fill="#A8C69F" opacity="0.6" />
+                <line x1="210" y1="210" x2="210" y2="80" stroke="#7A9B6D" strokeWidth="0.5" opacity="0.2" />
+                <line x1="210" y1="210" x2="330" y2="160" stroke="#7A9B6D" strokeWidth="0.5" opacity="0.2" />
+                <line x1="210" y1="210" x2="330" y2="260" stroke="#7A9B6D" strokeWidth="0.5" opacity="0.2" />
+                <line x1="210" y1="210" x2="210" y2="340" stroke="#7A9B6D" strokeWidth="0.5" opacity="0.2" />
+                <line x1="210" y1="210" x2="90" y2="260" stroke="#7A9B6D" strokeWidth="0.5" opacity="0.2" />
+                <line x1="210" y1="210" x2="90" y2="160" stroke="#7A9B6D" strokeWidth="0.5" opacity="0.2" />
+                <text x="210" y="68" textAnchor="middle" fontSize="9" fontFamily="Inter,sans-serif" fill="#4A6741" opacity="0.7" fontWeight="600" letterSpacing="1">COMMUNICATION</text>
+                <text x="346" y="158" fontSize="9" fontFamily="Inter,sans-serif" fill="#4A6741" opacity="0.7" fontWeight="600" letterSpacing="1">CONFIANCE</text>
+                <text x="338" y="272" fontSize="9" fontFamily="Inter,sans-serif" fill="#4A6741" opacity="0.7" fontWeight="600" letterSpacing="1">EXCELLENCE</text>
+                <text x="210" y="360" textAnchor="middle" fontSize="9" fontFamily="Inter,sans-serif" fill="#4A6741" opacity="0.7" fontWeight="600" letterSpacing="1">CLARTÉ</text>
+                <text x="16" y="272" fontSize="9" fontFamily="Inter,sans-serif" fill="#4A6741" opacity="0.7" fontWeight="600" letterSpacing="1">SÉCURITÉ</text>
+                <text x="20" y="158" fontSize="9" fontFamily="Inter,sans-serif" fill="#4A6741" opacity="0.7" fontWeight="600" letterSpacing="1">AMÉLIORATION</text>
               </svg>
             </div>
           </div>
@@ -426,9 +426,9 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
         <section className="pv-section pv-cta-section" id="pv-cta">
           <svg className="pv-cta-blobs" viewBox="0 0 1200 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
             <defs><filter id="pvwblur"><feGaussianBlur stdDeviation="40" /></filter></defs>
-            <ellipse cx="200" cy="300" rx="300" ry="200" fill="#C8D5F0" opacity="0.3" filter="url(#pvwblur)" />
-            <ellipse cx="1000" cy="300" rx="280" ry="180" fill="#A8D4B8" opacity="0.25" filter="url(#pvwblur)" />
-            <ellipse cx="600" cy="500" rx="200" ry="120" fill="#E8C97A" opacity="0.15" filter="url(#pvwblur)" />
+            <ellipse cx="200" cy="300" rx="300" ry="200" fill="#DCE8D5" opacity="0.3" filter="url(#pvwblur)" />
+            <ellipse cx="1000" cy="300" rx="280" ry="180" fill="#C4DCBA" opacity="0.25" filter="url(#pvwblur)" />
+            <ellipse cx="600" cy="500" rx="200" ry="120" fill="#EFD9A8" opacity="0.15" filter="url(#pvwblur)" />
           </svg>
           <p className="pv-section-label reveal" style={{ position: 'relative' }}>Rejoignez le Mouvement</p>
           <h2 className="pv-section-h2 pv-cta-h2 reveal reveal-delay-1">

@@ -10,9 +10,9 @@ export const EventsView: React.FC = () => {
   return (
     <PageLayout active="evenement">
       <section className="pl-hero">
-        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(147,112,219,.1)' }} />
-        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(224,123,32,.07)' }} />
-        <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(59,85,143,.05)' }} />
+        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(122,143,166,.1)' }} />
+        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(217,164,65,.07)' }} />
+        <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(122,155,109,.06)' }} />
         <div className="pl-hero-ghost">Agenda</div>
         <div className="pl-hero-left">
           <p className="pl-eyebrow">Agenda · Mai 2026</p>
@@ -22,7 +22,7 @@ export const EventsView: React.FC = () => {
         <div className="pl-hero-right">
           <div className="pl-hero-stats">
             <div className="pl-stat-block"><div className="pl-stat-num">{events.length}<em>+</em></div><div className="pl-stat-label">À venir</div></div>
-            <div className="pl-stat-block"><div className="pl-stat-num" style={{ color: '#7B58B0' }}>3</div><div className="pl-stat-label">Gratuits</div></div>
+            <div className="pl-stat-block"><div className="pl-stat-num" style={{ color: 'var(--color-purple)' }}>3</div><div className="pl-stat-label">Gratuits</div></div>
             <div className="pl-stat-block"><div className="pl-stat-num" style={{ color: 'var(--color-success)' }}>2</div><div className="pl-stat-label">Ce mois</div></div>
           </div>
         </div>
@@ -38,7 +38,7 @@ export const EventsView: React.FC = () => {
             const ts = TAG_STYLE[ev.tag] ?? { bg: 'var(--color-neutral-100)', color: 'var(--color-ink)' };
             return (
               <div key={ev.id} className="pl-card ev-row" style={{ animationDelay: `${i * .09}s` }}>
-                {ev.accent && <div className="ev-accent-strip" style={{ background: '#9370DB' }} />}
+                {ev.accent && <div className="ev-accent-strip" style={{ background: 'var(--color-matcha-300)' }} />}
                 <div className="ev-date-col" style={{ background: ts.bg }}>
                   <div className="ev-date-day" style={{ color: ts.color }}>{ev.jour}</div>
                   <div className="ev-date-mois" style={{ color: ts.color }}>{ev.mois}</div>

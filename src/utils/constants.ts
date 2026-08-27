@@ -29,7 +29,7 @@ export const CAT_COLOR: Record<string, string> = {
   culture:      'var(--color-purple)',
   social:       'var(--color-warning-light)',
   environnement:'var(--color-success-light)',
-  jeunesse:     '#4ECDC4',
+  jeunesse:     '#A8C69F',
   sante:        'var(--color-danger)',
 };
 

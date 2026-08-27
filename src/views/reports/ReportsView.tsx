@@ -27,9 +27,9 @@ export const ReportsView: React.FC = () => {
   return (
     <PageLayout active="sig">
       <section className="pl-hero">
-        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(59,85,143,.09)' }} />
-        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(123,143,204,.07)' }} />
-        <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(157,110,70,.05)' }} />
+        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(122,155,109,.12)' }} />
+        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(168,198,159,.09)' }} />
+        <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(217,164,65,.05)' }} />
         <div className="pl-hero-ghost">Suivi</div>
         <div className="pl-hero-left">
           <p className="pl-eyebrow">Espace citoyen · Suivi</p>

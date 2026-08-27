@@ -34,6 +34,18 @@ const DEMO_EVENTS = [
   { id: 3, titre: 'Fête de la musique', date: '21 juin', lieu: 'Esplanade', emoji: '🎵' },
 ];
 
+const USEFUL_NUMBERS_FALLBACK = [
+  { icon: '🚑', label: 'SAMU', phone: '15' },
+  { icon: '👮', label: 'Police secours', phone: '17' },
+  { icon: '🚒', label: 'Pompiers', phone: '18' },
+  { icon: '📞', label: 'Urgences européennes', phone: '112' },
+];
+
+const USEFUL_LINKS_FALLBACK = [
+  { icon: '🏛️', label: 'Service-public.fr', url: 'https://www.service-public.fr' },
+  { icon: '🗳️', label: 'Démarches en ligne', url: 'https://www.demarches-simplifiees.fr' },
+];
+
 export const HomeView: React.FC = () => {
   const { user, signalements, showView, toggleNotif, toggleBot, botOpen, weather: apiWeather, homeEventPreviews, alerts: apiAlerts, cityConfig } = useApp();
   const [showMap, setShowMap] = useState(false);
@@ -143,6 +155,35 @@ export const HomeView: React.FC = () => {
               <div className="home__event-meta">📍 {ev.lieu}</div>
             </div>
           ))}
+        </div>
+
+        <div className="home__section-head" style={{ marginTop: '3.5rem' }}>
+          <div><p className="home__section-label">Infos pratiques</p><h2 className="home__section-title">Numéros & liens <em>utiles</em>.</h2></div>
+        </div>
+        <div className="home__useful-grid">
+          <div className="home__useful-card">
+            <div className="home__useful-title">Numéros d'urgence & services</div>
+            {(cityConfig?.usefulNumbers?.length ? cityConfig.usefulNumbers : USEFUL_NUMBERS_FALLBACK).map((n, i) => (
+              <a key={i} className="home__useful-row" href={`tel:${n.phone}`} aria-label={`Appeler ${n.label} ${n.phone}`}>
+                <span className="home__useful-icon">{n.icon ?? '📞'}</span>
+                <span className="home__useful-label">{n.label}</span>
+                <span className="home__useful-val">{n.phone}</span>
+              </a>
+            ))}
+          </div>
+          <div className="home__useful-card">
+            <div className="home__useful-title">Liens & démarches</div>
+            {(cityConfig?.usefulLinks?.length ? cityConfig.usefulLinks : USEFUL_LINKS_FALLBACK).map((l, i) => (
+              <a key={i} className="home__useful-row" href={l.url} target="_blank" rel="noopener noreferrer">
+                <span className="home__useful-icon">{l.icon ?? '🔗'}</span>
+                <span className="home__useful-label">{l.label}</span>
+                <span className="home__useful-val">↗</span>
+              </a>
+            ))}
+            {cityConfig?.publicProfile?.openingHours && (
+              <div className="home__useful-hours">🕰️ Hôtel de ville : {cityConfig.publicProfile.openingHours}</div>
+            )}
+          </div>
         </div>
 
         <div className="home__lower">

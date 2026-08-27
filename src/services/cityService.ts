@@ -35,6 +35,8 @@ export interface CityConfig {
   isTransportFeatureAllowed?: boolean;
   isTransportFeatureEnabled?: boolean;
   associations?: CityAssociation[];
+  usefulNumbers?: { label: string; phone: string; icon?: string }[];
+  usefulLinks?: { label: string; url: string; icon?: string }[];
   publicProfile?: {
     mayorName?: string;
     welcomeText?: string;

@@ -48,6 +48,28 @@ img {
   display: block;
 }
 
+::selection {
+  background: var(--color-matcha-300);
+  color: var(--color-matcha-900);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+button:focus:not(:focus-visible),
+a:focus:not(:focus-visible) {
+  outline: none;
+}
+
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: none;
+}
+
 @keyframes fade-up {
   from {
     opacity: 0;
@@ -103,5 +125,16 @@ img {
 
 @keyframes counter-glow {
   0%, 100% { text-shadow: none; }
-  50% { text-shadow: 0 0 28px rgba(59, 85, 143, 0.35); }
+  50% { text-shadow: 0 0 28px rgba(122, 155, 109, 0.4); }
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.55; }
+}
+
+.skeleton {
+  background: var(--color-matcha-100);
+  border-radius: var(--radius-md);
+  animation: skeleton-pulse 1.6s ease-in-out infinite;
 }

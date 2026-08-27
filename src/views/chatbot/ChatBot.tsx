@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { useApp } from '../../context/AppContext';
-import { BOT_RESPONSES } from '../../data';
+import { chatbotService } from '../../services/chatbotService';
 import DOMPurify from 'dompurify';
 import './ChatBot.scss';
 
@@ -19,30 +19,10 @@ const QUICK_CHIPS = [
   { label: '📋 Mes demandes', query: 'demande' },
 ];
 
+const ERROR_TEXT = 'Le service est momentanément indisponible. Veuillez réessayer.';
+
 function now() {
   return new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
-}
-
-function getBotReply(input: string): string {
-  const q = input.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
-  for (const key of Object.keys(BOT_RESPONSES)) {
-    if (key !== 'default' && q.includes(key.normalize('NFD').replace(/[̀-ͯ]/g, ''))) {
-      return BOT_RESPONSES[key];
-    }
-  }
-  if (q.includes('transport') || q.includes('bus') || q.includes('metro') || q.includes('rer')) {
-    return 'Pour les transports, consultez la page <strong>Transports</strong> dans le menu. Elle liste toutes les lignes et perturbations en temps réel.';
-  }
-  if (q.includes('dechet') || q.includes('poubelle') || q.includes('tri') || q.includes('toilet')) {
-    return 'Retrouvez les calendriers de collecte et la localisation des toilettes publiques dans la section <strong>Déchets & Toilettes</strong>.';
-  }
-  if (q.includes('travaux') || q.includes('chantier')) {
-    return 'La page <strong>Travaux</strong> liste tous les chantiers en cours et planifiés avec leur impact sur la circulation.';
-  }
-  if (q.includes('evenement') || q.includes('agenda') || q.includes('fete') || q.includes('concert')) {
-    return 'Consultez la page <strong>Évènements</strong> pour l\'agenda complet : concerts, marchés, réunions publiques et bien plus.';
-  }
-  return BOT_RESPONSES['default'];
 }
 
 const WELCOME: Msg = {
@@ -58,16 +38,18 @@ export const MuniBot: React.FC = () => {
   const [msgs, setMsgs] = useState<Msg[]>([WELCOME]);
   const [input, setInput] = useState('');
   const [typing, setTyping] = useState(false);
+  const [errorVisible, setErrorVisible] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const focusTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const replyTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const lastFailedRef = useRef<string | null>(null);
+  const requestSeqRef = useRef(0);
 
   useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
     }
-  }, [msgs, typing]);
+  }, [msgs, typing, errorVisible]);
 
   useEffect(() => {
     if (pendingBotMsg && botOpen) {
@@ -87,28 +69,44 @@ export const MuniBot: React.FC = () => {
   useEffect(() => {
     return () => {
       if (focusTimerRef.current) clearTimeout(focusTimerRef.current);
-      if (replyTimerRef.current) clearTimeout(replyTimerRef.current);
+      lastFailedRef.current = null;
+      requestSeqRef.current += 1;
     };
   }, []);
 
-  const sendMessage = useCallback((text: string) => {
-    if (!text.trim()) return;
+  const sendMessage = useCallback(async (text: string) => {
+    const trimmed = text.trim();
+    if (!trimmed) return;
+    const seq = requestSeqRef.current + 1;
+    requestSeqRef.current = seq;
     const uid = Date.now();
-    const userMsg: Msg = { id: uid, from: 'user', text: text.trim(), time: now() };
+    const userMsg: Msg = { id: uid, from: 'user', text: trimmed, time: now() };
     setMsgs(prev => [...prev, userMsg]);
     setInput('');
     setTyping(true);
-
-    const delay = 800 + Math.random() * 600;
-    if (replyTimerRef.current) clearTimeout(replyTimerRef.current);
-    replyTimerRef.current = setTimeout(() => {
-      const reply = getBotReply(text);
-      setMsgs(prev => [...prev, { id: uid + 1, from: 'bot', text: reply, time: now() }]);
-      setTyping(false);
-    }, delay);
+    setErrorVisible(false);
+    lastFailedRef.current = trimmed;
+    try {
+      const response = await chatbotService.sendCitoyenMessage(trimmed);
+      if (requestSeqRef.current !== seq) return;
+      setMsgs(prev => [...prev, { id: uid + 1, from: 'bot', text: response.reply, time: now() }]);
+      lastFailedRef.current = null;
+    } catch {
+      if (requestSeqRef.current !== seq) return;
+      setErrorVisible(true);
+    } finally {
+      if (requestSeqRef.current === seq) {
+        setTyping(false);
+      }
+    }
   }, []);
 
-  const handleSend = () => sendMessage(input);
+  const handleRetry = useCallback(() => {
+    const failed = lastFailedRef.current;
+    if (failed) void sendMessage(failed);
+  }, [sendMessage]);
+
+  const handleSend = () => { void sendMessage(input); };
   const handleKey = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSend(); }
   };
@@ -117,8 +115,21 @@ export const MuniBot: React.FC = () => {
 
   return (
     <>
+      <button
+        type="button"
+        className={`bot-fab${botOpen ? ' bot-fab--open' : ''}`}
+        onClick={toggleBot}
+        aria-label={botOpen ? 'Fermer l\'assistant MuniBot' : 'Ouvrir l\'assistant MuniBot'}
+        title="Assistant MuniBot"
+      >
+        {botOpen ? (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" width="22" height="22"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        ) : (
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="22" height="22"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+        )}
+      </button>
       {botOpen && (
-        <div className="bot-panel">
+        <div className="bot-panel" role="dialog" aria-label="Assistant MuniBot">
           <div className="bot-header">
             <div className="bot-avatar">🏛️</div>
             <div className="bot-header-info">
@@ -160,6 +171,20 @@ export const MuniBot: React.FC = () => {
                 </div>
               </div>
             )}
+
+            {errorVisible && (
+              <div className="bot-msg">
+                <div className="bot-msg-avatar bot-msg-avatar--error">!</div>
+                <div>
+                  <div className="bot-bubble bot-bubble--error">
+                    <span>{ERROR_TEXT}</span>
+                    <button type="button" className="bot-retry" onClick={handleRetry}>
+                      Réessayer
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
 
           <div className="bot-chips">
@@ -178,9 +203,11 @@ export const MuniBot: React.FC = () => {
               onChange={e => setInput(e.target.value)}
               onKeyDown={handleKey}
               placeholder="Posez votre question…"
+              maxLength={5000}
               disabled={typing}
+              aria-label="Votre message à l'assistant municipal"
             />
-            <button className="bot-send" onClick={handleSend} disabled={!input.trim() || typing}>
+            <button className="bot-send" onClick={handleSend} disabled={!input.trim() || typing} aria-label="Envoyer">
               <svg viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="22" y1="2" x2="11" y2="13"/>
                 <polygon points="22 2 15 22 11 13 2 9 22 2"/>

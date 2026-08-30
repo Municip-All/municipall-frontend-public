@@ -17,7 +17,7 @@ import { eventService } from '../services/eventService';
 import { transportService } from '../services/transportService';
 import { constructionWorksService } from '../services/constructionWorksService';
 import { weatherService } from '../services/weatherService';
-import { fetchPublicToilets } from '../services/openDataService';
+import { fetchPublicToilets, fetchWaterPoints } from '../services/openDataService';
 import {
   mapApiUserToUser,
   mapReportToSignalement,
@@ -28,6 +28,7 @@ import {
   mapWasteServices,
   mapToilet,
   toiletsToMapPoints,
+  waterPointsToMapPoints,
   mapWeather,
   eventToHomePreview,
   transportToAlerts,
@@ -148,10 +149,11 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setApiTenantId(cityId);
         setTenantId(cityId);
 
-        const [eventsData, worksData, toiletsData] = await Promise.all([
+        const [eventsData, worksData, toiletsData, waterData] = await Promise.all([
           eventService.getEvents().catch(() => { showToast('Événements indisponibles'); return []; }),
           constructionWorksService.getWorks().catch(() => { showToast('Travaux indisponibles'); return []; }),
           fetchPublicToilets(30).catch(() => { showToast('Toilettes publiques indisponibles'); return []; }),
+          fetchWaterPoints(30).catch(() => { showToast("Points d'eau indisponibles"); return []; }),
         ]);
 
         const mappedEvents = eventsData.map(mapEventToEvenement);
@@ -161,7 +163,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         setAssociations((config.associations ?? []).map(mapAssociation));
         setCollecteSchedule(mapWasteServices(config));
         setToilets(toiletsData.map(mapToilet));
-        setMapPoints(toiletsToMapPoints(toiletsData));
+        setMapPoints([...toiletsToMapPoints(toiletsData), ...waterPointsToMapPoints(waterData)]);
         setMapCenter(coords);
 
         const transportOn =

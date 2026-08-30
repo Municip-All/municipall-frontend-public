@@ -26,4 +26,5 @@ export const Config = {
   API_BASE_URL: normalizeApiBaseUrl(process.env.REACT_APP_API_URL),
   DEFAULT_TENANT_ID: process.env.REACT_APP_DEFAULT_TENANT_ID || 'le-kremlin-bicetre',
   PARIS_OPENDATA_API: process.env.REACT_APP_PARIS_OPENDATA_API || 'https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/sanisettesparis/records',
+  PARIS_OPENDATA_WATER_API: process.env.REACT_APP_PARIS_OPENDATA_WATER_API || 'https://opendata.paris.fr/api/explore/v2.1/catalog/datasets/fontaines-a-boire/records',
 };

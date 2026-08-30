@@ -11,12 +11,12 @@ import type {
   User,
 } from '../types';
 import type { ApiUser } from '../services/authService';
+import type { PublicToilet, PublicWaterPoint } from '../services/openDataService';
 import type { ApiReport } from '../services/reportService';
 import type { ApiEvent } from '../services/eventService';
 import type { ApiConstructionWork } from '../services/constructionWorksService';
 import type { TransportLineDisruption } from '../services/transportService';
 import type { CityConfig } from '../services/cityService';
-import type { PublicToilet } from '../services/openDataService';
 import type { WeatherData } from '../services/weatherService';
 
 const MONTHS_SHORT = ['JAN', 'FÉV', 'MAR', 'AVR', 'MAI', 'JUN', 'JUL', 'AOÛ', 'SEP', 'OCT', 'NOV', 'DÉC'];
@@ -230,7 +230,7 @@ export function mapToilet(t: PublicToilet, index: number): ToiletRow {
 }
 
 export type MapPoint = {
-  type: 'toilet' | 'tri' | 'dechet';
+  type: 'toilet' | 'tri' | 'dechet' | 'eau';
   name: string;
   address: string;
   lat: number;
@@ -248,6 +248,24 @@ export function toiletsToMapPoints(toilets: PublicToilet[]): MapPoint[] {
     lng: t.lon,
     open: true,
   }));
+}
+
+export function waterPointsToMapPoints(points: PublicWaterPoint[]): MapPoint[] {
+  return points.map((w) => ({
+    type: 'eau' as const,
+    name: 'Fontaine à boire',
+    address: w.adresse,
+    lat: w.lat,
+    lng: w.lon,
+    open: w.dispo,
+  }));
+}
+
+export function mergeMapPoints(apiPoints: MapPoint[], staticPoints: MapPoint[]): MapPoint[] {
+  if (!apiPoints.length) return staticPoints;
+  const apiTypes = new Set(apiPoints.map((p) => p.type));
+  const staticExtras = staticPoints.filter((p) => !apiTypes.has(p.type));
+  return [...apiPoints, ...staticExtras];
 }
 
 export type HomeWeather = {

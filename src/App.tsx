@@ -69,6 +69,8 @@ const App: React.FC = () => {
       {stage === 'app' && <MainContent />}
       {stage === 'app' && <NotifDrawer />}
       {stage === 'app' && <MuniBot />}
+      {stage === 'app' && <div className="hairline-top" />}
+      {stage === 'app' && <div className="hairline-bottom" />}
     </AppProvider>
   );
 };

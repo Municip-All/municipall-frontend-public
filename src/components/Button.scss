@@ -36,7 +36,7 @@
   &--primary {
     background: var(--color-primary);
     border-color: var(--color-primary);
-    color: var(--color-cream-50);
+    color: var(--color-on-brand);
 
     &:hover:not(:disabled) {
       background: var(--color-primary-light);
@@ -85,8 +85,8 @@
 
     &:hover:not(:disabled) {
       background: var(--color-danger);
-      color: var(--color-cream-50);
-      box-shadow: 0 6px 20px rgba(198, 93, 78, 0.22);
+      color: var(--color-on-brand);
+      box-shadow: 0 6px 20px rgba(224, 120, 95, 0.28);
     }
   }
 

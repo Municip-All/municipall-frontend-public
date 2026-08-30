@@ -17,20 +17,81 @@ function animateNum(from: number, to: number, dur: number, cb: (v: number) => vo
 }
 
 const TICKER_ITEMS = [
-  'Signalements Centralisés', 'Suivi en Temps Réel', 'IA Intelligente', 'Intégration Flexible',
-  'Back-office All-in-One', 'Transparence Totale', 'Infos Municipales Unifiées', 'Démocratie de Proximité',
-  'Signalements Centralisés', 'Suivi en Temps Réel', 'IA Intelligente', 'Intégration Flexible',
-  'Back-office All-in-One', 'Transparence Totale', 'Infos Municipales Unifiées', 'Démocratie de Proximité',
+  'Signalements Centralisés', 'Suivi en Temps Réel', 'IA Intelligente', 'Mobile d’Abord',
+  'Notifications Instantanées', 'Transparence Totale', 'Infos Municipales Unifiées', 'Démocratie de Proximité',
+  'Signalements Centralisés', 'Suivi en Temps Réel', 'IA Intelligente', 'Mobile d’Abord',
+  'Notifications Instantanées', 'Transparence Totale', 'Infos Municipales Unifiées', 'Démocratie de Proximité',
 ];
 
-const VALUES = [
-  { n: '01', name: 'Communication Bienveillante', text: 'Une équipe qui écoute construit mieux. La transparence est notre fondation.' },
-  { n: '02', name: 'Confiance Gagnée', text: 'Nous sommes clairs sur nos limites autant que sur nos forces. Promesses tenues.' },
-  { n: '03', name: 'Excellence Sans Compromis', text: 'Les meilleurs modèles IA, interface intuitive, performance irréprochable.' },
-  { n: '04', name: "Clarté d'Abord", text: 'Design épuré, pas de jargon tech. Focus sur la tâche, pas sur la complexité.' },
-  { n: '05', name: 'Responsabilité Intégrée', text: "Privacy, sécurité, droits humains — pas un compromis, un standard non négociable." },
-  { n: '06', name: 'Amélioration Continue', text: "On teste rigoureusement, on écoute étroitement, on s'améliore constamment." },
+// Fixed decorative pattern — not a scannable code, just an illustrative preview
+const QR_PATTERN = [
+  1,1,1,0,1,0,1, 1,0,1,1,0,1,1, 1,1,1,0,0,1,1, 0,0,1,1,1,0,1,
+  1,1,0,1,0,1,1, 1,0,1,0,1,1,0, 1,1,1,0,1,0,1,
 ];
+
+type PhoneVariant = 'feed' | 'map' | 'notif';
+
+const PhoneMockup: React.FC<{ variant: PhoneVariant; className?: string }> = ({ variant, className }) => (
+  <div className={`pv-phone ${className || ''}`}>
+    <div className="pv-phone-notch" />
+    <div className="pv-phone-screen">
+      {variant === 'feed' && (
+        <>
+          <div className="pv-ph-statusbar"><span>9:41</span></div>
+          <div className="pv-ph-header">
+            <span className="pv-ph-avatar" />
+            <div>
+              <p className="pv-ph-hello">Bonjour, Camille</p>
+              <p className="pv-ph-sub">Quartier des Tilleuls</p>
+            </div>
+          </div>
+          <div className="pv-ph-search" />
+          <div className="pv-ph-card">
+            <span className="pv-ph-pill pv-ph-pill-progress">En cours</span>
+            <p className="pv-ph-card-title">Éclairage public</p>
+            <p className="pv-ph-card-sub">Rue des Acacias</p>
+          </div>
+          <div className="pv-ph-card">
+            <span className="pv-ph-pill pv-ph-pill-done">Résolu</span>
+            <p className="pv-ph-card-title">Dépôt sauvage</p>
+            <p className="pv-ph-card-sub">Square Voltaire</p>
+          </div>
+          <div className="pv-ph-fab">+</div>
+        </>
+      )}
+      {variant === 'map' && (
+        <>
+          <div className="pv-ph-statusbar"><span>9:41</span></div>
+          <div className="pv-ph-map">
+            <span className="pv-ph-pin" style={{ top: '28%', left: '34%' }} />
+            <span className="pv-ph-pin" style={{ top: '52%', left: '62%' }} />
+            <span className="pv-ph-pin pv-ph-pin-active" style={{ top: '68%', left: '38%' }} />
+          </div>
+          <div className="pv-ph-sheet">
+            <p className="pv-ph-card-title">Marché place centrale</p>
+            <p className="pv-ph-card-sub">À 240 m · ouvert jusqu'à 13h</p>
+          </div>
+        </>
+      )}
+      {variant === 'notif' && (
+        <>
+          <div className="pv-ph-statusbar pv-ph-statusbar-dark"><span>9:41</span></div>
+          <div className="pv-ph-lock">
+            <p className="pv-ph-time">9:41</p>
+            <p className="pv-ph-date">Lundi 30 Août</p>
+          </div>
+          <div className="pv-ph-notif">
+            <span className="pv-ph-notif-dot" />
+            <div>
+              <p className="pv-ph-notif-title">Municipall</p>
+              <p className="pv-ph-notif-text">Votre signalement « Éclairage public » a été résolu ✓</p>
+            </div>
+          </div>
+        </>
+      )}
+    </div>
+  </div>
+);
 
 export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }) => {
   const { setAuthView } = useApp();
@@ -92,25 +153,6 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
     return () => obs.disconnect();
   }, []);
 
-  // Value rows stagger
-  useEffect(() => {
-    const el = containerRef.current;
-    if (!el) return;
-    const obs = new IntersectionObserver(
-      (entries) => {
-        entries.forEach(e => {
-          if (e.isIntersecting) { e.target.classList.add('visible'); obs.unobserve(e.target); }
-        });
-      },
-      { threshold: 0.2, root: el }
-    );
-    el.querySelectorAll('.pv-value-row').forEach((row, i) => {
-      (row as HTMLElement).style.animationDelay = `${i * 0.08}s`;
-      obs.observe(row);
-    });
-    return () => obs.disconnect();
-  }, []);
-
   // Custom cursor
   useEffect(() => {
     const dot = dotRef.current;
@@ -160,8 +202,8 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
         <nav className="pv-nav">
           <a href="#pv-top" className="pv-nav-logo">Municip<span>'All</span></a>
           <ul className="pv-nav-links">
+            <li><a href="#pv-app">App Mobile</a></li>
             <li><a href="#pv-solutions">Solutions</a></li>
-            <li><a href="#pv-valeurs">Valeurs</a></li>
             <li><a href="#pv-impact">Impact</a></li>
           </ul>
           <button className="pv-nav-cta" onClick={handleCTA}>Accéder →</button>
@@ -187,18 +229,22 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
             </svg>
           </div>
 
-          <p className="pv-hero-eyebrow">Plateforme Civique Nouvelle Génération</p>
+          <div className="pv-hero-phone">
+            <PhoneMockup variant="feed" />
+          </div>
+
+          <p className="pv-hero-eyebrow">Votre commune, dans votre poche</p>
           <h1 className="pv-hero-headline">
-            La <em>démocratie</em><br />de proximité,<br />réinventée.
+            La <em>démocratie</em><br />de proximité,<br />dans votre poche.
           </h1>
           <p className="pv-hero-sub">
-            Le pont numérique entre élus et riverains. Simple, transparent, et construit pour durer — sans changer les habitudes de personne.
+            Comme les applications que vous utilisez déjà tous les jours, Municipall est avant tout une app mobile — rapide, intuitive, toujours à portée de main. Accessible aussi sur ordinateur.
           </p>
           <div className="pv-hero-actions">
-            <button className="pv-btn-primary" onClick={handleCTA}>
-              Accéder à Municipall <span className="pv-arrow">→</span>
-            </button>
-            <a href="#pv-solutions" className="pv-btn-ghost">Découvrir les solutions ↓</a>
+            <a href="#pv-app" className="pv-btn-primary">
+              Découvrir l'app <span className="pv-arrow">↓</span>
+            </a>
+            <button className="pv-btn-secondary" onClick={handleCTA}>Continuer sur le web →</button>
           </div>
           <div className="pv-scroll-line" />
         </section>
@@ -209,6 +255,52 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
             {TICKER_ITEMS.map((t, i) => <span key={i} className="pv-ticker-item">{t}</span>)}
           </div>
         </div>
+
+        {/* ── APP MOBILE ── */}
+        <section className="pv-section pv-app-section" id="pv-app">
+          <div className="pv-app-wrap">
+            <div className="pv-app-visual">
+              <PhoneMockup variant="map" className="pv-phone-back pv-phone-left" />
+              <PhoneMockup variant="notif" className="pv-phone-back pv-phone-right" />
+              <PhoneMockup variant="feed" className="pv-phone-front" />
+            </div>
+            <div className="pv-app-content">
+              <p className="pv-section-label reveal">L'app Municipall</p>
+              <h2 className="pv-section-h2 reveal reveal-delay-1">Pensée mobile <em>d'abord</em>.</h2>
+              <p className="pv-section-body reveal reveal-delay-2">
+                La version web reste disponible, mais l'app mobile est notre priorité : conçue pour tenir dans une poche, s'ouvrir en un instant, et rester avec vous partout dans la commune.
+              </p>
+              <ul className="pv-app-perks reveal reveal-delay-3">
+                <li>Signalement en 10 secondes — photo et géolocalisation automatiques</li>
+                <li>Notifications instantanées à chaque étape de votre demande</li>
+                <li>Infos essentielles de votre commune accessibles hors-ligne</li>
+              </ul>
+              <div className="pv-app-download reveal reveal-delay-4">
+                <div className="pv-store-badges">
+                  <button className="pv-store-badge" onClick={handleCTA}>
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <rect x="3" y="2" width="18" height="20" rx="3" stroke="currentColor" strokeWidth="1.5" />
+                      <circle cx="12" cy="18.2" r="1" fill="currentColor" />
+                    </svg>
+                    <span>App Store<small>Bientôt disponible</small></span>
+                  </button>
+                  <button className="pv-store-badge" onClick={handleCTA}>
+                    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M4 3.5v17l13-8.5-13-8.5z" stroke="currentColor" strokeWidth="1.5" strokeLinejoin="round" />
+                    </svg>
+                    <span>Google Play<small>Bientôt disponible</small></span>
+                  </button>
+                </div>
+                <div className="pv-qr">
+                  <div className="pv-qr-grid">
+                    {QR_PATTERN.map((on, i) => <span key={i} className={on ? 'on' : ''} />)}
+                  </div>
+                  <p className="pv-qr-label">QR code au lancement</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         {/* ── MANIFESTO + STATS ── */}
         <section className="pv-section">
@@ -221,10 +313,7 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
             </div>
             <div className="reveal reveal-delay-2">
               <p className="pv-section-body" style={{ marginTop: 0 }}>
-                Nous construisons le futur de la démocratie locale. Pas avec des technologies complexes, mais en simplifiant ce qui est essentiel : la conversation entre les citoyens et leurs élus.
-              </p>
-              <p className="pv-section-body" style={{ marginTop: '1.25rem' }}>
-                Municipall ne remplace pas les institutions. Il les rend accessibles. Chaque signalement devient une tâche. Chaque demande trouve une réponse. Chaque citoyen se sent entendu.
+                Municipall ne remplace pas les institutions. Il les rend accessibles. Chaque signalement devient une tâche, chaque demande trouve une réponse, chaque citoyen se sent entendu.
               </p>
             </div>
           </div>
@@ -253,10 +342,10 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
           <div className="pv-solutions-intro">
             <div>
               <p className="pv-section-label reveal">Nos Solutions</p>
-              <h2 className="pv-section-h2 reveal reveal-delay-1">Six piliers pour <em>transformer</em> votre commune.</h2>
+              <h2 className="pv-section-h2 reveal reveal-delay-1">L'essentiel pour <em>transformer</em> votre quotidien.</h2>
             </div>
             <p className="pv-section-body reveal reveal-delay-2" style={{ marginTop: 0, maxWidth: '320px' }}>
-              Clé en main ou modulaire. Chaque pilier s'intègre à votre infrastructure existante.
+              Quatre piliers, pensés d'abord pour l'app mobile.
             </p>
           </div>
           <div className="pv-solutions-grid">
@@ -305,85 +394,6 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
               <p className="pv-sol-num">04</p>
               <h3 className="pv-sol-title">IA Intelligente</h3>
               <p className="pv-sol-desc">Catégorisation auto, détection spam, résumés de satisfaction et redirection intelligente des demandes.</p>
-            </div>
-            <div className="pv-sol-card reveal reveal-delay-1">
-              <svg className="pv-sol-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="48" height="48" rx="12" fill="#E3EDDE" />
-                <rect x="13" y="18" width="10" height="12" rx="3" fill="#4A6741" opacity="0.8" />
-                <rect x="25" y="18" width="10" height="12" rx="3" fill="#A8C69F" />
-                <path d="M23 24 H25" stroke="#4A6741" strokeWidth="2" strokeLinecap="round" />
-              </svg>
-              <p className="pv-sol-num">05</p>
-              <h3 className="pv-sol-title">Intégration Flexible</h3>
-              <p className="pv-sol-desc">Clé en main ou via widgets dans votre application existante. Nous nous adaptons à vous, pas l'inverse.</p>
-            </div>
-            <div className="pv-sol-card reveal reveal-delay-2">
-              <svg className="pv-sol-icon" viewBox="0 0 48 48" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="48" height="48" rx="12" fill="#F5E4E0" />
-                <rect x="12" y="12" width="24" height="18" rx="3" stroke="#B04A3C" strokeWidth="1.5" fill="none" />
-                <line x1="12" y1="18" x2="36" y2="18" stroke="#B04A3C" strokeWidth="1.5" />
-                <rect x="18" y="23" width="12" height="3" rx="1" fill="#B04A3C" opacity="0.5" />
-                <path d="M20 33 h8 v5 h-8z" fill="#B04A3C" opacity="0.15" />
-              </svg>
-              <p className="pv-sol-num">06</p>
-              <h3 className="pv-sol-title">Back-office All-in-One</h3>
-              <p className="pv-sol-desc">Gérez tout en un lieu : citoyens, demandes, équipes, intégrations externes et tableaux de bord.</p>
-            </div>
-          </div>
-        </section>
-
-        {/* ── VALUES ── */}
-        <section className="pv-section pv-values-section" id="pv-valeurs">
-          <div className="pv-values-wrap">
-            <div>
-              <p className="pv-section-label reveal">Nos Valeurs</p>
-              <h2 className="pv-section-h2 reveal reveal-delay-1">Comment nous <em>construisons</em> Municipall.</h2>
-              <div className="pv-values-list">
-                {VALUES.map((v) => (
-                  <div key={v.n} className="pv-value-row">
-                    <span className="pv-value-index">{v.n}</span>
-                    <div>
-                      <p className="pv-value-name">{v.name}</p>
-                      <p className="pv-value-text">{v.text}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="pv-values-visual">
-              <svg viewBox="0 0 420 420" width="380" height="380" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                  <filter id="pvwc1"><feGaussianBlur stdDeviation="14" /></filter>
-                  <filter id="pvwc2"><feGaussianBlur stdDeviation="8" /></filter>
-                </defs>
-                <circle cx="210" cy="210" r="160" fill="#DCE8D5" opacity="0.3" filter="url(#pvwc1)" />
-                <circle cx="170" cy="180" r="100" fill="#7A9B6D" opacity="0.08" filter="url(#pvwc1)" />
-                <circle cx="260" cy="240" r="90" fill="#EFD9A8" opacity="0.2" filter="url(#pvwc1)" />
-                <circle cx="200" cy="270" r="70" fill="#C4DCBA" opacity="0.3" filter="url(#pvwc2)" />
-                <circle cx="240" cy="160" r="60" fill="#EFD3CC" opacity="0.2" filter="url(#pvwc2)" />
-                <circle cx="210" cy="210" r="130" stroke="#4A6741" strokeWidth="0.5" fill="none" opacity="0.2" />
-                <circle cx="210" cy="210" r="90" stroke="#7A9B6D" strokeWidth="0.5" fill="none" opacity="0.15" strokeDasharray="4 8" />
-                <circle cx="210" cy="210" r="8" fill="#7A9B6D" opacity="0.8" />
-                <circle cx="210" cy="210" r="4" fill="#4A6741" />
-                <circle cx="210" cy="80" r="4" fill="#7A9B6D" opacity="0.5" />
-                <circle cx="330" cy="160" r="3" fill="#A8C69F" opacity="0.6" />
-                <circle cx="330" cy="260" r="4" fill="#7A9B6D" opacity="0.4" />
-                <circle cx="210" cy="340" r="3" fill="#A8C69F" opacity="0.5" />
-                <circle cx="90" cy="260" r="4" fill="#7A9B6D" opacity="0.4" />
-                <circle cx="90" cy="160" r="3" fill="#A8C69F" opacity="0.6" />
-                <line x1="210" y1="210" x2="210" y2="80" stroke="#7A9B6D" strokeWidth="0.5" opacity="0.2" />
-                <line x1="210" y1="210" x2="330" y2="160" stroke="#7A9B6D" strokeWidth="0.5" opacity="0.2" />
-                <line x1="210" y1="210" x2="330" y2="260" stroke="#7A9B6D" strokeWidth="0.5" opacity="0.2" />
-                <line x1="210" y1="210" x2="210" y2="340" stroke="#7A9B6D" strokeWidth="0.5" opacity="0.2" />
-                <line x1="210" y1="210" x2="90" y2="260" stroke="#7A9B6D" strokeWidth="0.5" opacity="0.2" />
-                <line x1="210" y1="210" x2="90" y2="160" stroke="#7A9B6D" strokeWidth="0.5" opacity="0.2" />
-                <text x="210" y="68" textAnchor="middle" fontSize="9" fontFamily="Inter,sans-serif" fill="#4A6741" opacity="0.7" fontWeight="600" letterSpacing="1">COMMUNICATION</text>
-                <text x="346" y="158" fontSize="9" fontFamily="Inter,sans-serif" fill="#4A6741" opacity="0.7" fontWeight="600" letterSpacing="1">CONFIANCE</text>
-                <text x="338" y="272" fontSize="9" fontFamily="Inter,sans-serif" fill="#4A6741" opacity="0.7" fontWeight="600" letterSpacing="1">EXCELLENCE</text>
-                <text x="210" y="360" textAnchor="middle" fontSize="9" fontFamily="Inter,sans-serif" fill="#4A6741" opacity="0.7" fontWeight="600" letterSpacing="1">CLARTÉ</text>
-                <text x="16" y="272" fontSize="9" fontFamily="Inter,sans-serif" fill="#4A6741" opacity="0.7" fontWeight="600" letterSpacing="1">SÉCURITÉ</text>
-                <text x="20" y="158" fontSize="9" fontFamily="Inter,sans-serif" fill="#4A6741" opacity="0.7" fontWeight="600" letterSpacing="1">AMÉLIORATION</text>
-              </svg>
             </div>
           </div>
         </section>
@@ -437,9 +447,12 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
           <p className="pv-section-body pv-cta-body reveal reveal-delay-2">
             Rejoignez les communes qui construisent une démocratie plus proche, plus transparente, plus vivante. L'intégration prend moins d'une journée.
           </p>
-          <div className="reveal reveal-delay-3" style={{ position: 'relative' }}>
+          <div className="pv-cta-actions reveal reveal-delay-3">
             <button className="pv-btn-primary pv-btn-large" onClick={handleCTA}>
-              Accéder à Municipall <span className="pv-arrow">→</span>
+              Télécharger l'app <span className="pv-arrow">→</span>
+            </button>
+            <button className="pv-btn-secondary pv-btn-large" onClick={handleCTA}>
+              Utiliser sur le web <span className="pv-arrow">→</span>
             </button>
           </div>
           <div className="pv-cta-features reveal reveal-delay-4">
@@ -454,7 +467,7 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
         <footer className="pv-footer">
           <div className="pv-footer-brand">
             Municip<span>'All</span>
-            <span className="pv-footer-tagline"> · Démocratie de proximité</span>
+            <span className="pv-footer-tagline"> · Démocratie de proximité, mobile d'abord</span>
           </div>
           <ul className="pv-footer-links">
             <li><span>Solutions</span></li>

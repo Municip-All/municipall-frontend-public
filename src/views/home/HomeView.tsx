@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useApp } from '../../context/AppContext';
 import { ViewName } from '../../types';
 import { MapModal } from '../map/MapView';
-import { Badge, Button, ThemeToggle } from '../../components';
+import { Badge, Button, ThemeToggle, SplitText } from '../../components';
 import { CAT_STYLE, STATUS_COLOR } from '../../utils/constants';
 import './HomeView.scss';
 
@@ -87,7 +87,11 @@ export const HomeView: React.FC = () => {
         <div className="home__hero-ghost">{ville.split('-')[0].split(' ')[0]}</div>
         <div className="home__hero-left">
           <p className="home__hero-eyebrow"><span className="home__hero-dot" />{dayName.charAt(0).toUpperCase() + dayName.slice(1)} · {dateStr}</p>
-          <h1 className="home__hero-greeting">{greeting},<br /><em>{user?.prenom ?? 'Citoyen'}</em></h1>
+          <h1 className="home__hero-greeting">
+            <SplitText text={`${greeting},`} baseDelay={0.3} step={0.07} />
+            <br />
+            <em><SplitText as="span" text={user?.prenom ?? 'Citoyen'} baseDelay={0.58} step={0.07} /></em>
+          </h1>
           <p className="home__hero-sub">{ville}{user?.quartier ? ` · Quartier ${user.quartier}` : ''} — votre espace municipal</p>
           <div className="home__hero-ctas">
             <Button variant="primary" onClick={() => showView('sig')}>Signaler un problème</Button>

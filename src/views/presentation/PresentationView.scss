@@ -8,9 +8,14 @@
   to   { transform: translateX(-50%); }
 }
 
+@keyframes pv-cue {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100%); }
+}
+
 @keyframes pv-phone-float {
   0%, 100% { transform: translateY(-50%) rotate(4deg); }
-  50%      { transform: translateY(calc(-50% - 12px)) rotate(4deg); }
+  50%      { transform: translateY(calc(-50% - 14px)) rotate(4deg); }
 }
 
 // ── CURSOR + PROGRESS (outside .presentation) ───────
@@ -117,6 +122,168 @@
     &:hover { background: var(--pv-ink); color: var(--pv-white); }
   }
 
+  // ── THE JOURNEY — five acts pinned across a tall scroll track ──
+  .pv-journey {
+    position: relative;
+    height: 520vh;
+  }
+
+  .pv-journey-stage {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow: hidden;
+    background: radial-gradient(ellipse at 50% 55%, rgba(123, 143, 204, 0.07), transparent 62%);
+  }
+
+  .pv-journey-captions {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    padding: 0 3rem;
+    pointer-events: none;
+  }
+
+  .pv-chapter {
+    position: absolute;
+    max-width: 30ch;
+    opacity: 0;
+    will-change: opacity, transform;
+  }
+
+  // Final act: the word owns the middle of the frame, so the caption drops below it.
+  .pv-chapter--low {
+    bottom: 14vh;
+    max-width: 24ch;
+
+    .pv-chapter-title {
+      font-size: clamp(1.6rem, 2.8vw, 2.6rem);
+    }
+  }
+
+  .pv-chapter-num {
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--pv-gold);
+    margin-bottom: 1rem;
+  }
+
+  .pv-chapter-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(2.1rem, 4.6vw, 4.1rem);
+    font-weight: 800;
+    line-height: 1.06;
+    letter-spacing: -1.5px;
+    color: var(--pv-ink);
+    text-wrap: balance;
+  }
+
+  // Each word rises out of its own mask, staggered — the sentence assembles
+  // the way the particles do.
+  .pv-word-mask {
+    display: inline-block;
+    overflow: hidden;
+    vertical-align: top;
+    padding: 0 0.14em 0.14em 0;
+    margin-bottom: -0.14em;
+  }
+
+  .pv-word {
+    display: inline-block;
+    transform: translateY(110%);
+    opacity: 0;
+    transition: transform 0.9s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.6s ease;
+  }
+
+  .pv-chapter.is-active .pv-word {
+    transform: translateY(0);
+    opacity: 1;
+  }
+
+  .pv-chapter-hint {
+    margin-top: 1.25rem;
+    font-size: 0.8rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--pv-ink-30);
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+
+    &::before {
+      content: '';
+      width: 26px;
+      height: 1px;
+      background: var(--pv-gold);
+    }
+  }
+
+  .pv-journey-rail {
+    position: absolute;
+    right: 3rem;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 1.1rem;
+    pointer-events: none;
+  }
+
+  .pv-rail-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 0.7rem;
+    opacity: 0.3;
+    transition: opacity 0.5s ease;
+
+    &.is-active { opacity: 1; }
+  }
+
+  .pv-rail-tick {
+    width: 18px;
+    height: 1px;
+    background: var(--pv-ink-30);
+    transition: width 0.5s cubic-bezier(0.22, 1, 0.36, 1), background 0.5s ease;
+  }
+
+  .pv-rail-item.is-active .pv-rail-tick {
+    width: 40px;
+    background: var(--pv-gold);
+  }
+
+  .pv-rail-label {
+    font-size: 0.66rem;
+    font-weight: 600;
+    letter-spacing: 0.16em;
+    color: var(--pv-ink-30);
+    min-width: 2ch;
+    transition: color 0.5s ease;
+  }
+
+  .pv-rail-item.is-active .pv-rail-label { color: var(--pv-gold); }
+
+  .pv-journey-scroll-cue {
+    position: absolute;
+    bottom: 2.5rem;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 1px;
+    height: 54px;
+    background: var(--pv-border);
+    overflow: hidden;
+
+    span {
+      position: absolute;
+      inset: 0;
+      background: var(--pv-gold);
+      animation: pv-cue 2.4s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+    }
+  }
+
   // ── HERO ──
   .pv-hero {
     min-height: 100vh;
@@ -133,12 +300,6 @@
     font-size: clamp(120px, 20vw, 240px); font-weight: 800;
     color: transparent; -webkit-text-stroke: 1px rgba(157,110,70,0.22);
     white-space: nowrap; pointer-events: none; user-select: none; letter-spacing: -8px;
-  }
-
-  .pv-hero-watercolor {
-    position: absolute; top: 0; right: 0;
-    width: 55%; height: 100%; pointer-events: none; overflow: hidden;
-    svg { width: 100%; height: 100%; }
   }
 
   .pv-hero-eyebrow {
@@ -173,12 +334,29 @@
     position: relative; z-index: 1;
   }
 
+  // Mobile-first: the phone sits in the flow under the CTAs, and only becomes
+  // the floating desktop object once there is room beside the headline.
   .pv-hero-phone {
-    position: absolute; right: 6%; top: 50%;
-    transform: translateY(-50%) rotate(4deg);
-    z-index: 1; pointer-events: none;
-    animation: pv-phone-float 5s ease-in-out infinite;
-    .pv-phone { width: 240px; }
+    order: 5;
+    margin: 2.5rem auto 0;
+    width: max-content;
+    pointer-events: none;
+
+    .pv-phone { width: 190px; }
+  }
+
+  @media (min-width: 901px) {
+    .pv-hero-phone {
+      position: absolute;
+      right: 6%;
+      top: 50%;
+      margin: 0;
+      transform: translateY(-50%) rotate(4deg);
+      z-index: 1;
+      animation: pv-phone-float 5s ease-in-out infinite;
+
+      .pv-phone { width: 240px; }
+    }
   }
 
   .pv-scroll-line {
@@ -646,7 +824,32 @@
     .pv-nav { padding: 0 1.5rem; .pv-nav-links { display: none; } }
     .pv-section { padding: 4rem 1.5rem; }
     .pv-hero { padding: calc(var(--pv-nav-h) + 2rem) 1.5rem 3rem; }
-    .pv-hero-phone { display: none; }
+    // Shorter track: five acts should not cost five phone-screens of thumb work.
+    .pv-journey { height: 340vh; }
+    .pv-journey-stage { height: 100svh; }
+    .pv-journey-captions { padding: 0 1.5rem; align-items: flex-end; }
+    .pv-chapter {
+      max-width: 100%;
+      bottom: 16vh;
+      .pv-chapter-title { font-size: clamp(1.9rem, 8.5vw, 2.9rem); letter-spacing: -1px; }
+    }
+    .pv-chapter--low { bottom: 16vh; .pv-chapter-title { font-size: clamp(1.5rem, 6.5vw, 2.1rem); } }
+
+    .pv-journey-rail {
+      right: auto;
+      left: 1.5rem;
+      top: auto;
+      bottom: 7vh;
+      transform: none;
+      flex-direction: row;
+      gap: 0.55rem;
+      align-items: center;
+    }
+    .pv-rail-label { display: none; }
+    .pv-rail-tick { width: 14px; }
+    .pv-rail-item.is-active .pv-rail-tick { width: 26px; }
+
+    .pv-journey-scroll-cue { bottom: 1.5rem; height: 38px; }
     .pv-manifesto { grid-template-columns: 1fr; gap: 2.5rem; }
     .pv-stats-grid { grid-template-columns: 1fr; .pv-stat-block { border-right: none; } }
     .pv-solutions-grid { grid-template-columns: 1fr 1fr; }
@@ -661,7 +864,6 @@
   @media (max-width: 560px) {
     .pv-solutions-grid { grid-template-columns: 1fr; }
     .pv-hero-bg-text { display: none; }
-    .pv-hero-watercolor { opacity: 0.4; }
     .pv-app-visual { min-height: 280px; }
     .pv-phone-front .pv-phone { width: 160px; }
     .pv-phone-back { width: 130px; .pv-phone { width: 130px; } }

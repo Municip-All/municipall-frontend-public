@@ -1,11 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense, lazy } from 'react';
 import { useApp } from '../../context/AppContext';
 import { ThemeToggle } from '../../components';
+import { StaticSkylineFallback } from './SkylineFallback';
 import './PresentationView.scss';
+
+const CityJourney = lazy(() => import('./CityJourney').then((m) => ({ default: m.CityJourney })));
 
 interface PresentationViewProps {
   onComplete?: () => void;
 }
+
+/**
+ * "La ville qui écoute" — the five acts the particle field moves through as the
+ * visitor scrolls. `from`/`to` are positions along the pinned journey (0→1).
+ */
+const CHAPTERS: Array<{ num: string; title: string; hint?: string; from: number; to: number; low?: boolean }> = [
+  // Starts before 0 so the opening caption is already at full opacity on arrival.
+  { num: 'Chapitre I', title: 'Chaque point est une voix.', from: -0.06, to: 0.17 },
+  { num: 'Chapitre II', title: 'Ensemble, elles dessinent une ville.', from: 0.2, to: 0.38 },
+  { num: 'Chapitre III', title: 'Elle réagit à votre présence.', hint: 'Bougez votre curseur', from: 0.42, to: 0.56 },
+  { num: 'Chapitre IV', title: "Et relie celles et ceux qui l'habitent.", from: 0.6, to: 0.78 },
+  // Sits low so it never collides with the word forming above it.
+  { num: 'Chapitre V', title: 'La démocratie de proximité.', from: 0.88, to: 1.0, low: true },
+];
 
 function animateNum(from: number, to: number, dur: number, cb: (v: number) => void) {
   const start = performance.now();
@@ -95,7 +112,7 @@ const PhoneMockup: React.FC<{ variant: PhoneVariant; className?: string }> = ({ 
 );
 
 export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }) => {
-  const { setAuthView } = useApp();
+  const { setAuthView, theme } = useApp();
   const [isHidden, setIsHidden] = useState(false);
   const [progress, setProgress] = useState(0);
   const [stats, setStats] = useState({ s1: 0, s2: 0, s3: 0 });
@@ -104,19 +121,72 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
   const statsAnimatedRef = useRef(false);
   const dotRef = useRef<HTMLDivElement>(null);
   const ringRef = useRef<HTMLDivElement>(null);
+  const journeyRef = useRef<HTMLElement>(null);
+  const journeyProgressRef = useRef(0);
+  const captionRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const railRefs = useRef<Array<HTMLDivElement | null>>([]);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const [coarsePointer, setCoarsePointer] = useState(false);
 
-  // Scroll progress + watercolor parallax
+  useEffect(() => {
+    const query = window.matchMedia('(pointer: coarse)');
+    setCoarsePointer(query.matches);
+    const onChange = () => setCoarsePointer(query.matches);
+    query.addEventListener('change', onChange);
+    return () => query.removeEventListener('change', onChange);
+  }, []);
+
+  useEffect(() => {
+    const query = window.matchMedia('(prefers-reduced-motion: reduce)');
+    setReducedMotion(query.matches);
+    const onChange = () => setReducedMotion(query.matches);
+    query.addEventListener('change', onChange);
+    return () => query.removeEventListener('change', onChange);
+  }, []);
+
+  // Scroll progress + journey chapter choreography.
+  // Chapter opacity is written straight to the DOM so the 5-act sequence never
+  // triggers a React re-render while scrolling.
   useEffect(() => {
     const el = containerRef.current;
     if (!el) return;
     const onScroll = () => {
-      setProgress(el.scrollTop / (el.scrollHeight - el.clientHeight) * 100);
-      const wc = el.querySelector<HTMLElement>('.pv-hero-watercolor');
-      if (wc) wc.style.transform = `translateY(${el.scrollTop * 0.3}px)`;
+      setProgress((el.scrollTop / (el.scrollHeight - el.clientHeight)) * 100);
+
+      const journey = journeyRef.current;
+      if (!journey) return;
+      const span = journey.clientHeight - el.clientHeight;
+      const raw = span > 0 ? (el.scrollTop - journey.offsetTop) / span : 0;
+      const p = Math.min(1, Math.max(0, raw));
+      journeyProgressRef.current = p;
+
+      const fade = 0.05;
+      CHAPTERS.forEach((chapter, i) => {
+        const node = captionRefs.current[i];
+        if (!node) return;
+        const opacity = Math.max(
+          0,
+          Math.min((p - chapter.from) / fade, (chapter.to - p) / fade, 1)
+        );
+        node.style.opacity = String(opacity);
+        node.style.transform = `translateY(${(1 - opacity) * 26}px)`;
+
+        // Class toggle (not a per-frame style write) drives the staggered
+        // word reveal, so the CSS transitions run uninterrupted.
+        const active = opacity > 0.55;
+        if (active !== node.classList.contains('is-active')) {
+          node.classList.toggle('is-active', active);
+        }
+        const rail = railRefs.current[i];
+        if (rail && active !== rail.classList.contains('is-active')) {
+          rail.classList.toggle('is-active', active);
+        }
+      });
     };
     el.addEventListener('scroll', onScroll, { passive: true });
+    onScroll();
     return () => el.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [reducedMotion]);
 
   // Reveal on scroll
   useEffect(() => {
@@ -213,25 +283,64 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
           </div>
         </nav>
 
+        {/* ── ACT I–V — "La ville qui écoute" ── */}
+        {!reducedMotion && (
+          <section className="pv-journey" id="pv-top" ref={journeyRef} aria-hidden="true">
+            <div className="pv-journey-stage">
+              <Suspense fallback={null}>
+                <CityJourney progressRef={journeyProgressRef} theme={theme} />
+              </Suspense>
+
+              <div className="pv-journey-captions">
+                {CHAPTERS.map((chapter, i) => (
+                  <div
+                    key={chapter.num}
+                    className={`pv-chapter${chapter.low ? ' pv-chapter--low' : ''}`}
+                    ref={(node) => { captionRefs.current[i] = node; }}
+                  >
+                    <p className="pv-chapter-num">{chapter.num}</p>
+                    <h2 className="pv-chapter-title">
+                      {chapter.title.split(' ').map((word, w) => (
+                        <span className="pv-word-mask" key={w}>
+                          <span className="pv-word" style={{ transitionDelay: `${0.05 + w * 0.055}s` }}>
+                            {word}
+                          </span>
+                        </span>
+                      ))}
+                    </h2>
+                    {chapter.hint && (
+                      <p className="pv-chapter-hint">
+                        {coarsePointer ? "Touchez l'écran" : chapter.hint}
+                      </p>
+                    )}
+                  </div>
+                ))}
+              </div>
+
+              {/* Chapter rail — gives the sequence a readable structure */}
+              <div className="pv-journey-rail">
+                {CHAPTERS.map((chapter, i) => (
+                  <div
+                    key={chapter.num}
+                    className="pv-rail-item"
+                    ref={(node) => { railRefs.current[i] = node; }}
+                  >
+                    <span className="pv-rail-tick" />
+                    <span className="pv-rail-label">{['I', 'II', 'III', 'IV', 'V'][i]}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="pv-journey-scroll-cue">
+                <span />
+              </div>
+            </div>
+          </section>
+        )}
+
         {/* ── HERO ── */}
-        <section className="pv-hero" id="pv-top">
-          <div className="pv-hero-bg-text">Démocratie</div>
-          <div className="pv-hero-watercolor">
-            <svg viewBox="0 0 800 900" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
-              <defs>
-                <filter id="pvb1"><feGaussianBlur stdDeviation="18" /></filter>
-                <filter id="pvb2"><feGaussianBlur stdDeviation="28" /></filter>
-                <filter id="pvb3"><feGaussianBlur stdDeviation="12" /></filter>
-              </defs>
-              <ellipse cx="600" cy="340" rx="320" ry="260" fill="#8FCB86" opacity="0.14" filter="url(#pvb2)" />
-              <ellipse cx="680" cy="500" rx="180" ry="140" fill="#D9A441" opacity="0.12" filter="url(#pvb2)" />
-              <ellipse cx="450" cy="650" rx="200" ry="160" fill="#7B8FCC" opacity="0.12" filter="url(#pvb1)" />
-              <ellipse cx="580" cy="220" rx="140" ry="100" fill="#8FCB86" opacity="0.08" filter="url(#pvb1)" />
-              <ellipse cx="700" cy="720" rx="120" ry="90" fill="#9D6E46" opacity="0.14" filter="url(#pvb2)" />
-              <path d="M480,280 Q540,200 620,310 Q700,420 580,480 Q460,540 440,440 Q420,340 480,280Z" fill="#8FCB86" opacity="0.09" filter="url(#pvb3)" />
-              <path d="M560,480 Q640,420 700,510 Q760,600 680,660 Q600,720 550,650 Q500,580 560,480Z" fill="#7B8FCC" opacity="0.09" filter="url(#pvb3)" />
-            </svg>
-          </div>
+        <section className="pv-hero" id={reducedMotion ? 'pv-top' : undefined}>
+          {reducedMotion && <StaticSkylineFallback />}
 
           <div className="pv-hero-phone">
             <PhoneMockup variant="feed" />

@@ -1,0 +1,54 @@
+.home-animation {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1;
+
+  canvas {
+    display: block;
+  }
+}
+
+.home-animation__fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(
+    circle at center,
+    var(--color-primary-light) 0%,
+    transparent 70%
+  );
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at center, transparent 0%, var(--bg-primary) 100%);
+  }
+}
+
+.home-animation__fallback-orb {
+  width: 60%;
+  aspect-ratio: 1;
+  max-width: 400px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 30%, var(--color-primary-light), var(--color-secondary));
+  opacity: 0.3;
+  filter: blur(60px);
+  animation: float 6s ease-in-out infinite;
+
+  @keyframes float {
+    0%, 100% {
+      transform: translateY(0);
+      opacity: 0.3;
+    }
+    50% {
+      transform: translateY(-20px);
+      opacity: 0.5;
+    }
+  }
+}

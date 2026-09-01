@@ -1,9 +1,13 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, lazy, Suspense } from 'react';
 import { useApp } from '../../context/AppContext';
 import { PageLayout } from '../layout/PageLayout';
 import { contactService } from '../../services/contactService';
 import { parseOpeningHours } from '../../lib/mappers';
 import './ContactView.scss';
+
+const ContactAnimationScene = lazy(() =>
+  import('./ContactAnimationScene').then((module) => ({ default: module.ContactAnimationScene }))
+);
 
 export const ContactView: React.FC = () => {
   const [nom, setNom] = useState('');
@@ -12,7 +16,9 @@ export const ContactView: React.FC = () => {
   const [msg, setMsg] = useState('');
   const [sent, setSent] = useState(false);
   const [sending, setSending] = useState(false);
+  const [focusedField, setFocusedField] = useState(-1);
   const sentTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const theme = (document.documentElement.getAttribute('data-theme') ?? 'light') as 'light' | 'dark';
 
   useEffect(() => {
     return () => {
@@ -42,6 +48,9 @@ export const ContactView: React.FC = () => {
   return (
     <PageLayout active="contact">
       <section className="pl-hero">
+        <Suspense fallback={<div style={{ position: 'absolute', inset: 0 }} />}>
+          <ContactAnimationScene theme={theme} focusedField={focusedField} />
+        </Suspense>
         <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(122,155,109,.1)' }} />
         <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(94,116,205,.09)' }} />
         <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(217,164,65,.05)' }} />
@@ -86,10 +95,10 @@ export const ContactView: React.FC = () => {
               <div className="pl-info-body" style={{ padding: '1.5rem' }}>
                 {sent && <div className="pl-alert success" style={{ marginBottom: '1rem' }}>✓ Votre message a bien été envoyé.</div>}
                 <form onSubmit={handleSubmit}>
-                  <div className="pl-field"><label className="pl-field-label">Nom complet *</label><input className="pl-input" type="text" placeholder="Jean Dupont" value={nom} onChange={e => setNom(e.target.value)} /></div>
-                  <div className="pl-field"><label className="pl-field-label">Adresse e-mail *</label><input className="pl-input" type="email" placeholder="jean.dupont@gmail.com" value={email} onChange={e => setEmail(e.target.value)} /></div>
-                  <div className="pl-field"><label className="pl-field-label">Sujet</label><select className="pl-select" value={sujet} onChange={e => setSujet(e.target.value)}><option value="">Choisir un sujet…</option><option>Urbanisme</option><option>État civil</option><option>Voirie & espaces verts</option><option>Vie associative</option><option>Autre</option></select></div>
-                  <div className="pl-field"><label className="pl-field-label">Message *</label><textarea className="pl-textarea" style={{ height: '100px' }} placeholder="Votre message…" value={msg} onChange={e => setMsg(e.target.value)} /></div>
+                  <div className="pl-field"><label className="pl-field-label">Nom complet *</label><input className="pl-input" type="text" placeholder="Jean Dupont" value={nom} onChange={e => setNom(e.target.value)} onFocus={() => setFocusedField(0)} onBlur={() => setFocusedField(-1)} /></div>
+                  <div className="pl-field"><label className="pl-field-label">Adresse e-mail *</label><input className="pl-input" type="email" placeholder="jean.dupont@gmail.com" value={email} onChange={e => setEmail(e.target.value)} onFocus={() => setFocusedField(1)} onBlur={() => setFocusedField(-1)} /></div>
+                  <div className="pl-field"><label className="pl-field-label">Sujet</label><select className="pl-select" value={sujet} onChange={e => setSujet(e.target.value)} onFocus={() => setFocusedField(2)} onBlur={() => setFocusedField(-1)}><option value="">Choisir un sujet…</option><option>Urbanisme</option><option>État civil</option><option>Voirie & espaces verts</option><option>Vie associative</option><option>Autre</option></select></div>
+                  <div className="pl-field"><label className="pl-field-label">Message *</label><textarea className="pl-textarea" style={{ height: '100px' }} placeholder="Votre message…" value={msg} onChange={e => setMsg(e.target.value)} onFocus={() => setFocusedField(3)} onBlur={() => setFocusedField(-1)} /></div>
                   <button type="submit" className="ct-submit" disabled={sending || !nom || !email || !msg}>Envoyer →</button>
                 </form>
               </div>

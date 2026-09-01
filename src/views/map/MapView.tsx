@@ -4,6 +4,7 @@ import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { useApp } from '../../context/AppContext';
 import { mergeMapPoints, type MapPoint } from '../../lib/mappers';
+import { ThemeToggle } from '../../components';
 import './MapView.scss';
 
 type PointType = MapPoint['type'];
@@ -61,23 +62,23 @@ const MAP_POINTS: Record<string, MapPoint[]> = {
 
 function makeIcon(type: PointType, visible: boolean): L.DivIcon {
   const cfg: Record<PointType, { bg: string; border: string; emoji: string }> = {
-    toilet: { bg: '#4A6741', border: '#2E4029', emoji: '🚻' },
-    tri: { bg: '#7A9B6D', border: '#4A6741', emoji: '♻️' },
-    dechet: { bg: '#D9A441', border: '#8C6516', emoji: '🗑️' },
-    eau: { bg: '#7A8FA6', border: '#5A7291', emoji: '💧' },
+    toilet: { bg: '#8FCB86', border: '#3F6B3A', emoji: '🚻' },
+    tri: { bg: '#5A8A52', border: '#2E4A28', emoji: '♻️' },
+    dechet: { bg: '#D9A441', border: '#9D7228', emoji: '🗑️' },
+    eau: { bg: '#7B8FCC', border: '#4E5FA0', emoji: '💧' },
   };
   const c = cfg[type];
   const html = visible
-    ? `<div style="width:38px;height:38px;background:${c.bg};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid #FDFCF9;box-shadow:0 3px 14px rgba(46,64,41,.28);transition:transform .18s">${c.emoji}</div>`
+    ? `<div style="width:38px;height:38px;background:${c.bg};border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;border:3px solid #F8F3E7;box-shadow:0 3px 14px rgba(0,0,0,.5);transition:transform .18s">${c.emoji}</div>`
     : '<span></span>';
   return L.divIcon({ html, className: '', iconSize: [38, 38], iconAnchor: [19, 19], popupAnchor: [0, -22] });
 }
 
 function pointColor(type: PointType) {
-  if (type === 'toilet') return { bg: 'rgba(74,103,65,.12)', color: '#4A6741' };
-  if (type === 'tri') return { bg: 'rgba(122,155,109,.14)', color: '#4A6741' };
-  if (type === 'eau') return { bg: 'rgba(122,143,166,.16)', color: '#5A7291' };
-  return { bg: 'rgba(217,164,65,.14)', color: '#8C6516' };
+  if (type === 'toilet') return { bg: 'rgba(143,203,134,.16)', color: '#8FCB86' };
+  if (type === 'tri') return { bg: 'rgba(90,138,82,.20)', color: '#A9D89E' };
+  if (type === 'eau') return { bg: 'rgba(123,143,204,.18)', color: '#93A6E0' };
+  return { bg: 'rgba(217,164,65,.18)', color: '#E8C173' };
 }
 function typeLabel(type: PointType) {
   if (type === 'toilet') return 'Toilette publique';
@@ -126,6 +127,7 @@ export const MapModal: React.FC<MapModalProps> = ({ onClose }) => {
           <button className={`mm-filter${active.has('dechet') ? ' on dechet' : ''}`} onClick={() => toggle('dechet')}>🗑️ Déchetteries <span className="mm-count">{count('dechet')}</span></button>
           <button className={`mm-filter${active.has('eau') ? ' on eau' : ''}`} onClick={() => toggle('eau')}>💧 Points d'eau <span className="mm-count">{count('eau')}</span></button>
         </div>
+        <ThemeToggle />
       </div>
       <div className="mm-map-wrap">
         <MapContainer center={center} zoom={15} style={{ width: '100%', height: '100%' }} zoomControl={false}>
@@ -146,7 +148,7 @@ export const MapModal: React.FC<MapModalProps> = ({ onClose }) => {
                     <div className="mm-popup-name">{pt.name}</div>
                     <div className="mm-popup-addr">{pt.address}</div>
                     <div className="mm-popup-foot">
-                      {(pt.type === 'toilet' || pt.type === 'eau') && (<span className="mm-popup-badge" style={pt.open ? { background: 'rgba(74,103,65,.14)', color: '#4A6741' } : { background: 'rgba(198,93,78,.14)', color: '#B04A3C' }}>{pt.open ? 'Ouvert' : 'Fermé'}</span>)}
+                      {(pt.type === 'toilet' || pt.type === 'eau') && (<span className="mm-popup-badge" style={pt.open ? { background: 'rgba(143,203,134,.18)', color: '#8FCB86' } : { background: 'rgba(224,120,95,.18)', color: '#E0785F' }}>{pt.open ? 'Ouvert' : 'Fermé'}</span>)}
                       {pt.hours && <span className="mm-popup-hours">🕐 {pt.hours}</span>}
                     </div>
                   </div>
@@ -157,10 +159,10 @@ export const MapModal: React.FC<MapModalProps> = ({ onClose }) => {
         </MapContainer>
         <div className="mm-legend">
           <div className="mm-legend-label">Légende</div>
-          <div className="mm-legend-row"><div className="mm-legend-dot" style={{ background: '#4A6741' }} />Toilettes publiques</div>
-          <div className="mm-legend-row"><div className="mm-legend-dot" style={{ background: '#7A9B6D' }} />Points de tri</div>
+          <div className="mm-legend-row"><div className="mm-legend-dot" style={{ background: '#8FCB86' }} />Toilettes publiques</div>
+          <div className="mm-legend-row"><div className="mm-legend-dot" style={{ background: '#5A8A52' }} />Points de tri</div>
           <div className="mm-legend-row"><div className="mm-legend-dot" style={{ background: '#D9A441' }} />Déchetteries</div>
-          <div className="mm-legend-row"><div className="mm-legend-dot" style={{ background: '#7A8FA6' }} />Points d'eau</div>
+          <div className="mm-legend-row"><div className="mm-legend-dot" style={{ background: '#7B8FCC' }} />Points d'eau</div>
         </div>
       </div>
     </div>

@@ -59,6 +59,36 @@ img {
   border-radius: 4px;
 }
 
+* {
+  scrollbar-color: var(--color-border-hover) transparent;
+}
+
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-hover);
+  border-radius: 4px;
+}
+
+/* Bronze hairline bookending every screen — signature motif of the loading sequence */
+.hairline-top,
+.hairline-bottom {
+  position: fixed;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(to right, transparent, var(--color-bronze) 30%, var(--color-bronze) 70%, transparent);
+  opacity: 0.55;
+  pointer-events: none;
+  z-index: 500;
+}
+
+.hairline-top { top: 0; }
+.hairline-bottom { bottom: 0; }
+
 button:focus:not(:focus-visible),
 a:focus:not(:focus-visible) {
   outline: none;
@@ -137,4 +167,15 @@ select:focus-visible {
   background: var(--color-matcha-100);
   border-radius: var(--radius-md);
   animation: skeleton-pulse 1.6s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

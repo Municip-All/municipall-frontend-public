@@ -1,0 +1,48 @@
+@use '../styles/design-system' as *;
+
+.theme-toggle {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+  color: var(--color-neutral-600);
+  flex-shrink: 0;
+  overflow: hidden;
+  transition: background var(--transition-fast), color var(--transition-fast), transform var(--transition-fast), border-color var(--transition-fast);
+
+  &:hover {
+    background: var(--color-gold-bg);
+    color: var(--color-gold);
+    border-color: transparent;
+    transform: scale(1.06);
+  }
+
+  &__icon {
+    position: absolute;
+    transition: opacity 0.3s cubic-bezier(.22,1,.36,1), transform 0.4s cubic-bezier(.22,1,.36,1);
+  }
+
+  &--dark &__icon--sun {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+  &--dark &__icon--moon {
+    opacity: 0;
+    transform: rotate(-90deg) scale(0.4);
+  }
+
+  &--light &__icon--sun {
+    opacity: 0;
+    transform: rotate(90deg) scale(0.4);
+  }
+  &--light &__icon--moon {
+    opacity: 1;
+    transform: rotate(0deg) scale(1);
+  }
+}

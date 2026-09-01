@@ -40,7 +40,7 @@ body {
   align-items: center;
   height: 100vh;
   overflow: hidden;
-  background: linear-gradient(135deg, #171D14 0%, #1C241A 50%, #171D14 100%);
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
   position: relative;
 }
 
@@ -50,7 +50,7 @@ body {
   left: 0;
   right: 0;
   height: 1px;
-  background: linear-gradient(to right, transparent, #A8C69F 30%, #A8C69F 70%, transparent);
+  background: linear-gradient(to right, transparent, #9D6E46 30%, #9D6E46 70%, transparent);
 }
 
 .line-top {
@@ -64,7 +64,7 @@ body {
 .loading {
   position: fixed;
   inset: 0;
-  background: linear-gradient(135deg, #171D14 0%, #1C241A 50%, #171D14 100%);
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%);
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -107,7 +107,7 @@ body {
 
     #groundDots {
       fill: none;
-      stroke: rgba(168, 198, 159, 0.25);
+      stroke: rgba(200, 190, 165, 0.28);
       stroke-width: 1.2;
       stroke-linecap: round;
       stroke-dasharray: 3 11;
@@ -115,7 +115,7 @@ body {
 
     #mainPath {
       fill: none;
-      stroke: #A8C69F;
+      stroke: #7B8FCC;
       stroke-width: 1.8;
       stroke-linecap: round;
       stroke-linejoin: round;

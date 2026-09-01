@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { useApp } from '../../context/AppContext';
 import { ViewName } from '../../types';
 import { MapModal } from '../map/MapView';
-import { Badge, Button } from '../../components';
+import { Badge, Button, ThemeToggle, SplitText } from '../../components';
 import { CAT_STYLE, STATUS_COLOR } from '../../utils/constants';
 import './HomeView.scss';
+
+const HomeAnimationScene = lazy(() => import('./HomeAnimationScene').then((m) => ({ default: m.HomeAnimationScene })));
 
 const WEATHER_DATA: Record<string, { temp: number; desc: string; icon: string; forecast: Array<{ day: string; icon: string; hi: number }> }> = {
   'Kremlin-Bicêtre': { temp: 19, desc: 'Couvert', icon: '☁️', forecast: [{ day: 'Jeu', icon: '⛅', hi: 20 }, { day: 'Ven', icon: '🌦️', hi: 17 }, { day: 'Sam', icon: '☀️', hi: 24 }, { day: 'Dim', icon: '⛅', hi: 22 }] },
@@ -24,7 +26,7 @@ const SERVICES: Array<{ key: ViewName; num: string; title: string; desc: string;
   { key: 'sig', num: '01', title: 'Signalements', desc: 'Déclarez un incident et suivez son avancement en temps réel.', bg: 'var(--color-primary-bg)', color: 'var(--color-primary-light)', accentColor: 'var(--color-primary-light)', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg> },
   { key: 'collecte', num: '02', title: 'Déchets & Toilettes', desc: 'Points de collecte et sanitaires publics géolocalisés.', bg: 'var(--color-success-bg)', color: 'var(--color-success)', accentColor: 'var(--color-success)', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4h6v2"/></svg> },
   { key: 'travaux', num: '03', title: 'Travaux', desc: 'Chantiers en cours et planifiés dans votre quartier.', bg: 'var(--color-warning-bg)', color: 'var(--color-warning)', accentColor: 'var(--color-warning)', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M14.7 6.3a1 1 0 010 1.4l-8 8a1 1 0 01-1.4 0l-1-1a1 1 0 010-1.4l8-8a1 1 0 011.4 0l1 1z"/><path d="M16 2l4 4-1.5 1.5L14.5 3.5z"/><path d="M2 22l1.5-5.5 3.5 3.5z"/></svg> },
-  { key: 'transports', num: '04', title: 'Transports', desc: 'Horaires et perturbations en temps réel.', bg: 'var(--color-primary-bg)', color: 'var(--color-primary-light)', accentColor: 'var(--color-primary-light)', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="21" x2="8" y2="17"/><line x1="16" y1="21" x2="16" y2="17"/><line x1="5" y1="21" x2="19" y2="21"/></svg> },
+  { key: 'transports', num: '04', title: 'Transports', desc: 'Horaires et perturbations en temps réel.', bg: 'var(--color-secondary-bg)', color: 'var(--color-secondary)', accentColor: 'var(--color-secondary)', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="18" height="14" rx="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="8" y1="21" x2="8" y2="17"/><line x1="16" y1="21" x2="16" y2="17"/><line x1="5" y1="21" x2="19" y2="21"/></svg> },
   { key: 'social', num: '05', title: 'Social & Asso.', desc: 'Associations, groupes citoyens et initiatives locales.', bg: 'var(--color-secondary-bg)', color: 'var(--color-secondary)', accentColor: 'var(--color-secondary)', icon: <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg> },
 ];
 
@@ -49,6 +51,7 @@ const USEFUL_LINKS_FALLBACK = [
 export const HomeView: React.FC = () => {
   const { user, signalements, showView, toggleNotif, toggleBot, botOpen, weather: apiWeather, homeEventPreviews, alerts: apiAlerts, cityConfig } = useApp();
   const [showMap, setShowMap] = useState(false);
+  const theme = (document.documentElement.getAttribute('data-theme') ?? 'light') as 'light' | 'dark';
 
   const now = new Date();
   const dayName = now.toLocaleDateString('fr-FR', { weekday: 'long' });
@@ -75,6 +78,7 @@ export const HomeView: React.FC = () => {
           <li><button type="button" className="home__nav-link" onClick={() => showView('contact')}>Contact</button></li>
         </ul>
         <div className="home__nav-right">
+          <ThemeToggle />
           <button type="button" className={`home__nav-icon${botOpen ? ' home__nav-icon--on' : ''}`} onClick={toggleBot} title="Assistant MuniBot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="17" height="17"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
           <button type="button" className="home__nav-icon" onClick={toggleNotif} title="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="17" height="17"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span className="home__nav-dot" /></button>
           <button type="button" className="home__nav-avatar" title="Mon profil" onClick={() => showView('profil')}>{initials.toUpperCase()}</button>
@@ -86,7 +90,11 @@ export const HomeView: React.FC = () => {
         <div className="home__hero-ghost">{ville.split('-')[0].split(' ')[0]}</div>
         <div className="home__hero-left">
           <p className="home__hero-eyebrow"><span className="home__hero-dot" />{dayName.charAt(0).toUpperCase() + dayName.slice(1)} · {dateStr}</p>
-          <h1 className="home__hero-greeting">{greeting},<br /><em>{user?.prenom ?? 'Citoyen'}</em></h1>
+          <h1 className="home__hero-greeting">
+            <SplitText text={`${greeting},`} baseDelay={0.3} step={0.07} />
+            <br />
+            <em><SplitText as="span" text={user?.prenom ?? 'Citoyen'} baseDelay={0.58} step={0.07} /></em>
+          </h1>
           <p className="home__hero-sub">{ville}{user?.quartier ? ` · Quartier ${user.quartier}` : ''} — votre espace municipal</p>
           <div className="home__hero-ctas">
             <Button variant="primary" onClick={() => showView('sig')}>Signaler un problème</Button>
@@ -115,6 +123,16 @@ export const HomeView: React.FC = () => {
       </section>
 
       <div className="home__stats-strip">
+        <Suspense fallback={<div style={{ position: 'absolute', inset: 0 }} />}>
+          <HomeAnimationScene
+            stats={{
+              total: signalements.length,
+              active: activeSigs.length,
+              resolved: signalements.filter(s => s.statut === 'resolu').length,
+            }}
+            theme={theme}
+          />
+        </Suspense>
         <div className="home__stat"><div className="home__stat-num">{signalements.length}</div><div className="home__stat-label">Signalements</div></div>
         <div className="home__stat"><div className="home__stat-num">{activeSigs.length}</div><div className="home__stat-label">En cours</div></div>
         <div className="home__stat"><div className="home__stat-num">{signalements.filter(s => s.statut === 'resolu').length}</div><div className="home__stat-label">Résolus</div></div>

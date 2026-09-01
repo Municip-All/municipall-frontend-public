@@ -13,6 +13,7 @@ import { TravauxView } from './views/travaux/TravauxView';
 import { TransportsView } from './views/transports/TransportsView';
 import { SocialView } from './views/social/SocialView';
 import { NotifDrawer, MuniBot } from './views/layout/PageLayout';
+import { ViewTransition, GlobalCursor } from './components';
 import { ViewName } from './types';
 
 const VIEW_LABELS: Record<ViewName, string> = {
@@ -28,27 +29,40 @@ const VIEW_LABELS: Record<ViewName, string> = {
 };
 
 const MainContent: React.FC = () => {
-  const { isAuthenticated, isAuthLoading, currentView, showView } = useApp();  if (isAuthLoading) return <LoadingView />;
-  if (!isAuthenticated) return <AuthScreen />;
+  const { isAuthenticated, isAuthLoading, currentView, showView } = useApp();
 
-  switch (currentView) {
-    case 'home': return <HomeView />;
-    case 'sig': return <ReportsView />;
-    case 'evenement': return <EventsView />;
-    case 'contact': return <ContactView />;
-    case 'profil': return <ProfileView />;
-    case 'collecte': return <CollecteView />;
-    case 'travaux': return <TravauxView />;
-    case 'transports': return <TransportsView />;
-    case 'social': return <SocialView />;
-    default: return (
-      <div style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1.5rem', background: 'var(--color-bg)', fontFamily: 'var(--font-body)' }}>
-        <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '2.8rem', letterSpacing: '-1.5px', color: 'var(--color-ink)' }}><em>{VIEW_LABELS[currentView as ViewName]}</em></h1>
-        <p style={{ fontSize: '.9rem', color: 'var(--color-neutral-500)' }}>Cette page sera bientôt disponible.</p>
-        <button style={{ marginTop: '.5rem', padding: '.8rem 1.8rem', background: 'var(--color-ink)', border: 'none', borderRadius: '2rem', fontFamily: 'var(--font-body)', fontSize: '.88rem', fontWeight: 500, color: 'var(--color-neutral-50)', cursor: 'pointer' }} onClick={() => showView('home')}>← Retour à l'accueil</button>
-      </div>
-    );
+  let key: string = currentView;
+  let node: React.ReactNode;
+
+  if (isAuthLoading) {
+    key = 'loading';
+    node = <LoadingView />;
+  } else if (!isAuthenticated) {
+    key = 'auth';
+    node = <AuthScreen />;
+  } else {
+    switch (currentView) {
+      case 'home': node = <HomeView />; break;
+      case 'sig': node = <ReportsView />; break;
+      case 'evenement': node = <EventsView />; break;
+      case 'contact': node = <ContactView />; break;
+      case 'profil': node = <ProfileView />; break;
+      case 'collecte': node = <CollecteView />; break;
+      case 'travaux': node = <TravauxView />; break;
+      case 'transports': node = <TransportsView />; break;
+      case 'social': node = <SocialView />; break;
+      default:
+        node = (
+          <div style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1.5rem', background: 'var(--color-bg)', fontFamily: 'var(--font-body)' }}>
+            <h1 style={{ fontFamily: 'var(--font-display)', fontWeight: 800, fontSize: '2.8rem', letterSpacing: '-1.5px', color: 'var(--color-ink)' }}><em>{VIEW_LABELS[currentView as ViewName]}</em></h1>
+            <p style={{ fontSize: '.9rem', color: 'var(--color-neutral-500)' }}>Cette page sera bientôt disponible.</p>
+            <button style={{ marginTop: '.5rem', padding: '.8rem 1.8rem', background: 'var(--color-ink)', border: 'none', borderRadius: '2rem', fontFamily: 'var(--font-body)', fontSize: '.88rem', fontWeight: 500, color: 'var(--color-neutral-50)', cursor: 'pointer' }} onClick={() => showView('home')}>← Retour à l'accueil</button>
+          </div>
+        );
+    }
   }
+
+  return <ViewTransition viewKey={key} variant="swift">{node}</ViewTransition>;
 };
 
 const ChatbotWidget: React.FC = () => {
@@ -69,11 +83,16 @@ const App: React.FC = () => {
 
   return (
     <AppProvider>
-      {stage === 'loading' && <LoadingView />}
-      {stage === 'presentation' && <PresentationView onComplete={handlePresentationComplete} />}
-      {stage === 'app' && <MainContent />}
+      <ViewTransition viewKey={stage} variant="cinematic">
+        {stage === 'loading' && <LoadingView />}
+        {stage === 'presentation' && <PresentationView onComplete={handlePresentationComplete} />}
+        {stage === 'app' && <MainContent />}
+      </ViewTransition>
+      {stage === 'app' && <GlobalCursor />}
       {stage === 'app' && <NotifDrawer />}
       {stage === 'app' && <ChatbotWidget />}
+      {stage === 'app' && <div className="hairline-top" />}
+      {stage === 'app' && <div className="hairline-bottom" />}
     </AppProvider>
   );
 };

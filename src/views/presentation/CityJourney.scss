@@ -1,0 +1,9 @@
+.cj-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+
+  canvas {
+    pointer-events: auto;
+  }
+}

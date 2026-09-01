@@ -14,12 +14,12 @@
 .sv-service { font-size: .72rem; color: var(--color-neutral-500); margin-top: .35rem; display: flex; align-items: center; gap: .4rem; &::before { content: ''; width: 4px; height: 4px; border-radius: 50%; background: var(--color-neutral-300); flex-shrink: 0; } }
 .sv-agent-note { margin-top: .7rem; padding: .65rem .95rem; background: var(--color-success-bg); border: 1px solid var(--color-success-border); border-radius: 8px; font-size: .76rem; color: var(--color-neutral-500); line-height: 1.55; strong { color: var(--color-success); } }
 
-.sv-mobile-banner { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.4rem; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--color-primary-bg), rgba(122,143,166,.08)); border: 1px solid var(--color-primary-border); margin-bottom: 2rem; animation: fade-up .6s cubic-bezier(.22,1,.36,1) .25s both; }
+.sv-mobile-banner { display: flex; align-items: center; gap: 1rem; padding: 1rem 1.4rem; border-radius: var(--radius-md); background: linear-gradient(135deg, var(--color-primary-bg), rgba(94,116,205,.10)); border: 1px solid var(--color-primary-border); margin-bottom: 2rem; animation: fade-up .6s cubic-bezier(.22,1,.36,1) .25s both; }
 .sv-mobile-banner-icon { width: 40px; height: 40px; border-radius: var(--radius-sm); flex-shrink: 0; background: var(--color-primary); display: flex; align-items: center; justify-content: center; font-size: 1.1rem; }
 .sv-mobile-banner-body { flex: 1; min-width: 0; }
 .sv-mobile-banner-title { font-weight: var(--font-semibold); font-size: .88rem; color: var(--color-ink); margin-bottom: .18rem; }
 .sv-mobile-banner-sub { font-size: .76rem; color: var(--color-neutral-500); line-height: 1.5; }
-.sv-mobile-badge { display: inline-flex; align-items: center; gap: .35rem; padding: .3rem .8rem; border-radius: var(--radius-full); flex-shrink: 0; background: var(--color-primary); color: var(--color-cream-50); font-size: .7rem; font-weight: var(--font-semibold); letter-spacing: .04em; white-space: nowrap; }
+.sv-mobile-badge { display: inline-flex; align-items: center; gap: .35rem; padding: .3rem .8rem; border-radius: var(--radius-full); flex-shrink: 0; background: var(--color-primary); color: var(--color-on-brand); font-size: .7rem; font-weight: var(--font-semibold); letter-spacing: .04em; white-space: nowrap; }
 
 .sv-empty { padding: 3rem 2rem; text-align: center; display: flex; flex-direction: column; align-items: center; gap: .9rem; }
 .sv-empty-icon { font-size: 2.4rem; opacity: .35; }

@@ -11,7 +11,7 @@ export const TransportsView: React.FC = () => {
   return (
     <PageLayout active="home">
       <section className="pl-hero">
-        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(122,143,166,.1)' }} />
+        <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(94,116,205,.12)' }} />
         <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(122,155,109,.07)' }} />
         <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(198,93,78,.05)' }} />
         <div className="pl-hero-ghost">Lignes</div>

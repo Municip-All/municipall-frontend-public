@@ -24,7 +24,7 @@
   &__blobs { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
   &__blob { position: absolute; border-radius: 50%; filter: blur(72px); }
   &__blob--1 { width: 460px; height: 380px; top: -110px; right: -90px; background: rgba(122,155,109,.14); animation: blob-1 16s ease-in-out infinite; }
-  &__blob--2 { width: 340px; height: 290px; bottom: 40px; left: -70px; background: rgba(168,198,159,.1); animation: blob-2 20s ease-in-out 3s infinite; }
+  &__blob--2 { width: 340px; height: 290px; bottom: 40px; left: -70px; background: rgba(94,116,205,.09); animation: blob-2 20s ease-in-out 3s infinite; }
   &__blob--3 { width: 260px; height: 220px; top: 36%; right: 6%; background: rgba(217,164,65,.06); animation: blob-3 24s ease-in-out 1s infinite; }
 
   &__ghost {
@@ -43,7 +43,7 @@
     background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
     display: flex; align-items: center; justify-content: center;
     font-family: var(--font-display); font-weight: var(--font-extrabold); font-size: 1.25rem;
-    color: var(--color-cream-50); letter-spacing: -.5px; flex-shrink: 0;
+    color: var(--color-on-brand); letter-spacing: -.5px; flex-shrink: 0;
     box-shadow: 0 4px 18px rgba(74,103,65,.25);
   }
   &__logo-name { font-family: var(--font-display); font-weight: var(--font-extrabold); font-size: 1.15rem; color: var(--color-ink); letter-spacing: -.3px; line-height: 1; span { color: var(--color-primary-light); } }
@@ -70,7 +70,7 @@
 
   &__form-wrap { width: 100%; max-width: 410px; margin-top: auto; margin-bottom: auto; padding: var(--spacing-8) 0; }
   &__mobile-logo { display: none; align-items: center; gap: .65rem; margin-bottom: 2.5rem; }
-  &__mobile-mark { width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-lighter)); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: var(--font-extrabold); font-size: 1rem; color: var(--color-neutral-50); }
+  &__mobile-mark { width: 36px; height: 36px; border-radius: 8px; background: linear-gradient(135deg, var(--color-primary), var(--color-primary-lighter)); display: flex; align-items: center; justify-content: center; font-family: var(--font-display); font-weight: var(--font-extrabold); font-size: 1rem; color: var(--color-on-brand); }
   &__mobile-name { font-family: var(--font-display); font-weight: var(--font-extrabold); font-size: 1.1rem; color: var(--color-ink); span { color: var(--color-primary-light); } }
 
   &__form-eyebrow { font-size: .7rem; font-weight: var(--font-semibold); letter-spacing: .14em; text-transform: uppercase; color: var(--color-neutral-400); margin-bottom: .6rem; animation: fade-up .75s cubic-bezier(.22,1,.36,1) .38s both; }

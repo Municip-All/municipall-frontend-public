@@ -89,6 +89,9 @@ interface AppContextType {
   notifOpen: boolean;
   toggleNotif: () => void;
   closeNotif: () => void;
+
+  theme: 'light' | 'dark';
+  toggleTheme: () => void;
 }
 
 const AppContext = createContext<AppContextType | null>(null);
@@ -131,6 +134,14 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const [botOpen, setBotOpen] = useState(false);
   const [pendingBotMsg, setPendingBotMsg] = useState('');
   const [notifOpen, setNotifOpen] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>(() => {
+    try {
+      const stored = localStorage.getItem('municipall-theme');
+      return stored === 'light' || stored === 'dark' ? stored : 'dark';
+    } catch {
+      return 'dark';
+    }
+  });
 
   const isAuthenticated = user !== null;
 
@@ -349,6 +360,19 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const toggleNotif = useCallback(() => setNotifOpen((p) => !p), []);
   const closeNotif = useCallback(() => setNotifOpen(false), []);
 
+  const toggleTheme = useCallback(() => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.setAttribute('data-theme', theme);
+    try {
+      localStorage.setItem('municipall-theme', theme);
+    } catch {
+      // ignore storage errors (private browsing, etc.)
+    }
+  }, [theme]);
+
   useEffect(() => {
     return () => {
       if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
@@ -397,6 +421,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         notifOpen,
         toggleNotif,
         closeNotif,
+        theme,
+        toggleTheme,
       }}>
       {children}
     </AppContext.Provider>

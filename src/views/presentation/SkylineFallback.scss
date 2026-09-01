@@ -1,0 +1,23 @@
+.cj-fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.45;
+  pointer-events: none;
+
+  svg {
+    width: 80%;
+    max-width: 900px;
+    height: auto;
+
+    path {
+      fill: none;
+      stroke: var(--color-gold);
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+  }
+}

@@ -1,0 +1,140 @@
+.vt {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.vt__slot {
+  position: fixed;
+  inset: 0;
+}
+
+.vt__slot--exiting {
+  z-index: 5;
+  pointer-events: none;
+}
+
+.vt--swift .vt__slot--exiting {
+  animation: vt-exit-swift 460ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.vt--cinematic .vt__slot--exiting {
+  animation: vt-exit-cinema 860ms cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+.vt__enter {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  clip-path: inset(0 0 100% 0);
+  transition: clip-path 620ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.vt__enter--open {
+  clip-path: inset(0 0 0% 0);
+}
+
+.vt--cinematic .vt__enter {
+  transition-duration: 900ms;
+  transition-timing-function: cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.vt__enter .vt__slot--current {
+  position: fixed;
+  inset: 0;
+  animation: vt-content-in 640ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+.vt--cinematic .vt__enter .vt__slot--current {
+  animation-duration: 900ms;
+  animation-delay: 0.08s;
+}
+
+.vt__sweep {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.vt--active .vt__sweep {
+  opacity: 1;
+  background: linear-gradient(
+    100deg,
+    transparent 32%,
+    rgba(217, 164, 65, 0.28) 47%,
+    rgba(217, 164, 65, 0.5) 50%,
+    rgba(217, 164, 65, 0.28) 53%,
+    transparent 68%
+  );
+  background-size: 320% 100%;
+  animation: vt-sweep 620ms cubic-bezier(0.65, 0, 0.35, 1) forwards;
+}
+
+.vt--cinematic.vt--active .vt__sweep {
+  animation-duration: 920ms;
+}
+
+@keyframes vt-content-in {
+  from {
+    opacity: 0;
+    transform: translateY(18px) scale(0.99);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes vt-exit-swift {
+  from {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.975);
+    filter: blur(3px);
+  }
+}
+
+@keyframes vt-exit-cinema {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
+
+@keyframes vt-sweep {
+  0% {
+    background-position: 220% 0;
+  }
+  100% {
+    background-position: -120% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .vt__slot--exiting {
+    animation: none !important;
+    opacity: 0;
+  }
+  .vt__enter {
+    clip-path: none;
+    transition: none;
+  }
+  .vt__enter .vt__slot--current {
+    animation: none !important;
+    opacity: 1;
+    transform: none;
+  }
+  .vt--active .vt__sweep {
+    display: none;
+  }
+}

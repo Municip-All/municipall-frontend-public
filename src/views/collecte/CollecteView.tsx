@@ -11,7 +11,7 @@ export const CollecteView: React.FC = () => {
     <PageLayout active="home">
       <section className="pl-hero">
         <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(74,103,65,.1)' }} />
-        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(122,155,109,.07)' }} />
+        <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(94,116,205,.09)' }} />
         <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(217,164,65,.05)' }} />
         <div className="pl-hero-ghost">Déchets</div>
         <div className="pl-hero-left">

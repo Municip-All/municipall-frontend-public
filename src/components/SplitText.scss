@@ -1,0 +1,40 @@
+.split-text {
+  display: inline;
+}
+
+.split-text__sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  white-space: nowrap;
+  clip: rect(0, 0, 0, 0);
+  clip-path: inset(50%);
+}
+
+.split-text__word-mask {
+  display: inline-block;
+  overflow: hidden;
+  vertical-align: top;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+
+.split-text__word {
+  display: inline-block;
+  transform: translateY(115%);
+  animation: split-word-in 0.85s cubic-bezier(0.19, 1, 0.22, 1) forwards;
+}
+
+@keyframes split-word-in {
+  to {
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .split-text__word {
+    animation: none;
+    transform: none;
+  }
+}

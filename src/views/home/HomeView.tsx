@@ -1,10 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, lazy, Suspense } from 'react';
 import { useApp } from '../../context/AppContext';
 import { ViewName } from '../../types';
 import { MapModal } from '../map/MapView';
 import { Badge, Button, ThemeToggle, SplitText } from '../../components';
 import { CAT_STYLE, STATUS_COLOR } from '../../utils/constants';
 import './HomeView.scss';
+
+const HomeAnimationScene = lazy(() => import('./HomeAnimationScene').then((m) => ({ default: m.HomeAnimationScene })));
 
 const WEATHER_DATA: Record<string, { temp: number; desc: string; icon: string; forecast: Array<{ day: string; icon: string; hi: number }> }> = {
   'Kremlin-Bicêtre': { temp: 19, desc: 'Couvert', icon: '☁️', forecast: [{ day: 'Jeu', icon: '⛅', hi: 20 }, { day: 'Ven', icon: '🌦️', hi: 17 }, { day: 'Sam', icon: '☀️', hi: 24 }, { day: 'Dim', icon: '⛅', hi: 22 }] },
@@ -49,6 +51,7 @@ const USEFUL_LINKS_FALLBACK = [
 export const HomeView: React.FC = () => {
   const { user, signalements, showView, toggleNotif, toggleBot, botOpen, weather: apiWeather, homeEventPreviews, alerts: apiAlerts, cityConfig } = useApp();
   const [showMap, setShowMap] = useState(false);
+  const theme = (document.documentElement.getAttribute('data-theme') ?? 'light') as 'light' | 'dark';
 
   const now = new Date();
   const dayName = now.toLocaleDateString('fr-FR', { weekday: 'long' });
@@ -120,6 +123,16 @@ export const HomeView: React.FC = () => {
       </section>
 
       <div className="home__stats-strip">
+        <Suspense fallback={<div style={{ position: 'absolute', inset: 0 }} />}>
+          <HomeAnimationScene
+            stats={{
+              total: signalements.length,
+              active: activeSigs.length,
+              resolved: signalements.filter(s => s.statut === 'resolu').length,
+            }}
+            theme={theme}
+          />
+        </Suspense>
         <div className="home__stat"><div className="home__stat-num">{signalements.length}</div><div className="home__stat-label">Signalements</div></div>
         <div className="home__stat"><div className="home__stat-num">{activeSigs.length}</div><div className="home__stat-label">En cours</div></div>
         <div className="home__stat"><div className="home__stat-num">{signalements.filter(s => s.statut === 'resolu').length}</div><div className="home__stat-label">Résolus</div></div>

@@ -149,7 +149,7 @@ export const MuniBot: React.FC = () => {
                   ? <div className="bot-msg-avatar">🏛️</div>
                   : <div className="bot-msg-avatar user-av">{initials.toUpperCase()}</div>
                 }
-                <div>
+                <div className="bot-msg-body">
                   <div
                     className="bot-bubble"
                     dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(m.text) }}
@@ -175,7 +175,7 @@ export const MuniBot: React.FC = () => {
             {errorVisible && (
               <div className="bot-msg">
                 <div className="bot-msg-avatar bot-msg-avatar--error">!</div>
-                <div>
+                <div className="bot-msg-body">
                   <div className="bot-bubble bot-bubble--error">
                     <span>{ERROR_TEXT}</span>
                     <button type="button" className="bot-retry" onClick={handleRetry}>

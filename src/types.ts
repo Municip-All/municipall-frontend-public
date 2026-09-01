@@ -26,7 +26,7 @@ export interface User {
   avatar: string;
 }
 
-export type ViewName = 'home' | 'sig' | 'evenement' | 'contact' | 'profil' | 'collecte' | 'travaux' | 'transports' | 'social';
+export type ViewName = 'home' | 'sig' | 'evenement' | 'contact' | 'profil' | 'collecte' | 'travaux' | 'transports' | 'social' | 'privacy';
 export type AuthView = 'login' | 'register';
 
 export type SignalementStatus = 'attente' | 'en-cours' | 'resolu';

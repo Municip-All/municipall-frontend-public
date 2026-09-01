@@ -1,15 +1,30 @@
-import React from 'react';
+import React, { lazy, Suspense, useState, useEffect } from 'react';
 import { useApp } from '../../context/AppContext';
 import { PageLayout } from '../layout/PageLayout';
 import { TAG_STYLE } from '../../utils/constants';
 import './EventsView.scss';
 
+const EventsAnimationScene = lazy(() => import('./EventsAnimationScene').then((m) => ({ default: m.EventsAnimationScene })));
+
 export const EventsView: React.FC = () => {
   const { showView, events } = useApp();
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const theme = (document.documentElement.getAttribute('data-theme') ?? 'light') as 'light' | 'dark';
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrollProgress(window.scrollY / (document.documentElement.scrollHeight - window.innerHeight));
+    };
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   return (
     <PageLayout active="evenement">
       <section className="pl-hero">
+        <Suspense fallback={<div style={{ position: 'absolute', inset: 0 }} />}>
+          <EventsAnimationScene eventCount={events.length} theme={theme} scrollProgress={scrollProgress} />
+        </Suspense>
         <div className="pl-hero-blob pl-hero-b1" style={{ background: 'rgba(94,116,205,.12)' }} />
         <div className="pl-hero-blob pl-hero-b2" style={{ background: 'rgba(217,164,65,.07)' }} />
         <div className="pl-hero-blob pl-hero-b3" style={{ background: 'rgba(122,155,109,.06)' }} />

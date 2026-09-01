@@ -262,7 +262,7 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
       }
     };
     void init();
-  }, [loadPublicData, loadUserReports]);
+  }, [loadPublicData, loadUserReports, showToast]);
 
   const login = useCallback(
     async (email: string, password: string): Promise<boolean> => {

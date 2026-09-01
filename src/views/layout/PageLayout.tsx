@@ -14,7 +14,7 @@ const LINKS: Array<{ view: ViewName; label: string }> = [
 ];
 
 export const TopNav: React.FC<{ active?: ViewName }> = ({ active = 'home' }) => {
-  const { showView, toggleNotif, toggleBot, botOpen, user } = useApp();
+  const { showView, toggleNotif, toggleBot, botOpen, user, logout } = useApp();
   const initials = user ? (user.prenom[0] ?? '') + (user.nom[0] ?? '') : 'M';
 
   return (
@@ -37,6 +37,9 @@ export const TopNav: React.FC<{ active?: ViewName }> = ({ active = 'home' }) => 
           <span className="pl-nav-dot" />
         </button>
         <button type="button" className="pl-nav-avatar" onClick={() => showView('profil')} aria-label="Profil">{initials.toUpperCase()}</button>
+        <button type="button" className="pl-nav-icon" onClick={logout} title="Se déconnecter">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="17" height="17"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+        </button>
       </div>
     </nav>
   );
@@ -101,9 +104,44 @@ export const NotifDrawer: React.FC = () => {
   );
 };
 
+const Footer: React.FC = () => {
+  const { showView } = useApp();
+
+  return (
+    <footer className="pl-footer">
+      <div className="pl-footer-content">
+        <div className="pl-footer-section">
+          <h3 className="pl-footer-title">Municip'All</h3>
+          <p className="pl-footer-desc">Votre plateforme municipale de proximité</p>
+        </div>
+        <div className="pl-footer-section">
+          <h4 className="pl-footer-subtitle">Liens utiles</h4>
+          <ul className="pl-footer-links">
+            <li><button onClick={() => showView('contact')} className="pl-footer-link">Nous contacter</button></li>
+            <li><button onClick={() => showView('privacy')} className="pl-footer-link">Politique de confidentialité</button></li>
+            <li><button className="pl-footer-link">Conditions d'utilisation</button></li>
+          </ul>
+        </div>
+        <div className="pl-footer-section">
+          <h4 className="pl-footer-subtitle">Légal</h4>
+          <ul className="pl-footer-links">
+            <li><button onClick={() => showView('privacy')} className="pl-footer-link">RGPD & Confidentialité</button></li>
+            <li><button className="pl-footer-link">Accessibilité</button></li>
+            <li><button className="pl-footer-link">Plan du site</button></li>
+          </ul>
+        </div>
+      </div>
+      <div className="pl-footer-bottom">
+        <p className="pl-footer-copyright">&copy; 2026 Municip'All. Tous droits réservés.</p>
+      </div>
+    </footer>
+  );
+};
+
 export const PageLayout: React.FC<{ active?: ViewName; children: React.ReactNode }> = ({ active, children }) => (
   <div className="pl-root">
     <TopNav active={active} />
     {children}
+    <Footer />
   </div>
 );

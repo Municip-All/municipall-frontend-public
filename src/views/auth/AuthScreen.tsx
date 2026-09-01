@@ -114,13 +114,7 @@ export const AuthScreen: React.FC = () => {
         </div>
         <div className="auth__ghost">Civic</div>
         <div className="auth__left-content">
-          <div className="auth__logo">
-            <div className="auth__logo-mark">M</div>
-            <div>
-              <div className="auth__logo-name">Municip<span>'All</span></div>
-              <div className="auth__logo-sub">Espace Citoyen</div>
-            </div>
-          </div>
+          <div className="auth__logo-name" style={{ marginBottom: '3.75rem', animation: 'fade-up .85s cubic-bezier(.22,1,.36,1) .25s both' }}>Municip<span>'All</span></div>
           <p className="auth__eyebrow">Plateforme Municipale · Val-de-Marne</p>
           <h1 className="auth__headline">
             La <em>démocratie</em> de<br />proximité, enfin<br />numérique.
@@ -146,10 +140,7 @@ export const AuthScreen: React.FC = () => {
 
       <div className="auth__right">
         <div className="auth__form-wrap">
-          <div className="auth__mobile-logo">
-            <div className="auth__mobile-mark">M</div>
-            <div className="auth__mobile-name">Municip<span>'All</span></div>
-          </div>
+          <div className="auth__mobile-name" style={{ marginBottom: '2.5rem' }}>Municip<span>'All</span></div>
 
           {tab === 'login' ? (
             <>

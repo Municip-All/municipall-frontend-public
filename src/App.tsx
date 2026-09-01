@@ -12,6 +12,7 @@ import { CollecteView } from './views/collecte/CollecteView';
 import { TravauxView } from './views/travaux/TravauxView';
 import { TransportsView } from './views/transports/TransportsView';
 import { SocialView } from './views/social/SocialView';
+import { PrivacyPolicyView } from './views/privacy/PrivacyPolicyView';
 import { NotifDrawer, MuniBot } from './views/layout/PageLayout';
 import { ViewTransition, GlobalCursor } from './components';
 import { ViewName } from './types';
@@ -26,6 +27,7 @@ const VIEW_LABELS: Record<ViewName, string> = {
   travaux: 'Travaux',
   transports: 'Transports',
   social: 'Social',
+  privacy: 'Politique de Confidentialité',
 };
 
 const MainContent: React.FC = () => {
@@ -51,6 +53,7 @@ const MainContent: React.FC = () => {
       case 'travaux': node = <TravauxView />; break;
       case 'transports': node = <TransportsView />; break;
       case 'social': node = <SocialView />; break;
+      case 'privacy': node = <PrivacyPolicyView />; break;
       default:
         node = (
           <div style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1.5rem', background: 'var(--color-bg)', fontFamily: 'var(--font-body)' }}>

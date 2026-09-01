@@ -117,7 +117,7 @@ export const MuniBot: React.FC = () => {
   const handleFollowReport = useCallback(() => {
     if (botOpen) toggleBot();
     showView('sig');
-  }, [showView, toggleBot]);
+  }, [botOpen, showView, toggleBot]);
 
   const handleSend = () => { void sendMessage(input); };
   const handleKey = (e: React.KeyboardEvent) => {

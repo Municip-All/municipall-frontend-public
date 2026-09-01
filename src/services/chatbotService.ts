@@ -6,6 +6,7 @@ export interface CitoyenChatResponse {
   municipal_service: string;
   sentiment_score: number;
   reassured: boolean;
+  report_id?: number | null;
 }
 
 export const CITIZEN_CHAT_MAX_LENGTH = 5000;

@@ -9,14 +9,16 @@ interface Msg {
   from: 'bot' | 'user';
   text: string;
   time: string;
+  reportId?: number;
 }
 
 const QUICK_CHIPS = [
-  { label: '🛣️ Signaler', query: 'signaler' },
-  { label: '🏛️ Horaires mairie', query: 'horaires' },
-  { label: '🤝 Associations', query: 'association' },
-  { label: '🚲 Aide vélo', query: 'vélo' },
-  { label: '📋 Mes demandes', query: 'demande' },
+  { label: '🚧 Quels travaux sont en cours dans ma ville ?', query: 'Quels sont les travaux en cours actuellement dans ma ville ?' },
+  { label: '🚌 Transports perturbés ?', query: 'Y a-t-il des perturbations sur les transports en commun en ce moment ?' },
+  { label: '🗑️ Passage des poubelles', query: 'Quand passe la collecte des déchets et du tri sélectif ?' },
+  { label: '🤝 Associations locales', query: 'Quelles associations ou initiatives citoyennes puis-je rejoindre ?' },
+  { label: '⏰ Horaires de la mairie', query: 'Quels sont les horaires d\'ouverture de la mairie ?' },
+  { label: '📋 Suivre mon signalement', query: 'Où en est l\'avancement de mon signalement ?' },
 ];
 
 const ERROR_TEXT = 'Le service est momentanément indisponible. Veuillez réessayer.';
@@ -28,12 +30,12 @@ function now() {
 const WELCOME: Msg = {
   id: 0,
   from: 'bot',
-  text: 'Bonjour ! Je suis <strong>MuniBot</strong>, votre assistant municipal. Je peux vous aider à signaler un problème, trouver les horaires ou naviguer dans les services. Comment puis-je vous aider ?',
+  text: 'Bonjour ! Je suis <strong>MuniBot</strong>, votre assistant municipal. Je peux vous renseigner sur les <strong>travaux</strong>, les <strong>transports</strong>, la <strong>collecte des déchets</strong>, les <strong>associations</strong> et les <strong>horaires de la mairie</strong>. Vous pouvez aussi me <strong>signaler un problème</strong> (nid de poule, lampadaire cassé…) et <strong>suivre son avancement</strong>. Comment puis-je vous aider ?',
   time: now(),
 };
 
 export const MuniBot: React.FC = () => {
-  const { botOpen, toggleBot, user, pendingBotMsg, clearPendingBotMsg } = useApp();
+  const { botOpen, toggleBot, showView, user, pendingBotMsg, clearPendingBotMsg } = useApp();
 
   const [msgs, setMsgs] = useState<Msg[]>([WELCOME]);
   const [input, setInput] = useState('');
@@ -89,7 +91,13 @@ export const MuniBot: React.FC = () => {
     try {
       const response = await chatbotService.sendCitoyenMessage(trimmed);
       if (requestSeqRef.current !== seq) return;
-      setMsgs(prev => [...prev, { id: uid + 1, from: 'bot', text: response.reply, time: now() }]);
+      setMsgs(prev => [...prev, {
+        id: uid + 1,
+        from: 'bot',
+        text: response.reply,
+        time: now(),
+        reportId: response.report_id ?? undefined,
+      }]);
       lastFailedRef.current = null;
     } catch {
       if (requestSeqRef.current !== seq) return;
@@ -105,6 +113,11 @@ export const MuniBot: React.FC = () => {
     const failed = lastFailedRef.current;
     if (failed) void sendMessage(failed);
   }, [sendMessage]);
+
+  const handleFollowReport = useCallback(() => {
+    if (botOpen) toggleBot();
+    showView('sig');
+  }, [showView, toggleBot]);
 
   const handleSend = () => { void sendMessage(input); };
   const handleKey = (e: React.KeyboardEvent) => {
@@ -154,6 +167,15 @@ export const MuniBot: React.FC = () => {
                     className="bot-bubble"
                     dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(m.text) }}
                   />
+                  {m.reportId != null && (
+                    <button
+                      type="button"
+                      className="bot-follow-report"
+                      onClick={handleFollowReport}
+                    >
+                      📋 Suivre le signalement n°{m.reportId}
+                    </button>
+                  )}
                   <span className="bot-bubble-time">{m.time}</span>
                 </div>
               </div>

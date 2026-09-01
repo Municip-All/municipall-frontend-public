@@ -28,8 +28,7 @@ const VIEW_LABELS: Record<ViewName, string> = {
 };
 
 const MainContent: React.FC = () => {
-  const { isAuthenticated, isAuthLoading, currentView, showView } = useApp();
-  if (isAuthLoading) return <LoadingView />;
+  const { isAuthenticated, isAuthLoading, currentView, showView } = useApp();  if (isAuthLoading) return <LoadingView />;
   if (!isAuthenticated) return <AuthScreen />;
 
   switch (currentView) {
@@ -52,6 +51,12 @@ const MainContent: React.FC = () => {
   }
 };
 
+const ChatbotWidget: React.FC = () => {
+  const { isAuthenticated } = useApp();
+  if (!isAuthenticated) return null;
+  return <MuniBot />;
+};
+
 const App: React.FC = () => {
   const [stage, setStage] = useState<'loading' | 'presentation' | 'app'>('loading');
 
@@ -68,7 +73,7 @@ const App: React.FC = () => {
       {stage === 'presentation' && <PresentationView onComplete={handlePresentationComplete} />}
       {stage === 'app' && <MainContent />}
       {stage === 'app' && <NotifDrawer />}
-      {stage === 'app' && <MuniBot />}
+      {stage === 'app' && <ChatbotWidget />}
     </AppProvider>
   );
 };

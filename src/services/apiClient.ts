@@ -63,10 +63,19 @@ apiClient.interceptors.request.use((config) => {
 
 let isRedirecting = false;
 
+function isAuthAttempt(url: string | undefined): boolean {
+  if (!url) return false;
+  return url.includes('auth/login') || url.includes('auth/signup');
+}
+
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 && !isRedirecting) {
+    if (
+      error.response?.status === 401 &&
+      !isRedirecting &&
+      !isAuthAttempt(error.config?.url)
+    ) {
       isRedirecting = true;
       setStoredToken(null);
       window.location.href = '/';

@@ -66,7 +66,8 @@ let isRedirecting = false;
 apiClient.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401 && !isRedirecting) {
+    const isAuthRoute = error.config?.url?.includes('auth/login') || error.config?.url?.includes('auth/signup');
+    if (error.response?.status === 401 && !isRedirecting && !isAuthRoute) {
       isRedirecting = true;
       setStoredToken(null);
       window.location.href = '/';

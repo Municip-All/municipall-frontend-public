@@ -149,6 +149,7 @@ export const MapModal: React.FC<MapModalProps> = ({ onClose }) => {
                     <div className="mm-popup-addr">{pt.address}</div>
                     <div className="mm-popup-foot">
                       {(pt.type === 'toilet' || pt.type === 'eau') && (<span className="mm-popup-badge" style={pt.open ? { background: 'rgba(143,203,134,.18)', color: '#8FCB86' } : { background: 'rgba(224,120,95,.18)', color: '#E0785F' }}>{pt.open ? 'Ouvert' : 'Fermé'}</span>)}
+                      {pt.type === 'toilet' && pt.pmr != null && (<span className="mm-popup-badge" style={pt.pmr ? { background: 'rgba(123,143,204,.18)', color: '#93A6E0' } : { background: 'rgba(118,128,108,.16)', color: '#76806C' }}>{pt.pmr ? '♿ PMR' : 'Non PMR'}</span>)}
                       {pt.hours && <span className="mm-popup-hours">🕐 {pt.hours}</span>}
                     </div>
                   </div>

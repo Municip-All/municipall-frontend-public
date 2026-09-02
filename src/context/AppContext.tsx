@@ -104,12 +104,32 @@ export const useApp = () => {
 
 const DEFAULT_CENTER: [number, number] = [48.8141, 2.3611];
 
+const VIEW_NAMES: ViewName[] = [
+  'home',
+  'sig',
+  'evenement',
+  'contact',
+  'profil',
+  'collecte',
+  'travaux',
+  'transports',
+  'social',
+  'privacy',
+];
+
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isAuthLoading, setIsAuthLoading] = useState(true);
   const [isDataLoading, setIsDataLoading] = useState(false);
   const [authView, setAuthView] = useState<AuthView>('login');
-  const [currentView, setCurrentView] = useState<ViewName>('home');
+  const [currentView, setCurrentView] = useState<ViewName>(() => {
+    try {
+      const stored = sessionStorage.getItem('municipall-view');
+      return (VIEW_NAMES as string[]).includes(stored ?? '') ? (stored as ViewName) : 'home';
+    } catch {
+      return 'home';
+    }
+  });
   const [tenantId, setTenantId] = useState(Config.DEFAULT_TENANT_ID);
   const [cityConfig, setCityConfig] = useState<CityConfig | null>(null);
   const [availableCities, setAvailableCities] = useState<
@@ -340,6 +360,13 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
   const updateUser = useCallback((partial: Partial<User>) => {
     setUser((prev) => (prev ? { ...prev, ...partial } : prev));
   }, []);
+
+  useEffect(() => {
+    try {
+      sessionStorage.setItem('municipall-view', currentView);
+    } catch {
+    }
+  }, [currentView]);
 
   const showView = useCallback((v: ViewName) => {
     setCurrentView(v);

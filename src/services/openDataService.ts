@@ -20,9 +20,9 @@ export interface PublicWaterPoint {
   typeObjet?: string;
 }
 
-export async function fetchPublicToilets(limit = 700): Promise<PublicToilet[]> {
+export async function fetchPublicToilets(): Promise<PublicToilet[]> {
   const { data } = await axios.get<{ results: Record<string, unknown>[] }>(Config.PARIS_OPENDATA_API, {
-    params: { limit },
+    params: { limit: -1 },
     timeout: 15000,
   });
 
@@ -43,9 +43,9 @@ export async function fetchPublicToilets(limit = 700): Promise<PublicToilet[]> {
   return markers;
 }
 
-export async function fetchWaterPoints(limit = 800): Promise<PublicWaterPoint[]> {
+export async function fetchWaterPoints(): Promise<PublicWaterPoint[]> {
   const { data } = await axios.get<{ results: Record<string, unknown>[] }>(Config.PARIS_OPENDATA_WATER_API, {
-    params: { limit, where: "dispo='OUI'" },
+    params: { limit: -1, where: "dispo='OUI'" },
     timeout: 15000,
   });
 

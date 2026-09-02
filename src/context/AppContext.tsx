@@ -183,8 +183,8 @@ export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => 
         const [eventsData, worksData, toiletsData, waterData] = await Promise.all([
           eventService.getEvents().catch(() => { showToast('Événements indisponibles'); return []; }),
           constructionWorksService.getWorks().catch(() => { showToast('Travaux indisponibles'); return []; }),
-          fetchPublicToilets(700).catch(() => { showToast('Toilettes publiques indisponibles'); return []; }),
-          fetchWaterPoints(800).catch(() => { showToast("Points d'eau indisponibles"); return []; }),
+          fetchPublicToilets().catch(() => { showToast('Toilettes publiques indisponibles'); return []; }),
+          fetchWaterPoints().catch(() => { showToast("Points d'eau indisponibles"); return []; }),
         ]);
 
         const mappedEvents = eventsData.map(mapEventToEvenement);

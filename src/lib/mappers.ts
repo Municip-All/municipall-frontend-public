@@ -278,10 +278,7 @@ export function waterPointsToMapPoints(points: PublicWaterPoint[]): MapPoint[] {
 }
 
 export function mergeMapPoints(apiPoints: MapPoint[], staticPoints: MapPoint[]): MapPoint[] {
-  if (!apiPoints.length) return staticPoints;
-  const apiTypes = new Set(apiPoints.map((p) => p.type));
-  const staticExtras = staticPoints.filter((p) => !apiTypes.has(p.type));
-  return [...apiPoints, ...staticExtras];
+  return [...apiPoints, ...staticPoints];
 }
 
 export type HomeWeather = {

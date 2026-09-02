@@ -1,0 +1,47 @@
+.events-animation {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 0;
+}
+.events-animation canvas {
+  display: block;
+}
+
+.events-animation__fallback {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: radial-gradient(circle at center, var(--color-primary) 0%, transparent 60%);
+}
+.events-animation__fallback::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at center, transparent 0%, var(--bg-primary) 100%);
+}
+
+.events-animation__fallback-pulse {
+  width: 80%;
+  aspect-ratio: 1;
+  max-width: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 30%, var(--color-primary-light), var(--color-primary));
+  opacity: 0.2;
+  filter: blur(50px);
+  animation: pulse-grow 4s ease-in-out infinite;
+}
+@keyframes pulse-grow {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.2;
+  }
+  50% {
+    transform: scale(1.3);
+    opacity: 0.4;
+  }
+}/*# sourceMappingURL=EventsAnimation.css.map */

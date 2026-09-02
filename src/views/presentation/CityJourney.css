@@ -1,0 +1,8 @@
+.cj-canvas {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.cj-canvas canvas {
+  pointer-events: auto;
+}/*# sourceMappingURL=CityJourney.css.map */

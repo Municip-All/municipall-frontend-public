@@ -1,0 +1,159 @@
+.privacy-container {
+  padding: 3rem 2rem;
+  max-width: 900px;
+  margin: 0 auto;
+  color: var(--color-ink);
+  line-height: 1.7;
+}
+.privacy-container .privacy-header {
+  margin-bottom: 4rem;
+  text-align: left;
+}
+.privacy-container .privacy-header h1 {
+  font-family: var(--font-display);
+  font-size: 2.8rem;
+  font-weight: 800;
+  letter-spacing: -1.5px;
+  margin: 0 0 0.5rem 0;
+  color: var(--color-ink);
+}
+.privacy-container .privacy-header h1 em {
+  font-style: italic;
+}
+.privacy-container .privacy-header .privacy-subtitle {
+  font-size: 1.1rem;
+  color: var(--color-neutral-600);
+  font-weight: 500;
+  margin: 0.5rem 0 1rem 0;
+}
+.privacy-container .privacy-header .privacy-date {
+  font-size: 0.9rem;
+  color: var(--color-neutral-500);
+  margin: 0;
+}
+.privacy-container .privacy-content .privacy-section {
+  margin-bottom: 3rem;
+}
+.privacy-container .privacy-content .privacy-section h2 {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  margin: 0 0 1rem 0;
+  color: var(--color-ink);
+  padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--color-neutral-200);
+}
+.privacy-container .privacy-content .privacy-section h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.75rem 0;
+  color: var(--color-ink);
+}
+.privacy-container .privacy-content .privacy-section p {
+  margin: 0.75rem 0;
+  color: var(--color-neutral-700);
+}
+.privacy-container .privacy-content .privacy-section p.privacy-contact-rights {
+  background-color: var(--color-neutral-100);
+  padding: 1rem 1.25rem;
+  border-left: 4px solid var(--color-accent);
+  border-radius: 0.5rem;
+  margin: 1.5rem 0;
+}
+.privacy-container .privacy-content .privacy-section p strong {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.privacy-container .privacy-content .privacy-section p a {
+  color: var(--color-accent);
+  text-decoration: none;
+  font-weight: 500;
+  transition: opacity 0.2s;
+}
+.privacy-container .privacy-content .privacy-section p a:hover {
+  opacity: 0.8;
+  text-decoration: underline;
+}
+.privacy-container .privacy-content .privacy-section ul {
+  margin: 0.75rem 0 1rem 0;
+  padding-left: 1.5rem;
+}
+.privacy-container .privacy-content .privacy-section ul li {
+  margin: 0.5rem 0;
+  color: var(--color-neutral-700);
+}
+.privacy-container .privacy-content .privacy-section ul li strong {
+  font-weight: 600;
+  color: var(--color-ink);
+}
+.privacy-container .privacy-footer {
+  margin-top: 4rem;
+  padding-top: 2rem;
+  border-top: 2px solid var(--color-neutral-200);
+  text-align: center;
+}
+.privacy-container .privacy-footer .privacy-footer-text {
+  font-size: 0.95rem;
+  color: var(--color-neutral-600);
+  margin: 0 0 1.5rem 0;
+  font-style: italic;
+}
+.privacy-container .privacy-footer .privacy-back-btn {
+  padding: 0.8rem 2rem;
+  background-color: var(--color-ink);
+  color: var(--color-neutral-50);
+  border: none;
+  border-radius: 2rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.privacy-container .privacy-footer .privacy-back-btn:hover {
+  background-color: var(--color-accent);
+  transform: translateY(-2px);
+}
+.privacy-container .privacy-footer .privacy-back-btn:active {
+  transform: translateY(0);
+}
+
+@media (max-width: 768px) {
+  .privacy-container {
+    padding: 2rem 1.25rem;
+  }
+  .privacy-container .privacy-header {
+    margin-bottom: 2.5rem;
+  }
+  .privacy-container .privacy-header h1 {
+    font-size: 2rem;
+    letter-spacing: -0.75px;
+  }
+  .privacy-container .privacy-header .privacy-subtitle {
+    font-size: 1rem;
+  }
+  .privacy-container .privacy-content .privacy-section {
+    margin-bottom: 2rem;
+  }
+  .privacy-container .privacy-content .privacy-section h2 {
+    font-size: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+  .privacy-container .privacy-content .privacy-section h3 {
+    font-size: 1rem;
+    margin: 1rem 0 0.5rem 0;
+  }
+  .privacy-container .privacy-content .privacy-section ul {
+    padding-left: 1.25rem;
+  }
+  .privacy-container .privacy-content .privacy-section ul li {
+    font-size: 0.95rem;
+  }
+}
+@media (prefers-color-scheme: dark) {
+  .privacy-container .privacy-content .privacy-section p.privacy-contact-rights {
+    background-color: var(--color-neutral-900);
+    border-left-color: var(--color-accent);
+  }
+}/*# sourceMappingURL=PrivacyPolicyView.css.map */

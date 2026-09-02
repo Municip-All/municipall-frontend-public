@@ -14,7 +14,7 @@ import { TransportsView } from './views/transports/TransportsView';
 import { SocialView } from './views/social/SocialView';
 import { PrivacyPolicyView } from './views/privacy/PrivacyPolicyView';
 import { NotifDrawer, MuniBot } from './views/layout/PageLayout';
-import { ViewTransition, GlobalCursor } from './components';
+import { ViewTransition } from './components';
 import { ViewName } from './types';
 
 const VIEW_LABELS: Record<ViewName, string> = {
@@ -91,7 +91,6 @@ const App: React.FC = () => {
         {stage === 'presentation' && <PresentationView onComplete={handlePresentationComplete} />}
         {stage === 'app' && <MainContent />}
       </ViewTransition>
-      {stage === 'app' && <GlobalCursor />}
       {stage === 'app' && <NotifDrawer />}
       {stage === 'app' && <ChatbotWidget />}
       {stage === 'app' && <div className="hairline-top" />}

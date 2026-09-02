@@ -6,6 +6,9 @@ export interface PublicToilet {
   adresse: string;
   lat: number;
   lon: number;
+  open: boolean;
+  pmr: boolean;
+  horaire?: string;
 }
 
 export interface PublicWaterPoint {
@@ -14,12 +17,13 @@ export interface PublicWaterPoint {
   lat: number;
   lon: number;
   dispo: boolean;
+  typeObjet?: string;
 }
 
-export async function fetchPublicToilets(limit = 40): Promise<PublicToilet[]> {
+export async function fetchPublicToilets(limit = 700): Promise<PublicToilet[]> {
   const { data } = await axios.get<{ results: Record<string, unknown>[] }>(Config.PARIS_OPENDATA_API, {
     params: { limit },
-    timeout: 10000,
+    timeout: 15000,
   });
 
   const markers: PublicToilet[] = [];
@@ -27,19 +31,22 @@ export async function fetchPublicToilets(limit = 40): Promise<PublicToilet[]> {
     const geo = record.geo_point_2d as { lat?: number; lon?: number } | undefined;
     if (geo?.lat == null || geo?.lon == null) return;
     markers.push({
-      id: `toilet-${geo.lat}-${geo.lon}-${index}`,
+      id: `toilet-${String(record.recordid ?? `${geo.lat}-${geo.lon}-${index}`)}`,
       adresse: String(record.adresse || 'Adresse non disponible'),
       lat: geo.lat,
       lon: geo.lon,
+      open: String(record.statut ?? 'En service') === 'En service',
+      pmr: String(record.acces_pmr ?? 'Non').toLowerCase() === 'oui',
+      horaire: record.horaire ? String(record.horaire) : undefined,
     });
   });
   return markers;
 }
 
-export async function fetchWaterPoints(limit = 40): Promise<PublicWaterPoint[]> {
+export async function fetchWaterPoints(limit = 800): Promise<PublicWaterPoint[]> {
   const { data } = await axios.get<{ results: Record<string, unknown>[] }>(Config.PARIS_OPENDATA_WATER_API, {
-    params: { limit },
-    timeout: 10000,
+    params: { limit, where: "dispo='OUI'" },
+    timeout: 15000,
   });
 
   const markers: PublicWaterPoint[] = [];
@@ -63,6 +70,7 @@ export async function fetchWaterPoints(limit = 40): Promise<PublicWaterPoint[]> 
       lat,
       lon,
       dispo: String(record.dispo ?? 'OUI').toUpperCase() === 'OUI',
+      typeObjet: record.type_objet ? String(record.type_objet) : undefined,
     });
   });
   return markers;

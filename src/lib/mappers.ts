@@ -225,7 +225,7 @@ export function mapToilet(t: PublicToilet, index: number): ToiletRow {
   return {
     nom: `Sanisette ${index + 1}`,
     adresse: t.adresse,
-    ouvert: true,
+    ouvert: t.open,
   };
 }
 
@@ -237,23 +237,39 @@ export type MapPoint = {
   lng: number;
   open?: boolean;
   hours?: string;
+  pmr?: boolean;
 };
+
+const WATER_KIND_LABELS: Record<string, string> = {
+  BORNE_FONTAINE: 'Borne fontaine',
+  FONTAINE_WALLACE: 'Fontaine Wallace',
+  FONTAINE_BOIRE: 'Fontaine à boire',
+  BRUMISATEUR: 'Brumisateur',
+  FONTAINE_POTAO: 'Fontaine potable',
+};
+
+function waterKindLabel(typeObjet?: string): string {
+  if (!typeObjet) return 'Fontaine à boire';
+  return WATER_KIND_LABELS[typeObjet.toUpperCase()] ?? typeObjet.charAt(0) + typeObjet.slice(1).toLowerCase();
+}
 
 export function toiletsToMapPoints(toilets: PublicToilet[]): MapPoint[] {
   return toilets.map((t) => ({
     type: 'toilet' as const,
-    name: 'Toilette publique',
+    name: t.pmr ? 'Toilette publique (PMR)' : 'Toilette publique',
     address: t.adresse,
     lat: t.lat,
     lng: t.lon,
-    open: true,
+    open: t.open,
+    hours: t.horaire,
+    pmr: t.pmr,
   }));
 }
 
 export function waterPointsToMapPoints(points: PublicWaterPoint[]): MapPoint[] {
   return points.map((w) => ({
     type: 'eau' as const,
-    name: 'Fontaine à boire',
+    name: waterKindLabel(w.typeObjet),
     address: w.adresse,
     lat: w.lat,
     lng: w.lon,

@@ -8,6 +8,7 @@ const CityJourney = lazy(() => import('./CityJourney').then((m) => ({ default: m
 
 interface PresentationViewProps {
   onComplete?: () => void;
+  onNavigateTo?: (view: string) => void;
 }
 
 /**
@@ -111,7 +112,7 @@ const PhoneMockup: React.FC<{ variant: PhoneVariant; className?: string }> = ({ 
   </div>
 );
 
-export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }) => {
+export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete, onNavigateTo }) => {
   const { setAuthView, theme } = useApp();
   const [isHidden, setIsHidden] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -259,6 +260,15 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
   const handleCTA = () => {
     setIsHidden(true);
     setTimeout(() => { setAuthView('login'); onComplete?.(); }, 600);
+  };
+
+  const handleFooterLink = (view: string) => {
+    setIsHidden(true);
+    setTimeout(() => {
+      onNavigateTo?.(view);
+      setAuthView('login');
+      onComplete?.();
+    }, 600);
   };
 
   return (
@@ -583,11 +593,11 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete }
             <span className="pv-footer-tagline"> · Démocratie de proximité, mobile d'abord</span>
           </div>
           <ul className="pv-footer-links">
-            <li><span>Solutions</span></li>
-            <li><span>À propos</span></li>
-            <li><span>Carrières</span></li>
-            <li><span>Contact</span></li>
-            <li><span>RGPD</span></li>
+            <li><button onClick={() => handleFooterLink('sig')}>Solutions</button></li>
+            <li><button onClick={() => handleFooterLink('home')}>À propos</button></li>
+            <li><button onClick={() => handleFooterLink('social')}>Carrières</button></li>
+            <li><button onClick={() => handleFooterLink('contact')}>Contact</button></li>
+            <li><button onClick={() => handleFooterLink('privacy')}>RGPD</button></li>
           </ul>
           <p className="pv-footer-legal">© 2026 Municip'All. Tous droits réservés.</p>
         </footer>

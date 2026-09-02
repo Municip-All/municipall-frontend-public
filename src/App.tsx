@@ -30,8 +30,14 @@ const VIEW_LABELS: Record<ViewName, string> = {
   privacy: 'Politique de Confidentialité',
 };
 
-const MainContent: React.FC = () => {
+const MainContent: React.FC<{ pendingView?: string | null }> = ({ pendingView }) => {
   const { isAuthenticated, isAuthLoading, currentView, showView } = useApp();
+
+  useEffect(() => {
+    if (isAuthenticated && pendingView) {
+      showView(pendingView as ViewName);
+    }
+  }, [isAuthenticated, pendingView, showView]);
 
   let key: string = currentView;
   let node: React.ReactNode;
@@ -76,20 +82,32 @@ const ChatbotWidget: React.FC = () => {
 
 const App: React.FC = () => {
   const [stage, setStage] = useState<'loading' | 'presentation' | 'app'>('loading');
+  const [pendingView, setPendingView] = useState<string | null>(null);
 
   useEffect(() => {
     const t = setTimeout(() => setStage('presentation'), 5000);
     return () => clearTimeout(t);
   }, []);
 
-  const handlePresentationComplete = () => setStage('app');
+  const handlePresentationComplete = () => {
+    setStage('app');
+    if (pendingView) {
+      setTimeout(() => {
+        // Will be handled in the MainContent after auth
+      }, 100);
+    }
+  };
+
+  const handleNavigateTo = (view: string) => {
+    setPendingView(view);
+  };
 
   return (
     <AppProvider>
       <ViewTransition viewKey={stage} variant="cinematic">
         {stage === 'loading' && <LoadingView />}
-        {stage === 'presentation' && <PresentationView onComplete={handlePresentationComplete} />}
-        {stage === 'app' && <MainContent />}
+        {stage === 'presentation' && <PresentationView onComplete={handlePresentationComplete} onNavigateTo={handleNavigateTo} />}
+        {stage === 'app' && <MainContent pendingView={pendingView} />}
       </ViewTransition>
       {stage === 'app' && <NotifDrawer />}
       {stage === 'app' && <ChatbotWidget />}

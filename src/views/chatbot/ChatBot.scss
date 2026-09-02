@@ -14,14 +14,15 @@
 
 .bot-panel {
   position: fixed; bottom: 6rem; right: 1.5rem; z-index: 59;
-  width: 380px; max-width: calc(100vw - 2rem);
+  width: 420px; max-width: calc(100vw - 2rem);
   background: var(--color-bg); border-radius: var(--radius-2xl);
   border: 1px solid var(--color-border);
   box-shadow: 0 24px 64px rgba(46,64,41,.16), 0 4px 16px rgba(74,103,65,.08);
   display: flex; flex-direction: column;
   overflow: hidden; font-family: var(--font-body);
   animation: fade-up .32s cubic-bezier(.22,1,.36,1) both;
-  max-height: min(540px, calc(100dvh - 8rem));
+  height: min(620px, calc(100dvh - 8rem));
+  max-height: min(620px, calc(100dvh - 8rem));
 }
 
 .bot-header { background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%); padding: 1.1rem 1.25rem; display: flex; align-items: center; gap: .9rem; flex-shrink: 0; position: relative; overflow: hidden; &::before { content: ''; position: absolute; top: -30px; right: -30px; width: 120px; height: 120px; border-radius: 50%; background: rgba(253,252,249,.09); pointer-events: none; } }

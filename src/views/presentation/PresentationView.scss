@@ -26,18 +26,11 @@
 }
 
 .pv-cursor-dot {
-  width: 6px; height: 6px; background: #D9A441;
-  border-radius: 50%; position: fixed; pointer-events: none;
-  z-index: 9999; transform: translate(-50%, -50%);
-  transition: width 0.2s, height 0.2s;
+  display: none;
 }
 
 .pv-cursor-ring {
-  width: 36px; height: 36px;
-  border: 1px solid rgba(217,164,65,0.4);
-  border-radius: 50%; position: fixed; pointer-events: none;
-  z-index: 9998; transform: translate(-50%, -50%);
-  transition: width 0.2s, height 0.2s;
+  display: none;
 }
 
 // ── ROOT ─────────────────────────────────────────────
@@ -64,10 +57,10 @@
   color: var(--pv-ink);
   font-family: 'Inter', sans-serif;
   font-size: 16px; line-height: 1.6;
-  transition: opacity 0.6s ease, transform 0.6s ease;
+  transition: opacity 0.3s ease, transform 0.3s ease;
 
   &.hide {
-    opacity: 0; pointer-events: none; transform: translateY(-30px);
+    opacity: 0; pointer-events: none; transform: translateY(-20px);
   }
 
   // ── REVEAL ──

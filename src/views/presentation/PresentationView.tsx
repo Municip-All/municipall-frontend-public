@@ -120,8 +120,6 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete, 
   const [barsVisible, setBarsVisible] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const statsAnimatedRef = useRef(false);
-  const dotRef = useRef<HTMLDivElement>(null);
-  const ringRef = useRef<HTMLDivElement>(null);
   const journeyRef = useRef<HTMLElement>(null);
   const journeyProgressRef = useRef(0);
   const captionRefs = useRef<Array<HTMLDivElement | null>>([]);
@@ -225,41 +223,10 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete, 
     return () => obs.disconnect();
   }, []);
 
-  // Custom cursor
-  useEffect(() => {
-    const dot = dotRef.current;
-    const ring = ringRef.current;
-    if (!dot || !ring) return;
-    let mx = -100, my = -100, rx = -100, ry = -100, raf = 0;
-    const onMove = (e: MouseEvent) => { mx = e.clientX; my = e.clientY; };
-    const tick = () => {
-      rx += (mx - rx) * 0.15; ry += (my - ry) * 0.15;
-      dot.style.left = `${mx}px`; dot.style.top = `${my}px`;
-      ring.style.left = `${rx}px`; ring.style.top = `${ry}px`;
-      raf = requestAnimationFrame(tick);
-    };
-    document.addEventListener('mousemove', onMove);
-    tick();
-    const grow = () => { ring.style.width = '56px'; ring.style.height = '56px'; };
-    const shrink = () => { ring.style.width = '36px'; ring.style.height = '36px'; };
-    const interactiveEls = document.querySelectorAll('a, button');
-    interactiveEls.forEach(el => {
-      el.addEventListener('mouseenter', grow);
-      el.addEventListener('mouseleave', shrink);
-    });
-    return () => {
-      document.removeEventListener('mousemove', onMove);
-      cancelAnimationFrame(raf);
-      interactiveEls.forEach(el => {
-        el.removeEventListener('mouseenter', grow);
-        el.removeEventListener('mouseleave', shrink);
-      });
-    };
-  }, []);
 
   const handleCTA = () => {
     setIsHidden(true);
-    setTimeout(() => { setAuthView('login'); onComplete?.(); }, 600);
+    setTimeout(() => { setAuthView('login'); onComplete?.(); }, 350);
   };
 
   const handleFooterLink = (view: string) => {
@@ -268,14 +235,12 @@ export const PresentationView: React.FC<PresentationViewProps> = ({ onComplete, 
       onNavigateTo?.(view);
       setAuthView('login');
       onComplete?.();
-    }, 600);
+    }, 350);
   };
 
   return (
     <>
       <div className="pv-progress-bar" style={{ width: `${progress}%` }} />
-      <div className="pv-cursor-dot" ref={dotRef} />
-      <div className="pv-cursor-ring" ref={ringRef} />
 
       <div className={`presentation ${isHidden ? 'hide' : ''}`} ref={containerRef}>
 

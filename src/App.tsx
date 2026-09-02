@@ -91,11 +91,6 @@ const App: React.FC = () => {
 
   const handlePresentationComplete = () => {
     setStage('app');
-    if (pendingView) {
-      setTimeout(() => {
-        // Will be handled in the MainContent after auth
-      }, 100);
-    }
   };
 
   const handleNavigateTo = (view: string) => {

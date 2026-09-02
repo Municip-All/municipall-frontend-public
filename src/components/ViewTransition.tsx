@@ -4,7 +4,6 @@ import './ViewTransition.scss';
 type TransitionVariant = 'swift' | 'cinematic';
 
 interface ViewTransitionProps {
-  /** Changing this value triggers the curtain-wipe transition. */
   viewKey: string;
   children: React.ReactNode;
   /** 'swift' = in-app navigation, 'cinematic' = rare full-stage boot transitions. */
@@ -15,21 +14,6 @@ interface Slot {
   key: string;
   children: React.ReactNode;
 }
-
-const EnterCurtain: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [open, setOpen] = useState(false);
-
-  useEffect(() => {
-    const raf = requestAnimationFrame(() => setOpen(true));
-    return () => cancelAnimationFrame(raf);
-  }, []);
-
-  return (
-    <div className={`vt__enter${open ? ' vt__enter--open' : ''}`}>
-      <div className="vt__slot vt__slot--current">{children}</div>
-    </div>
-  );
-};
 
 export const ViewTransition: React.FC<ViewTransitionProps> = ({ viewKey, children, variant = 'swift' }) => {
   const [display, setDisplay] = useState<Slot>({ key: viewKey, children });
@@ -47,7 +31,7 @@ export const ViewTransition: React.FC<ViewTransitionProps> = ({ viewKey, childre
     prevKeyRef.current = viewKey;
 
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    const duration = variant === 'cinematic' ? 920 : 560;
+    const duration = variant === 'cinematic' ? 320 : 180;
     timeoutRef.current = setTimeout(() => setExiting(null), duration);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [viewKey, children, variant]);
@@ -63,8 +47,9 @@ export const ViewTransition: React.FC<ViewTransitionProps> = ({ viewKey, childre
           {exiting.children}
         </div>
       )}
-      <EnterCurtain key={`enter-${display.key}`}>{display.children}</EnterCurtain>
-      <div className="vt__sweep" aria-hidden="true" />
+      <div key={`enter-${display.key}`} className="vt__slot vt__slot--current">
+        {display.children}
+      </div>
     </div>
   );
 };

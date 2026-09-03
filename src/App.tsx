@@ -16,6 +16,7 @@ import { PrivacyPolicyView } from './views/privacy/PrivacyPolicyView';
 import { NotifDrawer, MuniBot } from './views/layout/PageLayout';
 import { ViewTransition } from './components';
 import { ViewName } from './types';
+import { setGoToPresentationCallback } from './context/navigationCallbacks';
 
 const VIEW_LABELS: Record<ViewName, string> = {
   home: 'Accueil',
@@ -87,6 +88,12 @@ const App: React.FC = () => {
   useEffect(() => {
     const t = setTimeout(() => setStage('presentation'), 5000);
     return () => clearTimeout(t);
+  }, []);
+
+  useEffect(() => {
+    setGoToPresentationCallback(() => {
+      setStage('presentation');
+    });
   }, []);
 
   const handlePresentationComplete = () => {

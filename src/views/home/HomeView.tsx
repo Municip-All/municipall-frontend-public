@@ -6,6 +6,40 @@ import { Badge, Button, ThemeToggle, SplitText } from '../../components';
 import { CAT_STYLE, STATUS_COLOR } from '../../utils/constants';
 import './HomeView.scss';
 
+const Footer: React.FC = () => {
+  const { showView } = useApp();
+
+  return (
+    <footer className="home__footer">
+      <div className="home__footer-content">
+        <div className="home__footer-section">
+          <h3 className="home__footer-title">Municip'All</h3>
+          <p className="home__footer-desc">Votre plateforme municipale de proximité</p>
+        </div>
+        <div className="home__footer-section">
+          <h4 className="home__footer-subtitle">Liens utiles</h4>
+          <ul className="home__footer-links">
+            <li><button onClick={() => showView('contact')} className="home__footer-link">Nous contacter</button></li>
+            <li><button onClick={() => showView('privacy')} className="home__footer-link">Politique de confidentialité</button></li>
+            <li><button className="home__footer-link">Conditions d'utilisation</button></li>
+          </ul>
+        </div>
+        <div className="home__footer-section">
+          <h4 className="home__footer-subtitle">Légal</h4>
+          <ul className="home__footer-links">
+            <li><button onClick={() => showView('privacy')} className="home__footer-link">RGPD & Confidentialité</button></li>
+            <li><button className="home__footer-link">Accessibilité</button></li>
+            <li><button className="home__footer-link">Plan du site</button></li>
+          </ul>
+        </div>
+      </div>
+      <div className="home__footer-bottom">
+        <p className="home__footer-copyright">&copy; 2026 Municip'All. Tous droits réservés.</p>
+      </div>
+    </footer>
+  );
+};
+
 const HomeAnimationScene = lazy(() => import('./HomeAnimationScene').then((m) => ({ default: m.HomeAnimationScene })));
 
 const WEATHER_DATA: Record<string, { temp: number; desc: string; icon: string; forecast: Array<{ day: string; icon: string; hi: number }> }> = {
@@ -49,7 +83,7 @@ const USEFUL_LINKS_FALLBACK = [
 ];
 
 export const HomeView: React.FC = () => {
-  const { user, signalements, showView, toggleNotif, toggleBot, botOpen, weather: apiWeather, homeEventPreviews, alerts: apiAlerts, cityConfig } = useApp();
+  const { user, signalements, showView, toggleNotif, toggleBot, botOpen, weather: apiWeather, homeEventPreviews, alerts: apiAlerts, cityConfig, logout } = useApp();
   const [showMap, setShowMap] = useState(false);
   const theme = (document.documentElement.getAttribute('data-theme') ?? 'light') as 'light' | 'dark';
 
@@ -82,6 +116,7 @@ export const HomeView: React.FC = () => {
           <button type="button" className={`home__nav-icon${botOpen ? ' home__nav-icon--on' : ''}`} onClick={toggleBot} title="Assistant MuniBot"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="17" height="17"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg></button>
           <button type="button" className="home__nav-icon" onClick={toggleNotif} title="Notifications"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="17" height="17"><path d="M18 8A6 6 0 006 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 01-3.46 0"/></svg><span className="home__nav-dot" /></button>
           <button type="button" className="home__nav-avatar" title="Mon profil" onClick={() => showView('profil')}>{initials.toUpperCase()}</button>
+          <button type="button" className="home__nav-icon" onClick={logout} title="Se déconnecter"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" width="17" height="17"><path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg></button>
         </div>
       </nav>
 
@@ -287,6 +322,8 @@ export const HomeView: React.FC = () => {
       </button>
 
       {showMap && <MapModal onClose={() => setShowMap(false)} />}
+
+      <Footer />
     </div>
   );
 };

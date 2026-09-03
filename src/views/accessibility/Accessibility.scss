@@ -1,0 +1,68 @@
+.accessibility-view {
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.accessibility-container {
+  max-width: 800px;
+  margin: 0 auto;
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 2rem;
+    color: var(--color-primary);
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-primary);
+  }
+
+  a {
+    color: var(--color-primary);
+    text-decoration: underline;
+
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+}
+
+.accessibility-section {
+  margin-bottom: 2rem;
+  line-height: 1.6;
+
+  p {
+    margin-bottom: 1rem;
+  }
+
+  ul {
+    margin-left: 1.5rem;
+    margin-bottom: 1rem;
+
+    li {
+      margin-bottom: 0.75rem;
+    }
+  }
+}
+
+.keyboard-shortcuts {
+  margin-left: 1.5rem;
+  margin-bottom: 1rem;
+
+  dt {
+    font-weight: bold;
+    margin-top: 0.75rem;
+    margin-bottom: 0.25rem;
+    color: var(--color-primary);
+  }
+
+  dd {
+    margin-left: 1rem;
+    margin-bottom: 0.75rem;
+  }
+}

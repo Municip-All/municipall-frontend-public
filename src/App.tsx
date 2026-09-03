@@ -13,6 +13,9 @@ import { TravauxView } from './views/travaux/TravauxView';
 import { TransportsView } from './views/transports/TransportsView';
 import { SocialView } from './views/social/SocialView';
 import { PrivacyPolicyView } from './views/privacy/PrivacyPolicyView';
+import { Conditions } from './views/conditions/Conditions';
+import { Accessibility } from './views/accessibility/Accessibility';
+import { Sitemap } from './views/sitemap/Sitemap';
 import { NotifDrawer, MuniBot } from './views/layout/PageLayout';
 import { ViewTransition } from './components';
 import { ViewName } from './types';
@@ -29,6 +32,9 @@ const VIEW_LABELS: Record<ViewName, string> = {
   transports: 'Transports',
   social: 'Social',
   privacy: 'Politique de Confidentialité',
+  conditions: 'Conditions d\'utilisation',
+  accessibility: 'Accessibilité',
+  sitemap: 'Plan du site',
 };
 
 const MainContent: React.FC<{ pendingView?: string | null }> = ({ pendingView }) => {
@@ -61,6 +67,9 @@ const MainContent: React.FC<{ pendingView?: string | null }> = ({ pendingView })
       case 'transports': node = <TransportsView />; break;
       case 'social': node = <SocialView />; break;
       case 'privacy': node = <PrivacyPolicyView />; break;
+      case 'conditions': node = <Conditions />; break;
+      case 'accessibility': node = <Accessibility />; break;
+      case 'sitemap': node = <Sitemap />; break;
       default:
         node = (
           <div style={{ position: 'fixed', inset: 0, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '1.5rem', background: 'var(--color-bg)', fontFamily: 'var(--font-body)' }}>

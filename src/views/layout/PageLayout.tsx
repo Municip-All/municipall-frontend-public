@@ -119,15 +119,15 @@ const Footer: React.FC = () => {
           <ul className="pl-footer-links">
             <li><button onClick={() => showView('contact')} className="pl-footer-link">Nous contacter</button></li>
             <li><button onClick={() => showView('privacy')} className="pl-footer-link">Politique de confidentialité</button></li>
-            <li><button className="pl-footer-link">Conditions d'utilisation</button></li>
+            <li><button onClick={() => showView('conditions')} className="pl-footer-link">Conditions d'utilisation</button></li>
           </ul>
         </div>
         <div className="pl-footer-section">
           <h4 className="pl-footer-subtitle">Légal</h4>
           <ul className="pl-footer-links">
             <li><button onClick={() => showView('privacy')} className="pl-footer-link">RGPD & Confidentialité</button></li>
-            <li><button className="pl-footer-link">Accessibilité</button></li>
-            <li><button className="pl-footer-link">Plan du site</button></li>
+            <li><button onClick={() => showView('accessibility')} className="pl-footer-link">Accessibilité</button></li>
+            <li><button onClick={() => showView('sitemap')} className="pl-footer-link">Plan du site</button></li>
           </ul>
         </div>
       </div>

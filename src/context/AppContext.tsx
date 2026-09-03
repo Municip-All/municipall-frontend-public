@@ -115,6 +115,9 @@ const VIEW_NAMES: ViewName[] = [
   'transports',
   'social',
   'privacy',
+  'conditions',
+  'accessibility',
+  'sitemap',
 ];
 
 export const AppProvider: React.FC<{ children: ReactNode }> = ({ children }) => {

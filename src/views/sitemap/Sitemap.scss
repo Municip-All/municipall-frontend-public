@@ -1,0 +1,62 @@
+.sitemap-view {
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.sitemap-container {
+  max-width: 800px;
+  margin: 0 auto;
+
+  h1 {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-primary);
+  }
+}
+
+.sitemap-intro {
+  font-size: 1.1rem;
+  margin-bottom: 2rem;
+  color: var(--color-text-secondary);
+}
+
+.sitemap-section {
+  margin-bottom: 2.5rem;
+
+  h2 {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+    color: var(--color-primary);
+  }
+}
+
+.sitemap-list {
+  list-style: none;
+  margin-left: 0;
+
+  li {
+    margin-bottom: 0.75rem;
+    line-height: 1.6;
+  }
+}
+
+.sitemap-link {
+  background: none;
+  border: none;
+  color: var(--color-primary);
+  font-size: 1rem;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+
+  &:hover {
+    opacity: 0.8;
+  }
+
+  &:focus {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+}

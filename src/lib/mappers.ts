@@ -74,7 +74,10 @@ export function mapReportToSignalement(r: ApiReport): Signalement {
     id: String(r.id ?? ''),
     categorie: (r.category || 'Autre') as SignalementCategory,
     description: r.description || r.category || 'Signalement',
-    adresse: `${r.lat.toFixed(4)}, ${r.lon.toFixed(4)}`,
+    adresse:
+      Number.isFinite(r.lat) && (r.lat !== 0 || r.lon !== 0)
+        ? `${r.lat.toFixed(4)}, ${r.lon.toFixed(4)}`
+        : 'Position non communiquée',
     statut,
     dateCreation: r.createdAt
       ? new Date(r.createdAt).toLocaleDateString('fr-FR')
